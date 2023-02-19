@@ -50,7 +50,7 @@ namespace myMath
         Vector(const T &x);
         Vector(const T x[R]);
         Vector(const Vector<T, R> &obj);
-        ~Vector();
+        ~Vector() = default;
 
         T &operator[](const unsigned int i);
 
@@ -83,7 +83,7 @@ namespace myMath
         Matrix(const double &x);
         Matrix(const double x[R][C]);
         Matrix(const Matrix<T, R, C> &obj);
-        ~Matrix();
+        ~Matrix() = default;
 
         Vector<T, R> &operator[](const unsigned int i);
 
@@ -93,14 +93,12 @@ namespace myMath
 
         Matrix<T, R, C> operator+(const Matrix<T, R, C> &obj) const;
         Matrix<T, R, C> operator-(const Matrix<T, R, C> &obj) const;
-        // Matrix<T, R, C> operator*(const Matrix<T, R, C> &obj) const;
         Matrix<T, R, C> operator*(const double &x) const;
         Vector<T, R> operator*(const Vector<T, C> &obj) const;
         Matrix<T, R, C> operator/(const double &x) const;
 
         Matrix<T, R, C> &operator+=(const Matrix<T, R, C> &obj);
         Matrix<T, R, C> &operator-=(const Matrix<T, R, C> &obj);
-        // Matrix<T, R, C> &operator*=(const Matrix<T, R, C> &obj);
         Matrix<T, R, C> &operator*=(const double &x);
         Matrix<T, R, C> &operator/=(const double &x);
 
@@ -159,11 +157,11 @@ namespace myMath
         }
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>::~Vector()
-    {
-        delete this;
-    }
+    // template <class T, unsigned int R>
+    // Vector<T, R>::~Vector()
+    // {
+    //     delete this;
+    // }
 
     template <class T, unsigned int R>
     T &Vector<T, R>::operator[](const unsigned int i)
@@ -389,11 +387,11 @@ namespace myMath
         }
     }
 
-    template <class T, unsigned int R, unsigned int C>
-    Matrix<T, R, C>::~Matrix()
-    {
-        delete this;
-    }
+    // template <class T, unsigned int R, unsigned int C>
+    // Matrix<T, R, C>::~Matrix()
+    // {
+    //     delete this;
+    // }
 
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C>::Matrix(const double &x)
