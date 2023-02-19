@@ -79,7 +79,7 @@ namespace myMath
     class Matrix
     {
     public:
-        Vector<T, C> mat[R];
+        Vector<T, R> mat[C];
 
         Matrix();
         Matrix(const double &x);
@@ -108,57 +108,69 @@ namespace myMath
 
         Matrix<T, R, C> identity(void);
         Matrix<T, C, R> Transpose(void);
+        void LU_Decomposition(Matrix<T, R, R> &Lmat, Matrix<T, R, R> &Umat);
+        T Minor(unsigned int i, unsigned int j);
+        T Determinant(void);
     };
 
-    class Matrix2d : public Matrix<double, 2u, 2u>
-    {
-    public:
-        Matrix2d();
-        Matrix2d(const double &x);
-        Matrix2d(const double x[2][2]);
-        Matrix2d(const Matrix2d &obj);
-        Matrix2d(const Matrix<double, 2, 2> &obj);
-        ~Matrix2d();
+    /*
+        class Matrix2d : public Matrix<double, 2u, 2u>
+        {
+        public:
+            Matrix2d();
+            Matrix2d(const double &x);
+            Matrix2d(const double x[2][2]);
+            Matrix2d(const Matrix2d &obj);
+            Matrix2d(const Matrix<double, 2, 2> &obj);
+            ~Matrix2d();
 
-        double Minor(unsigned int i, unsigned int j);
-        Matrix2d Cofactor(void);
-        Matrix2d Adjoint(void);
-        double Determinant(void);
-        Matrix2d Inverse(void);
-    };
-    class Matrix3d : public Matrix<double, 3u, 3u>
-    {
-    public:
-        Matrix3d();
-        Matrix3d(const double &x);
-        Matrix3d(const double x[3][3]);
-        Matrix3d(const Matrix3d &obj);
-        Matrix3d(const Matrix<double, 3, 3> &obj);
-        ~Matrix3d();
+            double Minor(unsigned int i, unsigned int j);
+            Matrix2d Cofactor(void);
+            Matrix2d Adjoint(void);
+            double Determinant(void);
+            Matrix2d Inverse(void);
+        };
 
-        double Minor(unsigned int i, unsigned int j);
-        Matrix3d Cofactor(void);
-        Matrix3d Adjoint(void);
-        double Determinant(void);
-        Matrix3d Inverse(void);
-    };
 
-    class Matrix4d : public Matrix<double, 4u, 4u>
-    {
-    public:
-        Matrix4d();
-        Matrix4d(const double &x);
-        Matrix4d(const double x[4][4]);
-        Matrix4d(const Matrix4d &obj);
-        Matrix4d(const Matrix<double, 4, 4> &obj);
-        ~Matrix4d();
+        class Matrix3d : public Matrix<double, 3u, 3u>
+        {
+        public:
+            Matrix3d();
+            Matrix3d(const double &x);
+            Matrix3d(const double x[3][3]);
+            Matrix3d(const Matrix3d &obj);
+            Matrix3d(const Matrix<double, 3, 3> &obj);
+            ~Matrix3d();
 
-        double Minor(unsigned int i, unsigned int j);
-        Matrix4d Cofactor(void);
-        Matrix4d Adjoint(void);
-        double Determinant(void);
-        Matrix4d Inverse(void);
-    };
+            double Minor(unsigned int i, unsigned int j);
+            Matrix3d Cofactor(void);
+            Matrix3d Adjoint(void);
+            double Determinant(void);
+            Matrix3d Inverse(void);
+        };
+
+        class Matrix4d : public Matrix<double, 4u, 4u>
+        {
+        public:
+            Matrix4d();
+            Matrix4d(const double &x);
+            Matrix4d(const double x[4][4]);
+            Matrix4d(const Matrix4d &obj);
+            Matrix4d(const Matrix<double, 4, 4> &obj);
+            ~Matrix4d();
+
+            double Minor(unsigned int i, unsigned int j);
+            Matrix4d Cofactor(void);
+            Matrix4d Adjoint(void);
+            double Determinant(void);
+            Matrix4d Inverse(void);
+        };
+    */
+    typedef Vector<double, 3u> Vector3d;
+
+    typedef Matrix<double, 2u, 2u> Matrix2d;
+    typedef Matrix<double, 3u, 3u> Matrix3d;
+    typedef Matrix<double, 4u, 4u> Matrix4d;
 
     ////////////////////////////////////
     //                                //
@@ -422,9 +434,9 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C>::Matrix()
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 this->mat[i].vec[j] = 0.0;
             }
@@ -440,9 +452,9 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C>::Matrix(const double &x)
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 this->mat[i].vec[j] = x;
             }
@@ -452,11 +464,11 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C>::Matrix(const double x[R][C])
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
-                this->mat[i].vec[j] = x[i][j];
+                this->mat[i].vec[j] = x[j][i];
             }
         }
     }
@@ -464,9 +476,9 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C>::Matrix(const Matrix<T, R, C> &obj)
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 this->mat[i].vec[j] = obj.mat[i].vec[j];
             }
@@ -482,9 +494,9 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C> &Matrix<T, R, C>::operator=(const double &x)
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 this->mat[i].vec[j] = x;
             }
@@ -496,11 +508,11 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C> &Matrix<T, R, C>::operator=(const double x[R][C])
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
-                this->mat[i].vec[j] = x[i][j];
+                this->mat[i].vec[j] = x[j][i];
             }
         }
 
@@ -510,9 +522,9 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C> &Matrix<T, R, C>::operator=(const Matrix<T, R, C> &obj)
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 this->mat[i].vec[j] = obj.mat[i].vec[j];
             }
@@ -526,9 +538,9 @@ namespace myMath
     {
         Matrix<T, R, C> tmp{*this};
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 tmp.mat[i].vec[j] += obj.mat[i].vec[j];
             }
@@ -542,9 +554,9 @@ namespace myMath
     {
         Matrix<T, R, C> tmp{*this};
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 tmp.mat[i].vec[j] -= obj.mat[i].vec[j];
             }
@@ -558,13 +570,13 @@ namespace myMath
     {
         Matrix<T, R, C> tmp;
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
 
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 T tmp_sum = static_cast<T>(0.0);
-                for (unsigned int k{0}; k < C; k++)
+                for (unsigned int k{0}; k < R; k++)
                 {
                     tmp_sum += this->mat[i].vec[k] * obj.mat[k].vec[j];
                 }
@@ -581,9 +593,9 @@ namespace myMath
     {
         Matrix<T, R, C> tmp{*this};
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 tmp.mat[i].vec[j] *= x;
             }
@@ -601,7 +613,7 @@ namespace myMath
         {
             for (unsigned int j{0}; j < C; j++)
             {
-                tmp.vec[i] += this->mat[i].vec[j] * obj.vec[j];
+                tmp.vec[i] += this->mat[j].vec[i] * obj.vec[j];
             }
         }
 
@@ -613,9 +625,9 @@ namespace myMath
     {
         Matrix<T, R, C> tmp{*this};
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 tmp.mat[i].vec[j] /= x;
             }
@@ -628,9 +640,9 @@ namespace myMath
     Matrix<T, R, C> &Matrix<T, R, C>::operator+=(const Matrix<T, R, C> &obj)
     {
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0}; j < R; j++)
             {
                 this->mat[i].vec[j] += obj.mat[i].vec[j];
             }
@@ -659,24 +671,23 @@ namespace myMath
     {
         Matrix<T, R, C> tmp;
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < C; i++)
         {
-
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0u}; j < R; j++)
             {
                 T tmp_sum = static_cast<T>(0.0);
                 for (unsigned int k{0}; k < C; k++)
                 {
-                    tmp_sum += this->mat[i].vec[k] * obj.mat[k].vec[j];
+                    tmp_sum += this->mat[k].vec[j] * obj.mat[i].vec[k];
                 }
 
                 tmp.mat[i].vec[j] = tmp_sum;
             }
         }
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0u}; j < R; j++)
             {
                 this->mat[i].vec[j] = tmp.mat[i].vec[j];
             }
@@ -688,9 +699,9 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C> &Matrix<T, R, C>::operator*=(const double &x)
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0u}; j < R; j++)
             {
                 this->mat[i].vec[j] *= x;
             }
@@ -702,9 +713,9 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C> &Matrix<T, R, C>::operator/=(const double &x)
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0u}; j < R; j++)
             {
                 this->mat[i].vec[j] /= x;
             }
@@ -720,7 +731,7 @@ namespace myMath
 
         if (R == C)
         {
-            for (unsigned int i{0}; i < R; i++)
+            for (unsigned int i{0u}; i < R; i++)
             {
                 identityMat.mat[i].vec[i] = 1.0;
             }
@@ -734,9 +745,9 @@ namespace myMath
     {
         Matrix<T, C, R> tmp;
 
-        for (unsigned int i{0}; i < C; i++)
+        for (unsigned int i{0u}; i < C; i++)
         {
-            for (unsigned int j{0}; j < R; j++)
+            for (unsigned int j{0u}; j < R; j++)
             {
                 tmp.mat[i].vec[j] = this->mat[j].vec[i];
             }
@@ -745,23 +756,115 @@ namespace myMath
         return tmp;
     }
 
+    template <class T, unsigned int R, unsigned int C>
+    void Matrix<T, R, C>::LU_Decomposition(Matrix<T, R, R> &Lmat, Matrix<T, R, R> &Umat)
+    {
+        Matrix<T, R, R> LU{0.0};
+        T sum{static_cast<T>(0.0)};
+
+        for (unsigned int i{0u}; i < R; i--)
+        {
+            for (unsigned int j{i}; j < R; j++)
+            {
+                sum = static_cast<T>(0.0);
+
+                for (unsigned int k{0u}; k < i; k++)
+                {
+                    sum += LU.mat[k].vec[i] * LU.mat[j].vec[k];
+                }
+
+                LU.mat[j].vec[i] = this->mat[j].vec[i] - sum;
+            }
+
+            for (unsigned int j{i + 1u}; j < R; j++)
+            {
+                sum = static_cast<T>(0.0);
+
+                for (unsigned int k{0u}; k < i; k++)
+                {
+                    sum += LU.mat[k].vec[j] * LU.mat[i].vec[k];
+                }
+
+                LU.mat[i].vec[j] = (static_cast<T>(1.0) / LU.mat[i].vec[i]) * (this->mat[i].vec[j] - sum);
+            }
+        }
+
+        for (unsigned int i{0u}; i < R; i++)
+        {
+            for (unsigned int j{0u}; j < R; j++)
+            {
+                double ratio{-1.0 * static_cast<float>(j) / static_cast<float>(i)};
+
+                if (ratio == -1.0)
+                {
+                    Lmat.mat[j].vec[i] = static_cast<T>(1.0);
+                    Umat.mat[j].vec[i] = LU.mat[j].vec[i];
+                }
+                else if (ratio < -1.0)
+                {
+                    Lmat.mat[j].vec[i] = LU.mat[j].vec[i];
+                }
+                else
+                {
+                    Umat.mat[j].vec[i] = LU.mat[j].vec[i];
+                }
+            }
+        }
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    T Matrix<T, R, C>::Minor(unsigned int i, unsigned int j)
+    {
+        Matrix<T, R, R> minor;
+
+        for (unsigned int m{0u}; m < R; m++)
+        {
+            for (unsigned int n{0u}; n < R; n++)
+            {
+                if (m != i && n != j)
+                {
+                    minor.mat[m < i ? m : (m - 1u)].vec[n < j ? n : (n - 1u)] = this->mat[m].vec[n];
+                }
+            }
+        }
+
+        return (minor.Determinant());
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    T Matrix<T, R, C>::Determinant(void)
+    {
+        Matrix<T, R, R> Lmat;
+        Matrix<T, R, R> Umat;
+
+        this->LU_Decomposition(Lmat, Umat);
+
+        T det_val{static_cast<T>(1.0)};
+
+        for (unsigned int i{0u}; i < R; i++)
+        {
+            det_val *= Umat[i][i];
+        }
+
+        return det_val;
+    }
+
     template <class T, unsigned int R, unsigned int C, unsigned int C2>
     Matrix<T, R, C2> operator*(const Matrix<T, R, C> &lhs, const Matrix<T, C, C2> &rhs)
     {
         Matrix<T, R, C2> tmp;
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
-
-            for (unsigned int j{0}; j < C2; j++)
+            for (unsigned int j{0u}; j < C2; j++)
             {
                 T tmp_sum = static_cast<T>(0.0);
                 for (unsigned int k{0}; k < C; k++)
                 {
-                    tmp_sum += lhs.mat[i].vec[k] * rhs.mat[k].vec[j];
+                    tmp_sum += lhs.mat[k].vec[i] * rhs.mat[j].vec[k];
                 }
 
-                tmp.mat[i].vec[j] = tmp_sum;
+                tmp.mat[j].vec[i] = tmp_sum;
             }
         }
 
@@ -773,9 +876,47 @@ namespace myMath
     {
         Matrix<T, R, C> tmp{obj};
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < C; i++)
         {
-            for (unsigned int j{0}; j < C; j++)
+            for (unsigned int j{0u}; j < R; j++)
+            {
+                tmp.mat[i].vec[j] *= x;
+            }
+        }
+
+        return tmp;
+    }
+
+    template <class T, unsigned int R, unsigned int C, unsigned int C2>
+    Matrix<T, R, C2> operator*=(const Matrix<T, R, C> &lhs, const Matrix<T, C, C2> &rhs)
+    {
+        Matrix<T, R, C2> tmp;
+
+        for (unsigned int i{0u}; i < R; i++)
+        {
+            for (unsigned int j{0u}; j < C2; j++)
+            {
+                T tmp_sum = static_cast<T>(0.0);
+                for (unsigned int k{0}; k < C; k++)
+                {
+                    tmp_sum += lhs.mat[k].vec[i] * rhs.mat[j].vec[k];
+                }
+
+                tmp.mat[j].vec[i] = tmp_sum;
+            }
+        }
+
+        return tmp;
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    Matrix<T, R, C> operator*=(const Matrix<T, R, C> &obj, const double &x)
+    {
+        Matrix<T, R, C> tmp{obj};
+
+        for (unsigned int i{0u}; i < C; i++)
+        {
+            for (unsigned int j{0u}; j < R; j++)
             {
                 tmp.mat[i].vec[j] *= x;
             }
@@ -789,6 +930,7 @@ namespace myMath
     // Class Matrix2d definitions //
     //                            //
     ////////////////////////////////
+    /*
     Matrix2d::Matrix2d()
     {
         for (unsigned int i{0}; i < 2u; i++)
@@ -901,12 +1043,13 @@ namespace myMath
         }
         return tmp;
     }
-
+*/
     ////////////////////////////////
     //                            //
     // Class Matrix3d definitions //
     //                            //
     ////////////////////////////////
+    /*
     Matrix3d::Matrix3d()
     {
         for (unsigned int i{0}; i < 3u; i++)
@@ -1038,12 +1181,14 @@ namespace myMath
         }
         return tmp;
     }
+    */
 
     ////////////////////////////////
     //                            //
     // Class Matrix4d definitions //
     //                            //
     ////////////////////////////////
+    /*
     Matrix4d::Matrix4d()
     {
         for (unsigned int i{0}; i < 3u; i++)
@@ -1175,4 +1320,6 @@ namespace myMath
         }
         return tmp;
     }
+*/
+
 }
