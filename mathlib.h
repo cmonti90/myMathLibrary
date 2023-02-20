@@ -4,6 +4,7 @@ namespace myMath
 {
     constexpr double PI = 3.1415926535897932384626433832;
     constexpr double e = 2.718281828459045235360287471;
+    constexpr double ZERO_THRESHOLD = 1.0e-16;
 
     ////////////////////////////////
     //                            //
@@ -107,8 +108,10 @@ namespace myMath
         void LU_Decomposition(Matrix<T, R, R> &Lmat, Matrix<T, R, R> &Umat) const;
         T Minor(unsigned int i, unsigned int j) const;
         T Determinant(void) const;
+        bool Invertable(void);
     };
 
+    typedef Vector<double, 2u> Vector2d;
     typedef Vector<double, 3u> Vector3d;
     typedef Vector<double, 4u> Vector4d;
 
@@ -156,12 +159,6 @@ namespace myMath
             this->vec[i] = obj.vec[i];
         }
     }
-
-    // template <class T, unsigned int R>
-    // Vector<T, R>::~Vector()
-    // {
-    //     delete this;
-    // }
 
     template <class T, unsigned int R>
     T &Vector<T, R>::operator[](const unsigned int i)
@@ -386,12 +383,6 @@ namespace myMath
             }
         }
     }
-
-    // template <class T, unsigned int R, unsigned int C>
-    // Matrix<T, R, C>::~Matrix()
-    // {
-    //     delete this;
-    // }
 
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C>::Matrix(const double &x)
@@ -760,7 +751,7 @@ namespace myMath
         {
             for (unsigned int j{0u}; j < R; j++)
             {
-                double ratio{-1.0 * static_cast<float>(j) / static_cast<float>(i)};
+                double ratio{-1.0 * static_cast<double>(j) / static_cast<double>(i)};
 
                 if (ratio == -1.0)
                 {
@@ -814,5 +805,35 @@ namespace myMath
         }
 
         return det_val;
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    bool Matrix<T, R, C>::Invertable(void)
+    {
+        if ((R != C) || ABS(this->Determinant()) < ZERO_THRESHOLD)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    Matrix<T, R, C> Inverse(const Matrix<T, R, C>& obj)
+    {
+        Matrix<T, R, C> tmp{obj};
+
+        if (0)
+        {
+            // TODO: Inverse Algorithm
+
+            return tmp;
+        }
+        else
+        {
+            return obj;
+        }
+
+
     }
 }
