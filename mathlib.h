@@ -2,9 +2,12 @@
 
 namespace myMath
 {
-    constexpr double PI = 3.1415926535897932384626433832;
-    constexpr double e = 2.718281828459045235360287471;
-    constexpr double ZERO_THRESHOLD = 1.0e-16;
+    namespace Constants
+    {
+        constexpr double PI = 3.1415926535897932384626433832;
+        constexpr double e = 2.718281828459045235360287471;
+        constexpr double ZERO_THRESHOLD = 1.0e-16;
+    }
 
     ////////////////////////////////
     //                            //
@@ -108,7 +111,7 @@ namespace myMath
         void LU_Decomposition(Matrix<T, R, R> &Lmat, Matrix<T, R, R> &Umat) const;
         T Minor(unsigned int i, unsigned int j) const;
         T Determinant(void) const;
-        bool Invertable(void);
+        bool Invertable(void) const;
     };
 
     typedef Vector<double, 2u> Vector2d;
@@ -808,9 +811,9 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    bool Matrix<T, R, C>::Invertable(void)
+    bool Matrix<T, R, C>::Invertable(void) const
     {
-        if ((R != C) || ABS(this->Determinant()) < ZERO_THRESHOLD)
+        if ((R != C) || ABS(this->Determinant()) < Constants::ZERO_THRESHOLD)
         {
             return false;
         }
@@ -819,7 +822,7 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    Matrix<T, R, C> Inverse(const Matrix<T, R, C>& obj)
+    Matrix<T, R, C> Inverse(const Matrix<T, R, C> &obj)
     {
         Matrix<T, R, C> tmp{obj};
 
@@ -833,7 +836,5 @@ namespace myMath
         {
             return obj;
         }
-
-
     }
 }
