@@ -1,82 +1,11 @@
-#pragma once
+#ifndef DA413458_D25F_4FB0_9C74_0D7D0BBD5E25
+#define DA413458_D25F_4FB0_9C74_0D7D0BBD5E25
+
+#include "BasicFunctions.h"
+#include "Vector.h"
 
 namespace myMath
 {
-    namespace Constants
-    {
-        constexpr double PI = 3.1415926535897932384626433832;
-        constexpr double e = 2.718281828459045235360287471;
-        constexpr double ZERO_THRESHOLD = 1.0e-16;
-    }
-
-    ////////////////////////////////
-    //                            //
-    // Basic function definitions //
-    //                            //
-    ////////////////////////////////
-    unsigned int factorial(const unsigned int x)
-    {
-        unsigned int tmp = 1u;
-
-        if (x == 0u)
-        {
-            return 1u;
-        }
-
-        for (unsigned int i{1u}; i <= x; i++)
-        {
-            tmp *= i;
-        }
-
-        return tmp;
-    }
-
-    int factorial(int x)
-    {
-        x = x > 0 ? (static_cast<int>(factorial(static_cast<unsigned int>(x)))) : (-1 * static_cast<int>(factorial(static_cast<unsigned int>(x))));
-
-        return x;
-    }
-
-    template <class T>
-    T SQ(const T x)
-    {
-        return (x * x);
-    }
-
-    template <class T, unsigned int R>
-    class Vector
-    {
-    public:
-        T vec[R];
-
-        Vector();
-        Vector(const T &x);
-        Vector(const T x[R]);
-        Vector(const Vector<T, R> &obj);
-        ~Vector() = default;
-
-        T &operator[](const unsigned int i);
-
-        Vector<T, R> &operator=(const T &x);
-        Vector<T, R> &operator=(const T x[R]);
-        Vector<T, R> &operator=(const Vector<T, R> &obj);
-
-        Vector<T, R> operator+(const Vector<T, R> &obj) const;
-        Vector<T, R> operator-(const Vector<T, R> &obj) const;
-        Vector<T, R> operator*(const double &x) const;
-        Vector<T, R> operator/(const double &x) const;
-
-        Vector<T, R> &operator+=(const Vector<T, R> &obj);
-        Vector<T, R> &operator-=(const Vector<T, R> &obj);
-        Vector<T, R> &operator*=(const double &x);
-        Vector<T, R> &operator/=(const double &x);
-
-        T magnitude(void) const;
-        T dot(const Vector<T, R> &obj) const;
-        Vector<T, R> cross(const Vector<T, R> &obj) const;
-    };
-
     template <class T, unsigned int R, unsigned int C>
     class Matrix
     {
@@ -89,7 +18,8 @@ namespace myMath
         Matrix(const Matrix<T, R, C> &obj);
         ~Matrix() = default;
 
-        Vector<T, R> &operator[](const unsigned int i);
+        Vector<T, C> &operator[](const unsigned int i);
+        const Vector<T, C> &operator[](const unsigned int i) const;
 
         Matrix<T, R, C> &operator=(const double &x);
         Matrix<T, R, C> &operator=(const double x[R][C]);
@@ -108,272 +38,15 @@ namespace myMath
 
         Matrix<T, R, C> Identity(void) const;
         Matrix<T, C, R> Transpose(void) const;
-        void LU_Decomposition(Matrix<T, R, R> &Lmat, Matrix<T, R, R> &Umat) const;
+        void LU_Decomposition(Matrix<T, R, C> &Lmat, Matrix<T, R, C> &Umat) const;
         T Minor(unsigned int i, unsigned int j) const;
         T Determinant(void) const;
         bool Invertable(void) const;
     };
 
-    typedef Vector<double, 2u> Vector2d;
-    typedef Vector<double, 3u> Vector3d;
-    typedef Vector<double, 4u> Vector4d;
-
     typedef Matrix<double, 2u, 2u> Matrix2d;
     typedef Matrix<double, 3u, 3u> Matrix3d;
     typedef Matrix<double, 4u, 4u> Matrix4d;
-
-    ////////////////////////////////////
-    //                                //
-    // Class Vector<T, R> definitions //
-    //                                //
-    ////////////////////////////////////
-    template <class T, unsigned int R>
-    Vector<T, R>::Vector()
-    {
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] = 0.0;
-        }
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R>::Vector(const T &x)
-    {
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] = x;
-        }
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R>::Vector(const T x[R])
-    {
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] = x[i];
-        }
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R>::Vector(const Vector<T, R> &obj)
-    {
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] = obj.vec[i];
-        }
-    }
-
-    template <class T, unsigned int R>
-    T &Vector<T, R>::operator[](const unsigned int i)
-    {
-        return this->vec[i];
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> &Vector<T, R>::operator=(const T &x)
-    {
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] = x;
-        }
-
-        return *this;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> &Vector<T, R>::operator=(const T x[R])
-    {
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] = x[i];
-        }
-
-        return *this;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> &Vector<T, R>::operator=(const Vector<T, R> &obj)
-    {
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] = obj.vec[i];
-        }
-
-        return *this;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> Vector<T, R>::operator+(const Vector<T, R> &obj) const
-    {
-        Vector<T, R> tmp{*this};
-
-        for (unsigned int i{0}; i < R; i++)
-        {
-            tmp.vec[i] += obj.vec[i];
-        }
-
-        return tmp;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> Vector<T, R>::operator-(const Vector<T, R> &obj) const
-    {
-        Vector<T, R> tmp{*this};
-
-        for (unsigned int i{0}; i < R; i++)
-        {
-            tmp.vec[i] -= obj.vec[i];
-        }
-
-        return tmp;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> Vector<T, R>::operator*(const double &x) const
-    {
-        Vector<T, R> tmp{*this};
-
-        for (unsigned int i{0}; i < R; i++)
-        {
-            tmp.vec[i] *= x;
-        }
-
-        return tmp;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> Vector<T, R>::operator/(const double &x) const
-    {
-        Vector<T, R> tmp{*this};
-
-        for (unsigned int i{0}; i < R; i++)
-        {
-            tmp.vec[i] /= x;
-        }
-
-        return tmp;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> &Vector<T, R>::operator+=(const Vector<T, R> &obj)
-    {
-
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] += obj.vec[i];
-        }
-
-        return *this;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> &Vector<T, R>::operator-=(const Vector<T, R> &obj)
-    {
-
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] -= obj.vec[i];
-        }
-
-        return *this;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> &Vector<T, R>::operator*=(const double &x)
-    {
-
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] *= x;
-        }
-
-        return *this;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> &Vector<T, R>::operator/=(const double &x)
-    {
-
-        for (unsigned int i{0}; i < R; i++)
-        {
-            this->vec[i] /= x;
-        }
-
-        return *this;
-    }
-
-    template <class T, unsigned int C>
-    Vector<T, C> operator*(const double &x, const Vector<T, C> &obj)
-    {
-        Vector<T, C> tmp{obj};
-
-        for (unsigned int i{0}; i < C; i++)
-        {
-            tmp.vec[i] *= x;
-        }
-
-        return tmp;
-    }
-
-    template <class T, unsigned int R>
-    T Vector<T, R>::magnitude(void) const
-    {
-        T tmp = static_cast<T>(0.0);
-
-        for (unsigned int i{0}; i < R; i++)
-        {
-            tmp += SQ(this->vec[i], 2);
-        }
-    }
-
-    template <class T, unsigned int R>
-    T Vector<T, R>::dot(const Vector<T, R> &obj) const
-    {
-        T prod{static_cast<T>(0.0)};
-
-        for (unsigned int i{0}; i < R; i++)
-        {
-            prod += this->vec[i] * obj.vec[i];
-        }
-
-        return prod;
-    }
-
-    template <class T, unsigned int R>
-    Vector<T, R> Vector<T, R>::cross(const Vector<T, R> &obj) const
-    {
-        if (R == 3u)
-        {
-            Vector<double, 3u> prod{0.0};
-            Matrix3d concat{0.0};
-
-            for (unsigned int i{0}; i < 3u; i++)
-            {
-                concat.mat[0][i] = (2 * ((i + 2) % 2 == 0) - 1);
-                concat.mat[1][i] = this->vec[i];
-                concat.mat[2][i] = obj.vec[i];
-            }
-
-            for (unsigned int i{0}; i < 3u; i++)
-            {
-                prod.vec[i] = concat.Minor(0, i);
-            }
-
-            return prod;
-        }
-        else
-        {
-            Vector<T, R> tmp{0.0};
-
-            return tmp;
-        }
-    }
-
-    ///////////////////////////////////////
-    //                                   //
-    // Class Matrix<T, R, C> definitions //
-    //                                   //
-    ///////////////////////////////////////
 
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C>::Matrix()
@@ -424,7 +97,13 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    Vector<T, R> &Matrix<T, R, C>::operator[](const unsigned int i)
+    Vector<T, C> &Matrix<T, R, C>::operator[](const unsigned int i)
+    {
+        return this->mat[i];
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    const Vector<T, C> &Matrix<T, R, C>::operator[](const unsigned int i) const
     {
         return this->mat[i];
     }
@@ -718,12 +397,12 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    void Matrix<T, R, C>::LU_Decomposition(Matrix<T, R, R> &Lmat, Matrix<T, R, R> &Umat) const
+    void Matrix<T, R, C>::LU_Decomposition(Matrix<T, R, C> &Lmat, Matrix<T, R, C> &Umat) const
     {
-        Matrix<T, R, R> LU{0.0};
+        // Matrix<T, R, C> LU{0.0};
         T sum{static_cast<T>(0.0)};
 
-        for (unsigned int i{0u}; i < R; i--)
+        for (unsigned int i{0u}; i < R; i++)
         {
             for (unsigned int j{i}; j < R; j++)
             {
@@ -731,10 +410,10 @@ namespace myMath
 
                 for (unsigned int k{0u}; k < i; k++)
                 {
-                    sum += LU.mat[k].vec[i] * LU.mat[j].vec[k];
+                    sum += Lmat.mat[i].vec[k] * Umat.mat[k].vec[j];
                 }
 
-                LU.mat[j].vec[i] = this->mat[j].vec[i] - sum;
+                Umat.mat[i].vec[j] = this->mat[i].vec[j] - sum;
             }
 
             for (unsigned int j{i + 1u}; j < R; j++)
@@ -743,32 +422,10 @@ namespace myMath
 
                 for (unsigned int k{0u}; k < i; k++)
                 {
-                    sum += LU.mat[k].vec[j] * LU.mat[i].vec[k];
+                    sum += Lmat.mat[j].vec[k] * Umat.mat[k].vec[i];
                 }
 
-                LU.mat[i].vec[j] = (static_cast<T>(1.0) / LU.mat[i].vec[i]) * (this->mat[i].vec[j] - sum);
-            }
-        }
-
-        for (unsigned int i{0u}; i < R; i++)
-        {
-            for (unsigned int j{0u}; j < R; j++)
-            {
-                double ratio{-1.0 * static_cast<double>(j) / static_cast<double>(i)};
-
-                if (ratio == -1.0)
-                {
-                    Lmat.mat[j].vec[i] = static_cast<T>(1.0);
-                    Umat.mat[j].vec[i] = LU.mat[j].vec[i];
-                }
-                else if (ratio < -1.0)
-                {
-                    Lmat.mat[j].vec[i] = LU.mat[j].vec[i];
-                }
-                else
-                {
-                    Umat.mat[j].vec[i] = LU.mat[j].vec[i];
-                }
+                Lmat.mat[i].vec[j] = (static_cast<T>(1.0) / Umat.mat[i].vec[i]) * (this->mat[j].vec[i] - sum);
             }
         }
     }
@@ -838,3 +495,5 @@ namespace myMath
         }
     }
 }
+
+#endif /* DA413458_D25F_4FB0_9C74_0D7D0BBD5E25 */
