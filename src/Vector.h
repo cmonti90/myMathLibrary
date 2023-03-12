@@ -13,7 +13,7 @@ namespace myMath
 
         Vector();
         Vector(const T &x);
-        Vector(const T x[R]);
+        Vector(const T (&x)[R]);
         Vector(const Vector<T, R> &obj);
         ~Vector() = default;
 
@@ -21,7 +21,7 @@ namespace myMath
         const T &operator[](const unsigned int i) const;
 
         Vector<T, R> &operator=(const T &x);
-        Vector<T, R> &operator=(const T x[R]);
+        Vector<T, R> &operator=(const T (&x)[R]);
         Vector<T, R> &operator=(const Vector<T, R> &obj);
 
         Vector<T, R> operator+(const Vector<T, R> &obj) const;
@@ -63,7 +63,7 @@ namespace myMath
     }
 
     template <class T, unsigned int R>
-    Vector<T, R>::Vector(const T x[R])
+    Vector<T, R>::Vector(const T (&x)[R])
     {
         for (unsigned int i{0}; i < R; i++)
         {
@@ -104,7 +104,7 @@ namespace myMath
     }
 
     template <class T, unsigned int R>
-    Vector<T, R> &Vector<T, R>::operator=(const T x[R])
+    Vector<T, R> &Vector<T, R>::operator=(const T (&x)[R])
     {
         for (unsigned int i{0}; i < R; i++)
         {

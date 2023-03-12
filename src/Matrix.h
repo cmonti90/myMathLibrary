@@ -14,7 +14,7 @@ namespace myMath
 
         Matrix();
         Matrix(const double &x);
-        Matrix(const double x[R][C]);
+        Matrix(const double (&x)[R][C]);
         Matrix(const Matrix<T, R, C> &obj);
         ~Matrix() = default;
 
@@ -22,7 +22,7 @@ namespace myMath
         const Vector<T, C> &operator[](const unsigned int i) const;
 
         Matrix<T, R, C> &operator=(const double &x);
-        Matrix<T, R, C> &operator=(const double x[R][C]);
+        Matrix<T, R, C> &operator=(const double (&x)[R][C]);
         Matrix<T, R, C> &operator=(const Matrix<T, R, C> &obj);
 
         Matrix<T, R, C> operator+(const Matrix<T, R, C> &obj) const;
@@ -37,8 +37,7 @@ namespace myMath
         Matrix<T, R, C> &operator/=(const double &x);
 
         Matrix<T, R, C> Identity(void) const;
-        Matrix<T, C, R> Transpose(void) const;
-        void LU_Decomposition(Matrix<T, R, C> &Lmat, Matrix<T, R, C> &Umat) const;
+        void LU_Decomposition(Matrix<T, R, C> &Lmat, Matrix<T, R, C> &Umat, Matrix<T, R, C> &Pmat) const;
         T Minor(unsigned int i, unsigned int j) const;
         T Determinant(void) const;
         bool Invertable(void) const;
@@ -73,7 +72,7 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    Matrix<T, R, C>::Matrix(const double x[R][C])
+    Matrix<T, R, C>::Matrix(const double (&x)[R][C])
     {
         for (unsigned int i{0u}; i < R; i++)
         {
@@ -123,7 +122,7 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    Matrix<T, R, C> &Matrix<T, R, C>::operator=(const double x[R][C])
+    Matrix<T, R, C> &Matrix<T, R, C>::operator=(const double (&x)[R][C])
     {
         for (unsigned int i{0u}; i < R; i++)
         {
@@ -381,25 +380,42 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    Matrix<T, C, R> Matrix<T, R, C>::Transpose(void) const
+    void Matrix<T, R, C>::LU_Decomposition(Matrix<T, R, C> &Lmat, Matrix<T, R, C> &Umat, Matrix<T, R, C> &Pmat) const
     {
-        Matrix<T, C, R> tmp;
+        if (R == 1u)
+        {
+            Pmat = Matrix<T,R,C>::Identity();
+            Lmat = Matrix<T,R,C>::Identity();
+            Umat = *this;
+            return;
+        }
+        
+        bool isSingular{true};
+        Matrix<T, R, C> Amat{*this};
+
+        unsigned int heiarchy[R]{0u};
 
         for (unsigned int i{0u}; i < R; i++)
         {
-            for (unsigned int j{0u}; j < C; j++)
+            for (unsigned int j{0u}; j < R; j++)
             {
-                tmp.mat[i].vec[j] = this->mat[j].vec[i];
+                if (isSingular && Amat[0][j] != static_cast<T>(0.0))
+                {
+                    isSingular = false;
+                }
+
+                if (Amat[0][i] >= Amat[0][j])
+                {
+                    heiarchy[i]++;
+                }
+            }
+
+            if (isSingular)
+            {
+                return;
             }
         }
 
-        return tmp;
-    }
-
-    template <class T, unsigned int R, unsigned int C>
-    void Matrix<T, R, C>::LU_Decomposition(Matrix<T, R, C> &Lmat, Matrix<T, R, C> &Umat) const
-    {
-        // Matrix<T, R, C> LU{0.0};
         T sum{static_cast<T>(0.0)};
 
         for (unsigned int i{0u}; i < R; i++)
