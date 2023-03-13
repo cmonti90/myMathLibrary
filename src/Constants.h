@@ -11,7 +11,7 @@ namespace myMath
         constexpr double EULERS_NUM = 2.718281828459045235360287471;
         constexpr double ZERO_THRESHOLD = 1.0e-16;
 
-        constexpr double GRAVITY = 9.8067;                          // m / sec
+        constexpr double GRAVITY_ACCEL = 9.8067;                          // m / sec
         constexpr double EARTH_EQUITORIAL_RADIUS = 6378137.0;       // m
         constexpr double EARTH_POLAR_RADIUS = 6356752.0;            // m
         constexpr double EARTH_ROTATION_RATE = 7.2921159e-5;        // rad / sec
