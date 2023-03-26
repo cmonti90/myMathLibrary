@@ -1,6 +1,6 @@
 #!/bin/sh
 
-buildToDir="build/lib"
+buildToDir="build"
 
 SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )"
 
@@ -22,7 +22,15 @@ then
     echo "Done!"
 fi
 
+if [ -d "${SCRIPT_DIR}/install" ]
+then
+    echo "Removing current install..."
+    rm -rf "${SCRIPT_DIR}/install"
+    echo "Done!"
+fi
+
 mkdir -p "${SCRIPT_DIR}/${buildToDir}"
+mkdir -p "${SCRIPT_DIR}/install"
 
 echo "Configuring build..."
 cmake -S "${SCRIPT_DIR}" -B "${SCRIPT_DIR}/${buildToDir}"
@@ -54,7 +62,7 @@ fi
 echo "Build complete!"
 
 echo "Installing library..."
-cmake --install "${SCRIPT_DIR}/${buildToDir}" --prefix "${SCRIPT_DIR}/${buildToDir}/install"
+cmake --install "${SCRIPT_DIR}/${buildToDir}" --prefix "${SCRIPT_DIR}/install"
 
 cd ${curDir}
 export OLDPWD=${oldDir}
