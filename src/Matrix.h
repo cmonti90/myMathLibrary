@@ -39,10 +39,9 @@ namespace myMath
         Matrix<T, R, C> &operator/=(const double &x);
 
         Matrix<T, R, C> Identity(void) const;
-        void LU_Decomposition(Matrix<T, R, C> &Lmat, Matrix<T, R, C> &Umat, Matrix<T, R, C> &Pmat) const;
         T Minor(unsigned int i, unsigned int j) const;
         T Determinant(void) const;
-        bool Invertable(void) const;
+        Matrix<T, R, C> Inverse(void) const;
     };
 
     typedef Matrix<double, 2u, 2u> Matrix2d;
@@ -382,73 +381,6 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    void Matrix<T, R, C>::LU_Decomposition(Matrix<T, R, C> &Lmat, Matrix<T, R, C> &Umat, Matrix<T, R, C> &Pmat) const
-    {
-        if (R == 1u)
-        {
-            Pmat = Matrix<T,R,C>::Identity();
-            Lmat = Matrix<T,R,C>::Identity();
-            Umat = *this;
-            return;
-        }
-        
-        bool isSingular{true};
-        Matrix<T, R, C> Amat{*this};
-
-        unsigned int heiarchy[R]{0u};
-
-        for (unsigned int i{0u}; i < R; i++)
-        {
-            for (unsigned int j{0u}; j < R; j++)
-            {
-                if (isSingular && Amat[0][j] != static_cast<T>(0.0))
-                {
-                    isSingular = false;
-                }
-
-                if (Amat[0][i] >= Amat[0][j])
-                {
-                    heiarchy[i]++;
-                }
-            }
-
-            if (isSingular)
-            {
-                return;
-            }
-        }
-
-        T sum{static_cast<T>(0.0)};
-
-        for (unsigned int i{0u}; i < R; i++)
-        {
-            for (unsigned int j{i}; j < R; j++)
-            {
-                sum = static_cast<T>(0.0);
-
-                for (unsigned int k{0u}; k < i; k++)
-                {
-                    sum += Lmat.mat[i].vec[k] * Umat.mat[k].vec[j];
-                }
-
-                Umat.mat[i].vec[j] = this->mat[i].vec[j] - sum;
-            }
-
-            for (unsigned int j{i + 1u}; j < R; j++)
-            {
-                sum = static_cast<T>(0.0);
-
-                for (unsigned int k{0u}; k < i; k++)
-                {
-                    sum += Lmat.mat[j].vec[k] * Umat.mat[k].vec[i];
-                }
-
-                Lmat.mat[i].vec[j] = (static_cast<T>(1.0) / Umat.mat[i].vec[i]) * (this->mat[j].vec[i] - sum);
-            }
-        }
-    }
-
-    template <class T, unsigned int R, unsigned int C>
     T Matrix<T, R, C>::Minor(unsigned int i, unsigned int j) const
     {
         Matrix<T, R, R> minor;
@@ -470,46 +402,124 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     T Matrix<T, R, C>::Determinant(void) const
     {
-        Matrix<T, R, R> Lmat;
-        Matrix<T, R, R> Umat;
-
-        this->LU_Decomposition(Lmat, Umat);
-
-        T det_val{static_cast<T>(1.0)};
+        Matrix<T, R, C> tmpMat{*this};
+        T det{static_cast<T>(1.0)};
 
         for (unsigned int i{0u}; i < R; i++)
         {
-            det_val *= Umat[i][i];
+            unsigned int maxrow = i;
+
+            for (unsigned int j{i + 1u}; j < R; j++)
+            {
+                if (ABS(tmpMat[j][i]) > ABS(tmpMat[maxrow][i]))
+                {
+                    maxrow = j;
+                }
+            }
+
+            if (maxrow != i)
+            {
+                Vector<T, C> tmpRow{tmpMat[i]};
+
+                tmpMat[i] = tmpMat[maxrow];
+                tmpMat[maxrow] = tmpRow;
+
+                det *= static_cast<T>(-1.0);
+            }
+
+            for (unsigned int j{i + 1u}; j < R; j++)
+            {
+                T factor = tmpMat[j][i] / tmpMat[i][i];
+
+                for (unsigned int k{i + 1u}; k < R; k++)
+                {
+                    tmpMat[j][k] -= factor * tmpMat[i][k];
+                }
+
+                tmpMat[j][i] = static_cast<T>(0.0);
+            }
+
+            det *= tmpMat[i][i];
         }
 
-        return det_val;
+        return det;
     }
 
     template <class T, unsigned int R, unsigned int C>
-    bool Matrix<T, R, C>::Invertable(void) const
+    Matrix<T, R, C> Matrix<T, R, C>::Inverse(void) const
     {
-        if ((R != C) || ABS(this->Determinant()) < Constants::ZERO_THRESHOLD)
+        if (ABS(this->Determinant()) > static_cast<T>(Constants::ZERO_THRESHOLD))
         {
-            return false;
-        }
 
-        return true;
-    }
+            Matrix<T, R, C> tmpMat{*this};
+            Matrix<T, R, C> invMat{Matrix<T, R, C>::Identity()};
 
-    template <class T, unsigned int R, unsigned int C>
-    Matrix<T, R, C> Inverse(const Matrix<T, R, C> &obj)
-    {
-        Matrix<T, R, C> tmp{obj};
+            for (unsigned int i{0u}; i < R; i++)
+            {
+                invMat[i][i] = static_cast<T>(1.0);
+            }
 
-        if (0)
-        {
-            // TODO: Inverse Algorithm
+            for (unsigned int i{0u}; i < R; i++)
+            {
+                unsigned int maxrow = i;
 
-            return tmp;
+                for (unsigned int j{i + 1u}; j < R; j++)
+                {
+                    if (ABS(tmpMat[j][i]) > ABS(tmpMat[maxrow][i]))
+                    {
+                        maxrow = j;
+                    }
+                }
+
+                if (maxrow != i)
+                {
+                    Vector<T, C> tmpRow{tmpMat[i]};
+
+                    tmpMat[i] = tmpMat[maxrow];
+                    tmpMat[maxrow] = tmpRow;
+
+                    tmpRow = invMat[i];
+
+                    invMat[i] = invMat[maxrow];
+                    invMat[maxrow] = tmpRow;
+                }
+
+                for (unsigned int j{i + 1u}; j < R; j++)
+                {
+                    T factor = tmpMat[j][i] / tmpMat[i][i];
+
+                    for (unsigned int k{i + 1u}; k < R; k++)
+                    {
+                        tmpMat[j][k] -= factor * tmpMat[i][k];
+                    }
+
+                    for (unsigned int k{0u}; k < R; k++)
+                    {
+                        invMat[j][k] -= factor * invMat[i][k];
+                    }
+
+                    tmpMat[j][i] = static_cast<T>(0.0);
+                }
+            }
+
+            for (unsigned int i{R - 1u}; i >= 0u; i--)
+            {
+                for (unsigned int j{0u}; j < R; j++)
+                {
+                    for (unsigned int k{i + 1u}; k < R; k++)
+                    {
+                        invMat[i][j] -= tmpMat[i][k] * invMat[k][j];
+                    }
+
+                    invMat[i][j] /= tmpMat[i][i];
+                }
+            }
+
+            return invMat;
         }
         else
         {
-            return obj;
+            return Matrix<T, R, C>::Identity();
         }
     }
 }

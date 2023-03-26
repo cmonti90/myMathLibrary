@@ -3,8 +3,6 @@ set(exportedTarget mathlibTarget)
 
 set(version 1.0.0)
 
-project(${target})
-
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
