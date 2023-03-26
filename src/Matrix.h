@@ -3,6 +3,7 @@
 #ifndef DA413458_D25F_4FB0_9C74_0D7D0BBD5E25
 #define DA413458_D25F_4FB0_9C74_0D7D0BBD5E25
 
+#include "Constants.h"
 #include "BasicFunctions.h"
 #include "Vector.h"
 
@@ -502,11 +503,11 @@ namespace myMath
                 }
             }
 
-            for (unsigned int i{R - 1u}; i >= 0u; i--)
+            for (int i{static_cast<int>(R) - 1}; i >= 0; i--)
             {
                 for (unsigned int j{0u}; j < R; j++)
                 {
-                    for (unsigned int k{i + 1u}; k < R; k++)
+                    for (unsigned int k{static_cast<unsigned int>(i) + 1u}; k < R; k++)
                     {
                         invMat[i][j] -= tmpMat[i][k] * invMat[k][j];
                     }
