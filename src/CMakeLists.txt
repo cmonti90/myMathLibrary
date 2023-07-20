@@ -11,6 +11,7 @@ set(SOURCES mathlib.cpp)
 set(HEADERS 
             Constants.h
             BasicFunctions.h
+            Complex.h
             Vector.h
             Matrix.h
             MatrixFunctions.h

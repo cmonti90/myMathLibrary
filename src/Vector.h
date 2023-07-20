@@ -4,6 +4,9 @@
 #define E19DE42F_624A_4EBF_8117_D3009272C05E
 
 #include "BasicFunctions.h"
+#include <cmath>
+#include <initializer_list>
+#include <stdexcept>
 
 namespace myMath
 {
@@ -15,6 +18,7 @@ namespace myMath
 
         Vector();
         Vector(const T &x);
+        Vector(const std::initializer_list<T> &x);
         Vector(const T (&x)[R]);
         Vector(const Vector<T, R> &obj);
         ~Vector() = default;
@@ -23,6 +27,7 @@ namespace myMath
         const T &operator[](const unsigned int i) const;
 
         Vector<T, R> &operator=(const T &x);
+        Vector<T, R> &operator=(const std::initializer_list<T> &x);
         Vector<T, R> &operator=(const T (&x)[R]);
         Vector<T, R> &operator=(const Vector<T, R> &obj);
 
@@ -37,37 +42,49 @@ namespace myMath
         Vector<T, R> &operator/=(const double &x);
 
         T Magnitude(void) const;
-        // T dot(const Vector<T, R> &obj) const;
-        // Vector<T, R> cross(const Vector<T, R> &obj) const;
     };
 
     typedef Vector<double, 2u> Vector2d;
     typedef Vector<double, 3u> Vector3d;
     typedef Vector<double, 4u> Vector4d;
-    
 
     template <class T, unsigned int R>
     Vector<T, R>::Vector()
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
-            this->vec[i] = 0.0;
+            this->vec[i] = static_cast<T>(0.0);
         }
     }
 
     template <class T, unsigned int R>
     Vector<T, R>::Vector(const T &x)
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             this->vec[i] = x;
         }
     }
 
     template <class T, unsigned int R>
+    Vector<T, R>::Vector(const std::initializer_list<T> &x)
+    {
+        if (static_cast<unsigned int>(x.size()) != R)
+        {
+            throw std::invalid_argument("Initializer list has incorrect size of " + std::to_string(x.size()) + " instead of " + std::to_string(R) + "");
+        }
+        else if (x.size() == 0)
+        {
+            throw std::invalid_argument("Initializer list is empty");
+        }
+
+        std::copy(x.begin(), x.end(), this->vec);
+    }
+
+    template <class T, unsigned int R>
     Vector<T, R>::Vector(const T (&x)[R])
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             this->vec[i] = x[i];
         }
@@ -76,7 +93,7 @@ namespace myMath
     template <class T, unsigned int R>
     Vector<T, R>::Vector(const Vector<T, R> &obj)
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             this->vec[i] = obj.vec[i];
         }
@@ -87,7 +104,7 @@ namespace myMath
     {
         return this->vec[i];
     }
-    
+
     template <class T, unsigned int R>
     const T &Vector<T, R>::operator[](const unsigned int i) const
     {
@@ -97,7 +114,7 @@ namespace myMath
     template <class T, unsigned int R>
     Vector<T, R> &Vector<T, R>::operator=(const T &x)
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             this->vec[i] = x;
         }
@@ -106,9 +123,22 @@ namespace myMath
     }
 
     template <class T, unsigned int R>
+    Vector<T, R> &Vector<T, R>::operator=(const std::initializer_list<T> &x)
+    {
+        if (static_cast<unsigned int>(x.size()) != R)
+        {
+            throw std::invalid_argument("Initializer list has incorrect size of " + std::to_string(x.size()) + " instead of " + std::to_string(R) + "");
+        }
+
+        std::copy(x.begin(), x.end(), this->vec);
+
+        return *this;
+    }
+
+    template <class T, unsigned int R>
     Vector<T, R> &Vector<T, R>::operator=(const T (&x)[R])
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             this->vec[i] = x[i];
         }
@@ -119,7 +149,7 @@ namespace myMath
     template <class T, unsigned int R>
     Vector<T, R> &Vector<T, R>::operator=(const Vector<T, R> &obj)
     {
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             this->vec[i] = obj.vec[i];
         }
@@ -132,7 +162,7 @@ namespace myMath
     {
         Vector<T, R> tmp{*this};
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             tmp.vec[i] += obj.vec[i];
         }
@@ -145,7 +175,7 @@ namespace myMath
     {
         Vector<T, R> tmp{*this};
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             tmp.vec[i] -= obj.vec[i];
         }
@@ -158,7 +188,7 @@ namespace myMath
     {
         Vector<T, R> tmp{*this};
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             tmp.vec[i] *= x;
         }
@@ -171,7 +201,7 @@ namespace myMath
     {
         Vector<T, R> tmp{*this};
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             tmp.vec[i] /= x;
         }
@@ -183,7 +213,7 @@ namespace myMath
     Vector<T, R> &Vector<T, R>::operator+=(const Vector<T, R> &obj)
     {
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             this->vec[i] += obj.vec[i];
         }
@@ -195,7 +225,7 @@ namespace myMath
     Vector<T, R> &Vector<T, R>::operator-=(const Vector<T, R> &obj)
     {
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             this->vec[i] -= obj.vec[i];
         }
@@ -207,7 +237,7 @@ namespace myMath
     Vector<T, R> &Vector<T, R>::operator*=(const double &x)
     {
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             this->vec[i] *= x;
         }
@@ -219,7 +249,7 @@ namespace myMath
     Vector<T, R> &Vector<T, R>::operator/=(const double &x)
     {
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             this->vec[i] /= x;
         }
@@ -232,7 +262,7 @@ namespace myMath
     {
         Vector<T, C> tmp{obj};
 
-        for (unsigned int i{0}; i < C; i++)
+        for (unsigned int i{0u}; i < C; i++)
         {
             tmp.vec[i] *= x;
         }
@@ -245,54 +275,13 @@ namespace myMath
     {
         T tmp = static_cast<T>(0.0);
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
-            tmp += SQ(this->vec[i], 2);
+            tmp = SQ(this->vec[i]);
         }
+
+        return static_cast<T>(std::sqrt(tmp));
     }
-
-    // template <class T, unsigned int R>
-    // T Vector<T, R>::dot(const Vector<T, R> &obj) const
-    // {
-    //     T prod{static_cast<T>(0.0)};
-
-    //     for (unsigned int i{0}; i < R; i++)
-    //     {
-    //         prod += this->vec[i] * obj.vec[i];
-    //     }
-
-    //     return prod;
-    // }
-
-    // template <class T, unsigned int R>
-    // Vector<T, R> Vector<T, R>::cross(const Vector<T, R> &obj) const
-    // {
-    //     if (R == 3u)
-    //     {
-    //         Vector<double, 3u> prod{0.0};
-    //         Matrix3d concat{0.0};
-
-    //         for (unsigned int i{0}; i < 3u; i++)
-    //         {
-    //             concat.mat[0][i] = (2 * ((i + 2) % 2 == 0) - 1);
-    //             concat.mat[1][i] = this->vec[i];
-    //             concat.mat[2][i] = obj.vec[i];
-    //         }
-
-    //         for (unsigned int i{0}; i < 3u; i++)
-    //         {
-    //             prod.vec[i] = concat.Minor(0, i);
-    //         }
-
-    //         return prod;
-    //     }
-    //     else
-    //     {
-    //         Vector<T, R> tmp{0.0};
-
-    //         return tmp;
-    //     }
-    // }
 }
 
 #endif /* E19DE42F_624A_4EBF_8117_D3009272C05E */

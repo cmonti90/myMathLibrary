@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef DFB7B78E_BBE0_4E90_AFE6_62E04AA66E04
 #define DFB7B78E_BBE0_4E90_AFE6_62E04AA66E04
 
@@ -32,7 +30,7 @@ namespace myMath
     {
         T tmp = static_cast<T>(0.0);
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             tmp += SQ(obj.vec[i], 2);
         }
@@ -43,7 +41,7 @@ namespace myMath
     {
         T prod{static_cast<T>(0.0)};
 
-        for (unsigned int i{0}; i < R; i++)
+        for (unsigned int i{0u}; i < R; i++)
         {
             prod += lhs.vec[i] * rhs.vec[i];
         }
@@ -59,14 +57,14 @@ namespace myMath
             Vector<T, R> prod{static_cast<T>(0.0)};
             Matrix<T, R, R> concat{static_cast<T>(0.0)};
 
-            for (unsigned int i{0}; i < R; i++)
+            for (unsigned int i{0u}; i < R; i++)
             {
                 concat.mat[0][i] = static_cast<T>(2 * ((i + 2) % 2 == 0) - 1);
                 concat.mat[1][i] = lhs.vec[i];
                 concat.mat[2][i] = rhs.vec[i];
             }
 
-            for (unsigned int i{0}; i < R; i++)
+            for (unsigned int i{0u}; i < R; i++)
             {
                 prod.vec[i] = concat.Minor(0, i);
             }
