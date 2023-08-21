@@ -15,6 +15,9 @@ namespace myMath
     template <class T>
     T SQ(const T x);
 
+    template <class T>
+    T SIGN(const T x);
+
 
     /////////////////////////////////
     //         DEFINITIONS         //
@@ -53,6 +56,17 @@ namespace myMath
     inline T SQ(const T x)
     {
         return (x * x);
+    }
+
+    template <class T>
+    inline T SIGN(const T x)
+    {
+        if (x == static_cast<T>(0.0))
+        {
+            return static_cast<T>(0.0);
+        }
+        
+        return (x < static_cast<T>(0.0) ? (static_cast<T>(-1.0)) : (static_cast<T>(1.0)));
     }
 }
 

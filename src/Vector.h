@@ -7,6 +7,7 @@
 #include <cmath>
 #include <initializer_list>
 #include <stdexcept>
+#include <cstring>
 
 namespace myMath
 {
@@ -18,18 +19,18 @@ namespace myMath
 
         Vector();
         Vector(const T &x);
-        Vector(const std::initializer_list<T> &x);
         Vector(const T (&x)[R]);
         Vector(const Vector<T, R> &obj);
+        Vector(const std::initializer_list<T> &x);
         ~Vector() = default;
 
         T &operator[](const unsigned int i);
         const T &operator[](const unsigned int i) const;
 
         Vector<T, R> &operator=(const T &x);
-        Vector<T, R> &operator=(const std::initializer_list<T> &x);
         Vector<T, R> &operator=(const T (&x)[R]);
         Vector<T, R> &operator=(const Vector<T, R> &obj);
+        Vector<T, R> &operator=(const std::initializer_list<T> &x);
 
         Vector<T, R> operator+(const Vector<T, R> &obj) const;
         Vector<T, R> operator-(const Vector<T, R> &obj) const;
@@ -40,6 +41,11 @@ namespace myMath
         Vector<T, R> &operator-=(const Vector<T, R> &obj);
         Vector<T, R> &operator*=(const double &x);
         Vector<T, R> &operator/=(const double &x);
+
+        Vector<T, R> operator-(void) const;
+
+        bool operator==(const Vector<T, R> &obj) const;
+        bool operator!=(const Vector<T, R> &obj) const;
 
         T Magnitude(void) const;
     };
@@ -67,21 +73,6 @@ namespace myMath
     }
 
     template <class T, unsigned int R>
-    Vector<T, R>::Vector(const std::initializer_list<T> &x)
-    {
-        if (static_cast<unsigned int>(x.size()) != R)
-        {
-            throw std::invalid_argument("Initializer list has incorrect size of " + std::to_string(x.size()) + " instead of " + std::to_string(R) + "");
-        }
-        else if (x.size() == 0)
-        {
-            throw std::invalid_argument("Initializer list is empty");
-        }
-
-        std::copy(x.begin(), x.end(), this->vec);
-    }
-
-    template <class T, unsigned int R>
     Vector<T, R>::Vector(const T (&x)[R])
     {
         for (unsigned int i{0u}; i < R; i++)
@@ -97,6 +88,25 @@ namespace myMath
         {
             this->vec[i] = obj.vec[i];
         }
+    }
+
+    template <class T, unsigned int R>
+    Vector<T, R>::Vector(const std::initializer_list<T> &x)
+    {
+        if (static_cast<unsigned int>(x.size()) == 1u)
+        {
+            std::memset(this->vec, *(x.begin()), sizeof(this->vec));
+        }
+        else if (static_cast<unsigned int>(x.size()) != R)
+        {
+            throw std::invalid_argument("Initializer list has incorrect size of " + std::to_string(x.size()) + " instead of " + std::to_string(R) + "");
+        }
+        else if (x.size() == 0)
+        {
+            throw std::invalid_argument("Initializer list is empty");
+        }
+
+        std::copy(x.begin(), x.end(), this->vec);
     }
 
     template <class T, unsigned int R>
@@ -123,19 +133,6 @@ namespace myMath
     }
 
     template <class T, unsigned int R>
-    Vector<T, R> &Vector<T, R>::operator=(const std::initializer_list<T> &x)
-    {
-        if (static_cast<unsigned int>(x.size()) != R)
-        {
-            throw std::invalid_argument("Initializer list has incorrect size of " + std::to_string(x.size()) + " instead of " + std::to_string(R) + "");
-        }
-
-        std::copy(x.begin(), x.end(), this->vec);
-
-        return *this;
-    }
-
-    template <class T, unsigned int R>
     Vector<T, R> &Vector<T, R>::operator=(const T (&x)[R])
     {
         for (unsigned int i{0u}; i < R; i++)
@@ -153,6 +150,23 @@ namespace myMath
         {
             this->vec[i] = obj.vec[i];
         }
+
+        return *this;
+    }
+
+    template <class T, unsigned int R>
+    Vector<T, R> &Vector<T, R>::operator=(const std::initializer_list<T> &x)
+    {
+        if (static_cast<unsigned int>(x.size()) == 1u)
+        {
+            std::memset(this->vec, *(x.begin()), sizeof(this->vec));
+        }
+        else if (static_cast<unsigned int>(x.size()) != R)
+        {
+            throw std::invalid_argument("Initializer list has incorrect size of " + std::to_string(x.size()) + " instead of " + std::to_string(R) + "");
+        }
+
+        std::copy(x.begin(), x.end(), this->vec);
 
         return *this;
     }
@@ -255,6 +269,46 @@ namespace myMath
         }
 
         return *this;
+    }
+
+    template <class T, unsigned int R>
+    Vector<T, R> Vector<T, R>::operator-(void) const
+    {
+        Vector<T, R> tmp{*this};
+
+        for (unsigned int i{0u}; i < R; i++)
+        {
+            tmp.vec[i] = -tmp.vec[i];
+        }
+
+        return tmp;
+    }
+
+    template <class T, unsigned int R>
+    bool Vector<T, R>::operator==(const Vector<T, R> &obj) const
+    {
+        for (unsigned int i{0u}; i < R; i++)
+        {
+            if (this->vec[i] != obj.vec[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    template <class T, unsigned int R>
+    bool Vector<T, R>::operator!=(const Vector<T, R> &obj) const
+    {
+        bool tmp{false};
+
+        for (unsigned int i{0u}; i < R; i++)
+        {
+            tmp = tmp || (this->vec[i] != obj.vec[i]);
+        }
+
+        return tmp;
     }
 
     template <class T, unsigned int C>

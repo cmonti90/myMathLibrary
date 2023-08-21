@@ -22,6 +22,9 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, C, R> Transpose(const Matrix<T, R, C> &obj);
 
+    template <class T, unsigned int R, unsigned int C>
+    Matrix<T, R, C> OuterProduct(const Vector<T, R> &lhs, const Vector<T, C> &rhs);
+
     /////////////////////////////////
     //         DEFINITIONS         //
     /////////////////////////////////
@@ -91,8 +94,26 @@ namespace myMath
                 tmp[j][i] = obj[i][j];
             }
         }
+
+        return tmp;
     }
 
+}
+
+template <class T, unsigned int R, unsigned int C>
+myMath::Matrix<T, R, C> myMath::OuterProduct(const myMath::Vector<T, R> &lhs, const myMath::Vector<T, C> &rhs)
+{
+    Matrix<T, R, C> tmp{static_cast<T>(0.0)};
+
+    for (unsigned int i{0u}; i < R; i++)
+    {
+        for (unsigned int j{0u}; j < C; j++)
+        {
+            tmp.mat[i][j] = lhs.vec[i] * rhs.vec[j];
+        }
+    }
+
+    return tmp;
 }
 
 #endif /* DFB7B78E_BBE0_4E90_AFE6_62E04AA66E04 */

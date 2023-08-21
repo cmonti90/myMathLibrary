@@ -7,6 +7,10 @@
 #include "BasicFunctions.h"
 #include "Vector.h"
 
+#include <initializer_list>
+#include <stdexcept>
+#include <iostream>
+
 namespace myMath
 {
     template <class T, unsigned int R, unsigned int C>
@@ -19,6 +23,7 @@ namespace myMath
         Matrix(const double &x);
         Matrix(const double (&x)[R][C]);
         Matrix(const Matrix<T, R, C> &obj);
+        Matrix(const std::initializer_list<T> &x);
         ~Matrix() = default;
 
         Vector<T, C> &operator[](const unsigned int i);
@@ -39,10 +44,16 @@ namespace myMath
         Matrix<T, R, C> &operator*=(const double &x);
         Matrix<T, R, C> &operator/=(const double &x);
 
+        Matrix<T, R, C> operator-() const;
+
+        bool operator==(const Matrix<T, R, C> &obj) const;
+        bool operator!=(const Matrix<T, R, C> &obj) const;
+
         T Minor(unsigned int i, unsigned int j) const;
         T Determinant(void) const;
         Matrix<T, R, C> Inverse(void) const;
-        void Transpose(void);
+        Matrix<T, R, C> Transpose(void) const;
+        void TransposeInPlace(void);
         void Invert(void);
 
         static Matrix<T, R, C> Identity(void)
@@ -110,6 +121,27 @@ namespace myMath
             {
                 this->mat[i].vec[j] = obj.mat[i].vec[j];
             }
+        }
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    Matrix<T, R, C>::Matrix(const std::initializer_list<T> &x)
+    {
+        if (static_cast<unsigned int>(x.size()) == 1u)
+        {
+            std::memset(this->mat, *(x.begin()), sizeof(this->mat));
+        }
+        if (static_cast<unsigned int>(x.size()) != (R * C))
+        {
+            throw std::invalid_argument("Initializer list has incorrect size of " + std::to_string(x.size()) + " instead of " + std::to_string((R * C)) + "");
+        }
+        else if (x.size() == 0)
+        {
+            throw std::invalid_argument("Initializer list is empty");
+        }
+        else
+        {
+            std::copy(x.begin(), x.end(), this->mat);
         }
     }
 
@@ -197,6 +229,26 @@ namespace myMath
         }
 
         return tmp;
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    bool Matrix<T, R, C>::operator==(const Matrix<T, R, C> &obj) const
+    {
+        for (unsigned int i{0u}; i < R; i++)
+        {
+                if (this->mat[i] != obj.mat[i])
+                {
+                    return false;
+                }
+        }
+
+        return true;
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    bool Matrix<T, R, C>::operator!=(const Matrix<T, R, C> &obj) const
+    {
+        return !(*this == obj);
     }
 
     template <class T, unsigned int R, unsigned int C>
@@ -303,6 +355,22 @@ namespace myMath
         }
 
         return *this;
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    Matrix<T, R, C> Matrix<T, R, C>::operator-() const
+    {
+        Matrix<T, R, C> tmp{*this};
+
+        for (unsigned int i{0u}; i < R; i++)
+        {
+            for (unsigned int j{0u}; j < C; j++)
+            {
+                tmp.mat[i].vec[j] = -tmp.mat[i].vec[j];
+            }
+        }
+
+        return tmp;
     }
 
     template <class T, unsigned int R, unsigned int C, unsigned int C2>
@@ -525,7 +593,23 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    void Matrix<T, R, C>::Transpose(void)
+    Matrix<T, R, C> Matrix<T, R, C>::Transpose(void) const
+    {
+        Matrix<T, R, C> tmpMat{*this};
+
+        for (unsigned int i{0u}; i < R; i++)
+        {
+            for (unsigned int j{0u}; j < C; j++)
+            {
+                tmpMat.mat[i].vec[j] = this->mat[j].vec[i];
+            }
+        }
+
+        return tmpMat;
+    }
+
+    template <class T, unsigned int R, unsigned int C>
+    void Matrix<T, R, C>::TransposeInPlace(void)
     {
         Matrix<T, R, C> tmpMat{*this};
 

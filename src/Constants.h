@@ -7,7 +7,7 @@ namespace myMath
 {
 
     #define DEFINE_MATH_CONSTEXPR(type, name, value) \
-        extern constexpr type name = value;
+        static constexpr type name = value;
     namespace Constants
     {
         DEFINE_MATH_CONSTEXPR( double, PI, 3.1415926535897932384626433832);
@@ -15,6 +15,8 @@ namespace myMath
         DEFINE_MATH_CONSTEXPR( double, ZERO_THRESHOLD, 1.0e-16);
 
         DEFINE_MATH_CONSTEXPR( double, GRAVITY_ACCEL, 9.8067);                    // m / sec
+        DEFINE_MATH_CONSTEXPR( double, EARTH_ECCENTRICITY, 0.01671);              // -
+        DEFINE_MATH_CONSTEXPR( double, EARTH_FLATTENING, 1.0/298.3);              // -
         DEFINE_MATH_CONSTEXPR( double, EARTH_EQUITORIAL_RADIUS, 6378137.0);       // m
         DEFINE_MATH_CONSTEXPR( double, EARTH_POLAR_RADIUS, 6356752.0);            // m
         DEFINE_MATH_CONSTEXPR( double, EARTH_ROTATION_RATE, 7.2921159e-5);        // rad / sec

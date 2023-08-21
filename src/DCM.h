@@ -29,13 +29,7 @@ public:
 
     void Transpose();
     void Inverse();
-
-private:
     void Normalize();
-
-    T __m;
-
-    
 
 };
 
