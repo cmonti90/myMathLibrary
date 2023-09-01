@@ -9,13 +9,15 @@ include(CMakePackageConfigHelpers)
 set(SOURCES mathlib.cpp)
 
 set(HEADERS 
-            Constants.h
+            Angle.h
             BasicFunctions.h
-            Complex.h
-            Vector.h
+            Constants.h
+            DCM.h
+            mathlib.h
             Matrix.h
             MatrixFunctions.h
-            mathlib.h
+            Vector.h
+            Quaternion.h
 )
 
 add_library(${target} SHARED ${SOURCES})
