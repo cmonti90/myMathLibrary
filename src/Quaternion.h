@@ -4,6 +4,9 @@
 #include "BasicFunctions.h"
 #include "Vector.h"
 
+#include <cmath>
+#include <stdexcept>
+
 namespace myMath
 {
     template <typename T>

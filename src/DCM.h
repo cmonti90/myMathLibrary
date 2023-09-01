@@ -3,6 +3,8 @@
 
 #include "Matrix.h"
 
+#include <cmath>
+
 namespace myMath
 {
     template <typename T>
@@ -193,7 +195,7 @@ namespace myMath
         q[2] = (this->mat[0][2] - this->mat[2][0]) / (static_cast<T>(4) * q[0]);
         q[3] = (this->mat[1][0] - this->mat[0][1]) / (static_cast<T>(4) * q[0]);
 
-        return q;
+        return q.Normalize();
     }
 
 } // namespace myMath
