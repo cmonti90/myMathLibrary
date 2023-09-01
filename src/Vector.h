@@ -48,6 +48,7 @@ namespace myMath
         bool operator!=(const Vector<T, R> &obj) const;
 
         T Magnitude(void) const;
+        void Normalize(void);
     };
 
     typedef Vector<double, 2u> Vector2d;
@@ -335,6 +336,22 @@ namespace myMath
         }
 
         return static_cast<T>(std::sqrt(tmp));
+    }
+
+    template <class T, unsigned int R>
+    void Vector<T, R>::Normalize(void)
+    {
+        T mag{this->Magnitude()};
+
+        if (mag == static_cast<T>(0.0))
+        {
+            throw std::runtime_error("Cannot normalize a vector with magnitude of 0");
+        }
+
+        for (unsigned int i{0u}; i < R; i++)
+        {
+            this->vec[i] /= mag;
+        }
     }
 }
 

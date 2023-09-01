@@ -1,8 +1,10 @@
 #pragma once
 
-#include "Constants.h"
+#include "Angle.h"
 #include "BasicFunctions.h"
-#include "Complex.h"
-#include "Vector.h"
+#include "Constants.h"
+#include "DCM.h"
 #include "Matrix.h"
 #include "MatrixFunctions.h"
+#include "Quaternion.h"
+#include "Vector.h"

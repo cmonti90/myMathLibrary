@@ -16,8 +16,8 @@ set(HEADERS
             mathlib.h
             Matrix.h
             MatrixFunctions.h
-            Vector.h
             Quaternion.h
+            Vector.h
 )
 
 add_library(${target} SHARED ${SOURCES})

@@ -35,8 +35,12 @@ namespace myMath
 
         Matrix<T, R, C> operator+(const Matrix<T, R, C> &obj) const;
         Matrix<T, R, C> operator-(const Matrix<T, R, C> &obj) const;
-        Matrix<T, R, C> operator*(const double &x) const;
+
+        template <unsigned int C2>
+        Matrix<T, R, C2> operator*(const Matrix<T, C, C2> &rhs);
         Vector<T, R> operator*(const Vector<T, C> &obj) const;
+        Matrix<T, R, C> operator*(const double &x) const;
+
         Matrix<T, R, C> operator/(const double &x) const;
 
         Matrix<T, R, C> &operator+=(const Matrix<T, R, C> &obj);
@@ -236,10 +240,10 @@ namespace myMath
     {
         for (unsigned int i{0u}; i < R; i++)
         {
-                if (this->mat[i] != obj.mat[i])
-                {
-                    return false;
-                }
+            if (this->mat[i] != obj.mat[i])
+            {
+                return false;
+            }
         }
 
         return true;
@@ -360,21 +364,12 @@ namespace myMath
     template <class T, unsigned int R, unsigned int C>
     Matrix<T, R, C> Matrix<T, R, C>::operator-() const
     {
-        Matrix<T, R, C> tmp{*this};
-
-        for (unsigned int i{0u}; i < R; i++)
-        {
-            for (unsigned int j{0u}; j < C; j++)
-            {
-                tmp.mat[i].vec[j] = -tmp.mat[i].vec[j];
-            }
-        }
-
-        return tmp;
+        return static_cast<T>(-1)**this;
     }
 
-    template <class T, unsigned int R, unsigned int C, unsigned int C2>
-    Matrix<T, R, C2> operator*(const Matrix<T, R, C> &lhs, const Matrix<T, C, C2> &rhs)
+    template <class T, unsigned int R, unsigned int C>
+    template <unsigned int C2>
+    Matrix<T, R, C2> Matrix<T, R, C>::operator*(const Matrix<T, C, C2> &rhs)
     {
         Matrix<T, R, C2> tmp;
 
@@ -385,7 +380,7 @@ namespace myMath
                 T tmp_sum = static_cast<T>(0.0);
                 for (unsigned int k{0u}; k < C; k++)
                 {
-                    tmp_sum += lhs.mat[i].vec[k] * rhs.mat[k].vec[j];
+                    tmp_sum += this->mat[i].vec[k] * rhs.mat[k].vec[j];
                 }
 
                 tmp.mat[j].vec[i] = tmp_sum;
