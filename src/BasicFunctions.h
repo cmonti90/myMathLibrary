@@ -12,11 +12,17 @@ namespace myMath
     template <typename T>
     T ABS(const T x);
 
-    template <class T>
+    template <typename T>
     T SQ(const T x);
 
-    template <class T>
+    template <typename T>
     T SIGN(const T x);
+
+    template <typename T>
+    T MAX(const T x, const T y);
+
+    template <typename T>
+    T MIN(const T x, const T y);
 
 
     /////////////////////////////////
@@ -52,13 +58,13 @@ namespace myMath
         return (x < static_cast<T>(0.0) ? (static_cast<T>(-1.0) * x) : (x));
     }
 
-    template <class T>
+    template <typename T>
     inline T SQ(const T x)
     {
         return (x * x);
     }
 
-    template <class T>
+    template <typename T>
     inline T SIGN(const T x)
     {
         if (x == static_cast<T>(0.0))
@@ -67,6 +73,18 @@ namespace myMath
         }
         
         return (x < static_cast<T>(0.0) ? (static_cast<T>(-1.0)) : (static_cast<T>(1.0)));
+    }
+
+    template <typename T>
+    inline T MAX(const T x, const T y)
+    {
+        return (x > y ? x : y);
+    }
+
+    template <typename T>
+    inline T MIN(const T x, const T y)
+    {
+        return (x < y ? x : y);
     }
 }
 

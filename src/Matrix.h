@@ -383,7 +383,7 @@ namespace myMath
                     tmp_sum += this->mat[i].vec[k] * rhs.mat[k].vec[j];
                 }
 
-                tmp.mat[j].vec[i] = tmp_sum;
+                tmp.mat[i].vec[j] = tmp_sum;
             }
         }
 
@@ -421,7 +421,7 @@ namespace myMath
                     tmp_sum += lhs.mat[i].vec[k] * rhs.mat[k].vec[j];
                 }
 
-                tmp.mat[j].vec[i] = tmp_sum;
+                tmp.mat[i].vec[j] = tmp_sum;
             }
         }
 

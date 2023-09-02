@@ -4,6 +4,7 @@
 #include "Matrix.h"
 
 #include <cmath>
+#include <stdexcept>
 
 namespace myMath
 {
@@ -45,10 +46,13 @@ namespace myMath
 
         DCM<T> operator-(void) const;
 
+        bool operator==(const DCM<T> &dcm) const;
+        bool operator!=(const DCM<T> &dcm) const;
+
         void Normalize();
         Quaternion<T> ToQuaternion() const;
-        Angle<T> ToEuler(const EulerOrder &rotOrder) const;
         Angle<T> ToEuler(const TaitBryanOrder &rotOrder) const;
+        Angle<T> ToEuler(const EulerOrder &rotOrder) const;
     };
 } // namespace myMath
 
@@ -77,8 +81,15 @@ namespace myMath
     }
 
     template <typename T>
-    DCM<T>::DCM(const T (&m)[9]) : Matrix<T, 3, 3>(m)
+    DCM<T>::DCM(const T (&m)[9]) : Matrix<T, 3, 3>()
     {
+        for (unsigned int i{0u}; i < 3u; i++)
+        {
+            for (unsigned int j{0u}; j < 3u; j++)
+            {
+                this->mat[i][j] = m[i * 3u + j];
+            }
+        }
     }
 
     template <typename T>
@@ -183,6 +194,18 @@ namespace myMath
     }
 
     template <typename T>
+    bool DCM<T>::operator==(const DCM<T> &dcm) const
+    {
+        return Matrix<T, 3, 3>::operator==(dcm);
+    }
+
+    template <typename T>
+    bool DCM<T>::operator!=(const DCM<T> &dcm) const
+    {
+        return Matrix<T, 3, 3>::operator!=(dcm);
+    }
+
+    template <typename T>
     void DCM<T>::Normalize()
     {
         for (unsigned int i{0u}; i < 3u; i++)
@@ -196,76 +219,44 @@ namespace myMath
     {
         Quaternion<T> q;
 
-        q[0] = static_cast<T>(0.5) * sqrt(static_cast<T>(1) + this->mat[0][0] + this->mat[1][1] + this->mat[2][2]);
-        q[1] = (this->mat[2][1] - this->mat[1][2]) / (static_cast<T>(4) * q[0]);
-        q[2] = (this->mat[0][2] - this->mat[2][0]) / (static_cast<T>(4) * q[0]);
-        q[3] = (this->mat[1][0] - this->mat[0][1]) / (static_cast<T>(4) * q[0]);
+        T q0_mag = std::sqrt((static_cast<T>(1) + this->mat[0][0] + this->mat[1][1] + this->mat[2][2])) / static_cast<T>(2);
+        T q1_mag = std::sqrt((static_cast<T>(1) + this->mat[0][0] - this->mat[1][1] - this->mat[2][2])) / static_cast<T>(2);
+        T q2_mag = std::sqrt((static_cast<T>(1) - this->mat[0][0] + this->mat[1][1] - this->mat[2][2])) / static_cast<T>(2);
+        T q3_mag = std::sqrt((static_cast<T>(1) - this->mat[0][0] - this->mat[1][1] + this->mat[2][2])) / static_cast<T>(2);
+
+        T q_max = MAX(q0_mag, MAX(q1_mag, MAX(q2_mag, q3_mag)));
+
+        if (q_max == q0_mag)
+        {
+            q[0] = q0_mag;
+            q[1] = (this->mat[1][2] - this->mat[2][1]) / (static_cast<T>(4) * q0_mag);
+            q[2] = (this->mat[2][0] - this->mat[0][2]) / (static_cast<T>(4) * q0_mag);
+            q[3] = (this->mat[0][1] - this->mat[1][0]) / (static_cast<T>(4) * q0_mag);
+        }
+        else if (q_max == q1_mag)
+        {
+            q[0] = (this->mat[1][2] - this->mat[2][1]) / (static_cast<T>(4) * q1_mag);
+            q[1] = q1_mag;
+            q[2] = (this->mat[0][1] + this->mat[1][0]) / (static_cast<T>(4) * q1_mag);
+            q[3] = (this->mat[2][0] + this->mat[0][2]) / (static_cast<T>(4) * q1_mag);
+        }
+        else if (q_max == q2_mag)
+        {
+            q[0] = (this->mat[2][0] - this->mat[0][2]) / (static_cast<T>(4) * q2_mag);
+            q[1] = (this->mat[0][1] + this->mat[1][0]) / (static_cast<T>(4) * q2_mag);
+            q[2] = q2_mag;
+            q[3] = (this->mat[1][2] + this->mat[2][1]) / (static_cast<T>(4) * q2_mag);
+        }
+        else
+        {
+            q[0] = (this->mat[0][1] - this->mat[1][0]) / (static_cast<T>(4) * q3_mag);
+            q[1] = (this->mat[2][0] + this->mat[0][2]) / (static_cast<T>(4) * q3_mag);
+            q[2] = (this->mat[1][2] + this->mat[2][1]) / (static_cast<T>(4) * q3_mag);
+            q[3] = q3_mag;
+        }
+
 
         return q.Normalize();
-    }
-
-    template <typename T>
-    Angle<T> DCM<T>::ToEuler(const EulerOrder &rotOrder) const
-    {
-        Angle<T> euler;
-
-        switch (rotOrder)
-        {
-        case EulerOrder::XYZ:
-        {
-            euler[0] = atan2(this->mat[1][2], this->mat[2][2]);
-            euler[1] = atan2(-this->mat[0][2], sqrt(this->mat[0][0] * this->mat[0][0] + this->mat[0][1] * this->mat[0][1]));
-            euler[2] = atan2(this->mat[0][1], this->mat[0][0]);
-
-            break;
-        }
-        case EulerOrder::XZY:
-        {
-            euler[0] = atan2(-this->mat[2][1], this->mat[1][1]);
-            euler[1] = atan2(this->mat[0][2], sqrt(this->mat[0][0] * this->mat[0][0] + this->mat[0][2] * this->mat[0][2]));
-            euler[2] = atan2(-this->mat[0][2], this->mat[0][0]);
-
-            break;
-        }
-        case EulerOrder::YXZ:
-        {
-            euler[0] = atan2(-this->mat[0][2], this->mat[2][2]);
-            euler[1] = atan2(this->mat[1][2], sqrt(this->mat[1][0] * this->mat[1][0] + this->mat[1][1] * this->mat[1][1]));
-            euler[2] = atan2(-this->mat[1][0], this->mat[1][1]);
-
-            break;
-        }
-        case EulerOrder::YZX:
-        {
-            euler[0] = atan2(this->mat[2][0], this->mat[0][0]);
-            euler[1] = atan2(-this->mat[1][0], sqrt(this->mat[1][1] * this->mat[1][1] + this->mat[1][2] * this->mat[1][2]));
-            euler[2] = atan2(this->mat[1][2], this->mat[1][1]);
-
-            break;
-        }
-        case EulerOrder::ZXY:
-        {
-            euler[0] = atan2(this->mat[1][0], this->mat[0][0]);
-            euler[1] = atan2(-this->mat[2][0], sqrt(this->mat[2][1] * this->mat[2][1] + this->mat[2][2] * this->mat[2][2]));
-            euler[2] = atan2(this->mat[2][1], this->mat[2][2]);
-
-            break;
-        }
-        case EulerOrder::ZYX:
-        {
-            euler[0] = atan2(-this->mat[0][1], this->mat[1][1]);
-            euler[1] = atan2(this->mat[2][0], sqrt(this->mat[2][1] * this->mat[2][1] + this->mat[2][2] * this->mat[2][2]));
-            euler[2] = atan2(-this->mat[2][1], this->mat[2][2]);
-
-            break;
-        }
-        default:
-        {
-            throw std::invalid_argument("Invalid Euler Order");
-        }
-        }
-
-        return euler;
     }
 
     template <typename T>
@@ -275,7 +266,71 @@ namespace myMath
 
         switch (rotOrder)
         {
-        case TaitBryanOrder::XYX:
+        case TaitBryanOrder::XYZ:
+        {
+            euler[0] = atan2(this->mat[1][2], this->mat[2][2]);
+            euler[1] = atan2(-this->mat[0][2], sqrt(this->mat[0][0] * this->mat[0][0] + this->mat[0][1] * this->mat[0][1]));
+            euler[2] = atan2(this->mat[0][1], this->mat[0][0]);
+
+            break;
+        }
+        case TaitBryanOrder::XZY:
+        {
+            euler[0] = atan2(-this->mat[2][1], this->mat[1][1]);
+            euler[1] = atan2(this->mat[0][2], sqrt(this->mat[0][0] * this->mat[0][0] + this->mat[0][2] * this->mat[0][2]));
+            euler[2] = atan2(-this->mat[0][2], this->mat[0][0]);
+
+            break;
+        }
+        case TaitBryanOrder::YXZ:
+        {
+            euler[0] = atan2(-this->mat[0][2], this->mat[2][2]);
+            euler[1] = atan2(this->mat[1][2], sqrt(this->mat[1][0] * this->mat[1][0] + this->mat[1][1] * this->mat[1][1]));
+            euler[2] = atan2(-this->mat[1][0], this->mat[1][1]);
+
+            break;
+        }
+        case TaitBryanOrder::YZX:
+        {
+            euler[0] = atan2(this->mat[2][0], this->mat[0][0]);
+            euler[1] = atan2(-this->mat[1][0], sqrt(this->mat[1][1] * this->mat[1][1] + this->mat[1][2] * this->mat[1][2]));
+            euler[2] = atan2(this->mat[1][2], this->mat[1][1]);
+
+            break;
+        }
+        case TaitBryanOrder::ZXY:
+        {
+            euler[0] = atan2(this->mat[1][0], this->mat[0][0]);
+            euler[1] = atan2(-this->mat[2][0], sqrt(this->mat[2][1] * this->mat[2][1] + this->mat[2][2] * this->mat[2][2]));
+            euler[2] = atan2(this->mat[2][1], this->mat[2][2]);
+
+            break;
+        }
+        case TaitBryanOrder::ZYX:
+        {
+            euler[0] = atan2(-this->mat[0][1], this->mat[1][1]);
+            euler[1] = atan2(this->mat[2][0], sqrt(this->mat[2][1] * this->mat[2][1] + this->mat[2][2] * this->mat[2][2]));
+            euler[2] = atan2(-this->mat[2][1], this->mat[2][2]);
+
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Tait-Bryan Order");
+        }
+        }
+
+        return euler;
+    }
+
+    template <typename T>
+    Angle<T> DCM<T>::ToEuler(const EulerOrder &rotOrder) const
+    {
+        Angle<T> euler;
+
+        switch (rotOrder)
+        {
+        case EulerOrder::XYX:
         {
             euler[0] = atan2(this->mat[0][1], -this->mat[0][2]);
             euler[1] = acos(this->mat[0][0]);
@@ -283,7 +338,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::XZX:
+        case EulerOrder::XZX:
         {
             euler[0] = atan2(this->mat[0][2], this->mat[0][1]);
             euler[1] = acos(this->mat[0][0]);
@@ -291,7 +346,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::YXY:
+        case EulerOrder::YXY:
         {
             euler[0] = atan2(this->mat[1][0], this->mat[1][2]);
             euler[1] = acos(this->mat[1][1]);
@@ -299,7 +354,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::YZY:
+        case EulerOrder::YZY:
         {
             euler[0] = atan2(this->mat[1][2], -this->mat[1][0]);
             euler[1] = acos(this->mat[1][1]);
@@ -307,7 +362,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::ZXZ:
+        case EulerOrder::ZXZ:
         {
             euler[0] = atan2(this->mat[2][1], this->mat[2][0]);
             euler[1] = acos(this->mat[2][2]);
@@ -315,7 +370,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::ZYZ:
+        case EulerOrder::ZYZ:
         {
             euler[0] = atan2(this->mat[2][0], -this->mat[2][1]);
             euler[1] = acos(this->mat[2][2]);
@@ -325,7 +380,7 @@ namespace myMath
         }
         default:
         {
-            throw std::invalid_argument("Invalid Tait-Bryan Order");
+            throw std::invalid_argument("Invalid Euler Order");
         }
         }
 

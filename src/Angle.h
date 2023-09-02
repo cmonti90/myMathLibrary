@@ -8,7 +8,7 @@
 
 namespace myMath
 {
-    enum class EulerOrder : unsigned int
+    enum class TaitBryanOrder : unsigned int
     {
         XYZ,
         XZY,
@@ -19,7 +19,7 @@ namespace myMath
 
     };
 
-    enum class TaitBryanOrder : unsigned int
+    enum class EulerOrder : unsigned int
     {
         XYX,
         XZX,
@@ -45,6 +45,7 @@ namespace myMath
     template <typename T>
     class Angle : public Vector<T, 3u>
     {
+    public:
         Angle();
         Angle(const T (&x)[3u]);
         Angle(const Vector<T, 3u> &obj);
@@ -68,10 +69,16 @@ namespace myMath
         bool operator!=(const Angle<T> &obj) const;
 
         void Normalize();
-        DCM<T> ToDCM(const EulerOrder &rotOrder) const;
         DCM<T> ToDCM(const TaitBryanOrder &rotOrder) const;
-        Quaternion<T> ToQuaternion(const EulerOrder &rotOrder) const;
+        DCM<T> ToDCM(const EulerOrder &rotOrder) const;
         Quaternion<T> ToQuaternion(const TaitBryanOrder &rotOrder) const;
+        Quaternion<T> ToQuaternion(const EulerOrder &rotOrder) const;
+        Angle<T> rotate(const Axis &axis, const double &angle) const;
+        Angle<T> rotate(const Vector<T, 3u> &axis, const double &angle) const;
+        Angle<T> rotate(const DCM<T> &dcm, const TaitBryanOrder &rotOrder) const;
+        Angle<T> rotate(const DCM<T> &dcm, const EulerOrder &rotOrder) const;
+        Angle<T> rotate(const Quaternion<T> &q, const TaitBryanOrder &rotOrder) const;
+        Angle<T> rotate(const Quaternion<T> &q, const EulerOrder &rotOrder) const;
     };
 } // namespace myMath
 
@@ -80,6 +87,9 @@ namespace myMath
 
 namespace myMath
 {
+    typedef Angle<double> AngleD;
+    typedef Angle<float> AngleF;
+
     template <typename T>
     Angle<T>::Angle() : Vector<T, 3u>(static_cast<T>(0.0))
     {
@@ -189,99 +199,111 @@ namespace myMath
     }
 
     template <typename T>
-    DCM<T> Angle<T>::ToDCM(const EulerOrder &rotOrder) const
+    DCM<T> Angle<T>::ToDCM(const TaitBryanOrder &rotOrder) const
     {
         DCM<T> tmp;
 
         switch (rotOrder)
         {
-        case EulerOrder::XYZ:
+        case TaitBryanOrder::XYZ:
         {
             tmp[0][0] = std::cos(this->vec[1]) * std::cos(this->vec[2]);
-            tmp[0][1] = std::cos(this->vec[1]) * std::sin(this->vec[2]);
-            tmp[0][2] = -std::sin(this->vec[1]);
-            tmp[1][0] = std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]) - std::cos(this->vec[0]) * std::sin(this->vec[2]);
-            tmp[1][1] = std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) + std::cos(this->vec[0]) * std::cos(this->vec[2]);
+            tmp[0][1] = std::cos(this->vec[0]) * std::sin(this->vec[2]) + std::cos(this->vec[2]) * std::sin(this->vec[0]) * std::sin(this->vec[1]);
+            tmp[0][2] = std::sin(this->vec[0]) * std::sin(this->vec[2]) - std::cos(this->vec[0]) * std::cos(this->vec[2]) * std::sin(this->vec[1]);
+
+            tmp[1][0] = -std::cos(this->vec[1]) * std::sin(this->vec[2]);
+            tmp[1][1] = std::cos(this->vec[0]) * std::cos(this->vec[2]) - std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
+            tmp[1][2] = std::cos(this->vec[2]) * std::sin(this->vec[0]) + std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
+
+            tmp[2][0] = std::sin(this->vec[1]);
+            tmp[2][1] = -std::cos(this->vec[1]) * std::sin(this->vec[0]);
+            tmp[2][2] = std::cos(this->vec[0]) * std::cos(this->vec[1]);
+
+            break;
+        }
+        case TaitBryanOrder::XZY:
+        {
+            tmp[0][0] = std::cos(this->vec[1]) * std::cos(this->vec[2]);
+            tmp[0][1] = std::sin(this->vec[0]) * std::sin(this->vec[2]) + std::cos(this->vec[0]) * std::cos(this->vec[2]) * std::sin(this->vec[1]);
+            tmp[0][2] = std::cos(this->vec[2]) * std::sin(this->vec[0]) * std::sin(this->vec[1]) - std::cos(this->vec[0]) * std::sin(this->vec[2]);
+            
+            tmp[1][0] = -std::sin(this->vec[1]);
+            tmp[1][1] = std::cos(this->vec[0]) * std::cos(this->vec[1]);
             tmp[1][2] = std::sin(this->vec[0]) * std::cos(this->vec[1]);
-            tmp[2][0] = std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]) + std::sin(this->vec[0]) * std::sin(this->vec[2]);
+
+            tmp[2][0] = std::cos(this->vec[1]) * std::sin(this->vec[2]);
             tmp[2][1] = std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) - std::sin(this->vec[0]) * std::cos(this->vec[2]);
-            tmp[2][2] = std::cos(this->vec[0]) * std::cos(this->vec[1]);
+            tmp[2][2] = std::cos(this->vec[0]) * std::cos(this->vec[2]) + std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
 
             break;
         }
-        case EulerOrder::XZY:
-        {
-            tmp[0][0] = std::cos(this->vec[1]) * std::cos(this->vec[2]);
-            tmp[0][1] = -std::cos(this->vec[1]) * std::sin(this->vec[2]);
-            tmp[0][2] = std::sin(this->vec[1]);
-            tmp[1][0] = std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]) + std::cos(this->vec[0]) * std::sin(this->vec[2]);
-            tmp[1][1] = -std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) + std::cos(this->vec[0]) * std::cos(this->vec[2]);
-            tmp[1][2] = -std::sin(this->vec[0]) * std::cos(this->vec[1]);
-            tmp[2][0] = -std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]) + std::sin(this->vec[0]) * std::sin(this->vec[2]);
-            tmp[2][1] = std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) + std::sin(this->vec[0]) * std::cos(this->vec[2]);
-            tmp[2][2] = std::cos(this->vec[0]) * std::cos(this->vec[1]);
-
-            break;
-        }
-        case EulerOrder::YXZ:
+        case TaitBryanOrder::YXZ:
         {
             tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[2]) + std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
             tmp[0][1] = std::cos(this->vec[1]) * std::sin(this->vec[2]);
-            tmp[0][2] = -std::sin(this->vec[0]) * std::cos(this->vec[2]) + std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
-            tmp[1][0] = std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) - std::sin(this->vec[0]) * std::cos(this->vec[2]);
+            tmp[0][2] = std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) - std::sin(this->vec[0]) * std::cos(this->vec[2]);
+
+            tmp[1][0] = std::cos(this->vec[2]) * std::sin(this->vec[0]) * std::sin(this->vec[1]) - std::cos(this->vec[0]) * std::sin(this->vec[2]);
             tmp[1][1] = std::cos(this->vec[1]) * std::cos(this->vec[2]);
-            tmp[1][2] = std::sin(this->vec[0]) * std::sin(this->vec[2]) + std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]);
-            tmp[2][0] = std::cos(this->vec[0]) * std::sin(this->vec[1]);
+            tmp[1][2] = std::sin(this->vec[0]) * std::sin(this->vec[2]) +  std::cos(this->vec[0]) * std::cos(this->vec[2]) * std::sin(this->vec[1]);
+
+            tmp[2][0] = std::cos(this->vec[1]) * std::sin(this->vec[0]);
             tmp[2][1] = -std::sin(this->vec[1]);
             tmp[2][2] = std::cos(this->vec[0]) * std::cos(this->vec[1]);
 
             break;
         }
-        case EulerOrder::YZX:
+        case TaitBryanOrder::YZX:
         {
-            tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[2]) + std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
-            tmp[0][1] = std::sin(this->vec[0]) * std::cos(this->vec[1]);
-            tmp[0][2] = std::cos(this->vec[0]) * std::sin(this->vec[2]) - std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]);
-            tmp[1][0] = std::cos(this->vec[1]) * std::sin(this->vec[2]);
+            tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[1]);
+            tmp[0][1] = std::sin(this->vec[1]);
+            tmp[0][2] = -std::sin(this->vec[0]) * std::cos(this->vec[1]);
+
+            tmp[1][0] = std::sin(this->vec[0]) * std::sin(this->vec[2]) - std::cos(this->vec[0]) * std::cos(this->vec[2]) * std::sin(this->vec[1]);
             tmp[1][1] = std::cos(this->vec[1]) * std::cos(this->vec[2]);
-            tmp[1][2] = -std::sin(this->vec[1]);
-            tmp[2][0] = -std::sin(this->vec[0]) * std::cos(this->vec[2]) + std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
-            tmp[2][1] = std::sin(this->vec[0]) * std::sin(this->vec[2]) + std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]);
-            tmp[2][2] = std::cos(this->vec[0]) * std::cos(this->vec[1]);
+            tmp[1][2] = std::cos(this->vec[0]) * std::sin(this->vec[2]) + std::sin(this->vec[0]) * std::cos(this->vec[2]) * std::sin(this->vec[1]);
+
+            tmp[2][0] = std::sin(this->vec[0]) * std::cos(this->vec[2]) + std::cos(this->vec[0]) * std::sin(this->vec[2]) * std::sin(this->vec[1]);
+            tmp[2][1] = -std::cos(this->vec[1]) * std::sin(this->vec[2]);
+            tmp[2][2] = std::cos(this->vec[0]) * std::cos(this->vec[2]) - std::sin(this->vec[0]) * std::sin(this->vec[2]) * std::sin(this->vec[1]);
 
             break;
         }
-        case EulerOrder::ZXY:
+        case TaitBryanOrder::ZXY:
         {
-            tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[1]);
-            tmp[0][1] = std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) - std::sin(this->vec[0]) * std::cos(this->vec[2]);
-            tmp[0][2] = std::cos(this->vec[1]) * std::sin(this->vec[0]) * std::sin(this->vec[2]) + std::cos(this->vec[0]) * std::cos(this->vec[2]);
-            tmp[1][0] = std::cos(this->vec[1]) * std::sin(this->vec[2]);
-            tmp[1][1] = std::cos(this->vec[1]) * std::cos(this->vec[2]);
-            tmp[1][2] = -std::sin(this->vec[1]);
-            tmp[2][0] = -std::sin(this->vec[0]) * std::cos(this->vec[1]);
-            tmp[2][1] = std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) + std::cos(this->vec[0]) * std::cos(this->vec[2]);
-            tmp[2][2] = std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]) - std::cos(this->vec[0]) * std::sin(this->vec[2]);
+            tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[2]) - std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
+            tmp[0][1] = std::cos(this->vec[2]) * std::sin(this->vec[0]) + std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
+            tmp[0][2] = -std::cos(this->vec[1]) * std::sin(this->vec[2]);
+
+            tmp[1][0] = -std::cos(this->vec[1]) * std::sin(this->vec[0]);
+            tmp[1][1] = std::cos(this->vec[0]) * std::cos(this->vec[1]);
+            tmp[1][2] = std::sin(this->vec[1]);
+
+            tmp[2][0] = std::cos(this->vec[0]) * std::sin(this->vec[2]) + std::cos(this->vec[2]) * std::sin(this->vec[0]) * std::sin(this->vec[1]);
+            tmp[2][1] = std::sin(this->vec[0]) * std::sin(this->vec[2]) - std::cos(this->vec[0]) * std::cos(this->vec[2]) * std::sin(this->vec[1]);
+            tmp[2][2] = std::cos(this->vec[1]) * std::cos(this->vec[2]);
 
             break;
         }
-        case EulerOrder::ZYX:
+        case TaitBryanOrder::ZYX:
         {
             tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[1]);
-            tmp[0][1] = std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) - std::sin(this->vec[0]) * std::cos(this->vec[2]);
-            tmp[0][2] = std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]) + std::sin(this->vec[0]) * std::sin(this->vec[2]);
-            tmp[1][0] = std::sin(this->vec[0]) * std::cos(this->vec[1]);
-            tmp[1][1] = std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) + std::cos(this->vec[0]) * std::cos(this->vec[2]);
-            tmp[1][2] = std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]) - std::cos(this->vec[0]) * std::sin(this->vec[2]);
-            tmp[2][0] = -std::sin(this->vec[1]);
-            tmp[2][1] = std::cos(this->vec[1]) * std::sin(this->vec[2]);
+            tmp[0][1] = std::cos(this->vec[1]) * std::sin(this->vec[0]);
+            tmp[0][2] = -std::sin(this->vec[1]);
+
+            tmp[1][0] = std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]) - std::sin(this->vec[0]) * std::cos(this->vec[2]);
+            tmp[1][1] = std::cos(this->vec[0]) * std::cos(this->vec[2]) + std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
+            tmp[1][2] = std::cos(this->vec[1]) * std::sin(this->vec[2]);
+
+            tmp[2][0] = std::sin(this->vec[0]) * std::sin(this->vec[2]) + std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]);
+            tmp[2][1] = std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]) - std::cos(this->vec[0]) * std::sin(this->vec[2]);
             tmp[2][2] = std::cos(this->vec[1]) * std::cos(this->vec[2]);
 
             break;
         }
         default:
         {
-            throw std::invalid_argument("Invalid Euler Order");
+            throw std::invalid_argument("Invalid Tait-Bryan Order");
         }
         }
 
@@ -289,13 +311,13 @@ namespace myMath
     }
 
     template <typename T>
-    DCM<T> Angle<T>::ToDCM(const TaitBryanOrder &rotOrder) const
+    DCM<T> Angle<T>::ToDCM(const EulerOrder &rotOrder) const
     {
         DCM<T> tmp;
 
         switch (rotOrder)
         {
-        case TaitBryanOrder::XYX:
+        case EulerOrder::XYX:
         {
             tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[2]) - std::sin(this->vec[0]) * std::cos(this->vec[1]) * std::sin(this->vec[2]);
             tmp[0][1] = std::sin(this->vec[0]) * std::sin(this->vec[1]);
@@ -309,7 +331,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::XZX:
+        case EulerOrder::XZX:
         {
             tmp[0][0] = std::cos(this->vec[1]) * std::cos(this->vec[2]);
             tmp[0][1] = std::sin(this->vec[1]) * std::cos(this->vec[2]);
@@ -323,7 +345,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::YXY:
+        case EulerOrder::YXY:
         {
             tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[2]) - std::sin(this->vec[0]) * std::sin(this->vec[1]) * std::sin(this->vec[2]);
             tmp[0][1] = std::cos(this->vec[1]) * std::sin(this->vec[2]);
@@ -337,7 +359,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::YZY:
+        case EulerOrder::YZY:
         {
             tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[1]) * std::cos(this->vec[2]) - std::sin(this->vec[0]) * std::sin(this->vec[2]);
             tmp[0][1] = std::sin(this->vec[0]) * std::cos(this->vec[1]) * std::cos(this->vec[2]) + std::cos(this->vec[0]) * std::sin(this->vec[2]);
@@ -351,7 +373,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::ZXZ:
+        case EulerOrder::ZXZ:
         {
             tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[1]) * std::cos(this->vec[2]) - std::sin(this->vec[0]) * std::sin(this->vec[2]);
             tmp[0][1] = std::cos(this->vec[0]) * std::cos(this->vec[1]) * std::sin(this->vec[2]) + std::sin(this->vec[0]) * std::cos(this->vec[2]);
@@ -365,7 +387,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::ZYZ:
+        case EulerOrder::ZYZ:
         {
             tmp[0][0] = std::cos(this->vec[0]) * std::cos(this->vec[1]) * std::cos(this->vec[2]) - std::sin(this->vec[0]) * std::sin(this->vec[2]);
             tmp[0][1] = std::cos(this->vec[0]) * std::sin(this->vec[1]) * std::cos(this->vec[2]) + std::sin(this->vec[0]) * std::sin(this->vec[2]);
@@ -376,74 +398,6 @@ namespace myMath
             tmp[2][0] = std::sin(this->vec[1]) * std::cos(this->vec[2]);
             tmp[2][1] = std::sin(this->vec[1]) * std::sin(this->vec[2]);
             tmp[2][2] = std::cos(this->vec[1]);
-
-            break;
-        }
-        default:
-        {
-            throw std::invalid_argument("Invalid Tait-Bryan Order");
-        }
-        }
-    }
-
-    template <typename T>
-    Quaternion<T> Angle<T>::ToQuaternion(const EulerOrder &rotOrder) const
-    {
-        Quaternion<T> tmp;
-
-        switch (rotOrder)
-        {
-        case EulerOrder::XYZ:
-        {
-            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
-
-            break;
-        }
-        case EulerOrder::XZY:
-        {
-            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
-
-            break;
-        }
-        case EulerOrder::YXZ:
-        {
-            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
-
-            break;
-        }
-        case EulerOrder::YZX:
-        {
-            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
-
-            break;
-        }
-        case EulerOrder::ZXY:
-        {
-            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
-
-            break;
-        }
-        case EulerOrder::ZYX:
-        {
-            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
 
             break;
         }
@@ -461,64 +415,132 @@ namespace myMath
 
         switch (rotOrder)
         {
-            case TaitBryanOrder::XYX:
-            {
-                tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
+        case TaitBryanOrder::XYZ:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
 
-                break;
-            }
-            case TaitBryanOrder::XZX:
-            {
-                tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
-                tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
+            break;
+        }
+        case TaitBryanOrder::XZY:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
 
-                break;
-            }
-            case TaitBryanOrder::YXY:
-            {
-                tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[1] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[2] / 2.0);
-                tmp[2] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            break;
+        }
+        case TaitBryanOrder::YXZ:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
 
-                break;
-            }
-            case TaitBryanOrder::YZY:
-            {
-                tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[1] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[2] / 2.0);
-                tmp[2] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            break;
+        }
+        case TaitBryanOrder::YZX:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
 
-                break;
-            }
-            case TaitBryanOrder::ZXZ:
-            {
-                tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[1] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::cos(this->vec[2] / 2.0);
-                tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
-                tmp[3] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
+            break;
+        }
+        case TaitBryanOrder::ZXY:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
 
-                break;
-            }
-            case TaitBryanOrder::ZYZ:
-            {
-                tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[1] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::cos(this->vec[2] / 2.0);
-                tmp[2] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
-                tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            break;
+        }
+        case TaitBryanOrder::ZYX:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
 
-                break;
-            }
-            default:
-            {
-                throw std::invalid_argument("Invalid Tait-Bryan Order");
-            }
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Tait-Bryan Order");
+        }
+        }
+    }
+
+    template <typename T>
+    Quaternion<T> Angle<T>::ToQuaternion(const EulerOrder &rotOrder) const
+    {
+        Quaternion<T> tmp;
+
+        switch (rotOrder)
+        {
+        case EulerOrder::XYX:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
+
+            break;
+        }
+        case EulerOrder::XZX:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
+
+            break;
+        }
+        case EulerOrder::YXY:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[2] / 2.0);
+            tmp[2] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+
+            break;
+        }
+        case EulerOrder::YZY:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[2] / 2.0);
+            tmp[2] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+
+            break;
+        }
+        case EulerOrder::ZXZ:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::cos(this->vec[2] / 2.0);
+            tmp[2] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
+            tmp[3] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0);
+
+            break;
+        }
+        case EulerOrder::ZYZ:
+        {
+            tmp[0] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) + std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[1] = std::cos(this->vec[0] / 2.0) * std::sin(this->vec[1] / 2.0) * std::cos(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::cos(this->vec[2] / 2.0);
+            tmp[2] = std::sin(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) + std::cos(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+            tmp[3] = std::cos(this->vec[0] / 2.0) * std::cos(this->vec[1] / 2.0) * std::sin(this->vec[2] / 2.0) - std::sin(this->vec[0] / 2.0) * std::sin(this->vec[2] / 2.0);
+
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Euler Order");
+        }
         }
     }
 

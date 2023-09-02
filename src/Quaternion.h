@@ -15,8 +15,8 @@ namespace myMath
     template <typename T>
     class Angle;
 
-    enum class EulerOrder : unsigned int;
     enum class TaitBryanOrder : unsigned int;
+    enum class EulerOrder : unsigned int;
 
     template <typename T>
     class Quaternion : public Vector<T, 4u>
@@ -29,7 +29,8 @@ namespace myMath
         Quaternion(const Vector<T, 4u> &q);
         Quaternion(const T &w, const Vector<T, 3u> &v);
         Quaternion(const Vector<T, 3u> &v);
-        Quaternion(const Angle<T> &ang, const EulerOrder &rotOrder);
+        Quaternion(const T &w, const Angle<T> &v);
+        Quaternion(const Angle<T> &ang, const TaitBryanOrder &rotOrder);
 
         ~Quaternion() = default;
 
@@ -66,25 +67,33 @@ namespace myMath
 
         Quaternion<T> operator-(void) const;
 
+        bool operator==(const Quaternion<T> &q) const;
+        bool operator!=(const Quaternion<T> &q) const;
+
         T Magnitude(void) const;
         Quaternion<T> Conjugate(void) const;
         Quaternion<T> Inverse(void) const;
         Quaternion<T> &Normalize(void);
         DCM<T> ToDCM(void) const;
-        Angle<T> ToEuler(const EulerOrder &rotOrder) const;
         Angle<T> ToEuler(const TaitBryanOrder &rotOrder) const;
+        Angle<T> ToEuler(const EulerOrder &rotOrder) const;
 
         void set(const T &w, const T &x, const T &y, const T &z);
         void set(const DCM<T> &dcm);
-        void set(const Angle<T> &ang, const EulerOrder &rotOrder);
         void set(const Angle<T> &ang, const TaitBryanOrder &rotOrder);
+        void set(const Angle<T> &ang, const EulerOrder &rotOrder);
         void set(const Vector<T, 3u> &v);
+
+        Angle<T> rotate(const Angle<T> &ang, const TaitBryanOrder &rotOrder) const;
+        Angle<T> rotate(const Angle<T> &ang, const EulerOrder &rotOrder) const;
+        DCM<T> rotate(const DCM<T> &dcm) const;
+        Quaternion<T> rotate(const Quaternion<T> &q) const;
     };
 } // namespace myMath
 
 #include "Angle.h"
-#include "Matrix.h"
 #include "DCM.h"
+#include "Matrix.h"
 
 namespace myMath
 {
@@ -124,21 +133,24 @@ namespace myMath
     template <typename T>
     Quaternion<T>::Quaternion(const T &w, const Vector<T, 3u> &v) : Vector<T, 4u>({w, v[0], v[1], v[2]})
     {
-        Normalize();
     }
 
     template <typename T>
     Quaternion<T>::Quaternion(const Vector<T, 3u> &v) : Vector<T, 4u>({static_cast<T>(0.0), v[0], v[1], v[2]})
     {
-        Normalize();
     }
 
     template <typename T>
-    Quaternion<T>::Quaternion(const Angle<T> &ang, const EulerOrder &rotOrder) : Vector<T, 4u>()
+    Quaternion<T>::Quaternion(const T &w, const Angle<T> &ang) : Vector<T, 4u>({w, ang[0], ang[1], ang[2]})
+    {
+    }
+
+    template <typename T>
+    Quaternion<T>::Quaternion(const Angle<T> &ang, const TaitBryanOrder &rotOrder) : Vector<T, 4u>()
     {
         switch (rotOrder)
         {
-        case EulerOrder::ZYX:
+        case TaitBryanOrder::ZYX:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
@@ -153,7 +165,7 @@ namespace myMath
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
             break;
         }
-        case EulerOrder::YZX:
+        case TaitBryanOrder::YZX:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
@@ -168,7 +180,7 @@ namespace myMath
                            std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
             break;
         }
-        case EulerOrder::ZXY:
+        case TaitBryanOrder::ZXY:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
@@ -183,7 +195,7 @@ namespace myMath
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
             break;
         }
-        case EulerOrder::YXZ:
+        case TaitBryanOrder::YXZ:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
@@ -198,7 +210,7 @@ namespace myMath
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
             break;
         }
-        case EulerOrder::XZY:
+        case TaitBryanOrder::XZY:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
@@ -213,7 +225,7 @@ namespace myMath
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
             break;
         }
-        case EulerOrder::XYZ:
+        case TaitBryanOrder::XYZ:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
@@ -230,7 +242,7 @@ namespace myMath
         }
         default:
         {
-            throw std::invalid_argument("Invalid Euler Order");
+            throw std::invalid_argument("Invalid Tait-Bryan Order");
         }
         }
 
@@ -500,7 +512,7 @@ namespace myMath
         this->vec[1] /= q;
         this->vec[2] /= q;
         this->vec[3] /= q;
-        
+
         Normalize();
 
         return this->Normalize();
@@ -517,6 +529,18 @@ namespace myMath
         tmp[3] = -this->vec[3];
 
         return tmp;
+    }
+
+    template <typename T>
+    bool Quaternion<T>::operator==(const Quaternion<T> &q) const
+    {
+        return (this->vec[0] == q[0] && this->vec[1] == q[1] && this->vec[2] == q[2] && this->vec[3] == q[3]);
+    }
+
+    template <typename T>
+    bool Quaternion<T>::operator!=(const Quaternion<T> &q) const
+    {
+        return (this->vec[0] != q[0] || this->vec[1] != q[1] || this->vec[2] != q[2] || this->vec[3] != q[3]);
     }
 
     template <typename T>
@@ -575,13 +599,13 @@ namespace myMath
     }
 
     template <typename T>
-    Angle<T> Quaternion<T>::ToEuler(const EulerOrder &rotOrder) const
+    Angle<T> Quaternion<T>::ToEuler(const TaitBryanOrder &rotOrder) const
     {
         Angle<T> tmp;
 
         switch (rotOrder)
         {
-        case EulerOrder::ZYX:
+        case TaitBryanOrder::ZYX:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
                                 SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]));
@@ -593,7 +617,7 @@ namespace myMath
 
             break;
         }
-        case EulerOrder::YZX:
+        case TaitBryanOrder::YZX:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[3] - this->vec[1] * this->vec[2]),
                                 SQ(this->vec[0]) - SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[3]));
@@ -605,7 +629,7 @@ namespace myMath
 
             break;
         }
-        case EulerOrder::ZXY:
+        case TaitBryanOrder::ZXY:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[3] + this->vec[1] * this->vec[2]),
                                 SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]));
@@ -617,7 +641,7 @@ namespace myMath
 
             break;
         }
-        case EulerOrder::YXZ:
+        case TaitBryanOrder::YXZ:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] + this->vec[1] * this->vec[3]),
                                 SQ(this->vec[0]) - SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[3]));
@@ -629,7 +653,7 @@ namespace myMath
 
             break;
         }
-        case EulerOrder::XZY:
+        case TaitBryanOrder::XZY:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]),
                                 SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]));
@@ -641,7 +665,7 @@ namespace myMath
 
             break;
         }
-        case EulerOrder::XYZ:
+        case TaitBryanOrder::XYZ:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
                                 SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]));
@@ -655,7 +679,7 @@ namespace myMath
         }
         default:
         {
-            throw std::invalid_argument("Invalid Euler Order");
+            throw std::invalid_argument("Invalid Tait-Bryan Order");
         }
         }
 
@@ -663,13 +687,13 @@ namespace myMath
     }
 
     template <typename T>
-    Angle<T> Quaternion<T>::ToEuler(const TaitBryanOrder &rotOrder) const
+    Angle<T> Quaternion<T>::ToEuler(const EulerOrder &rotOrder) const
     {
         Angle<T> tmp;
 
         switch (rotOrder)
         {
-        case TaitBryanOrder::XYX:
+        case EulerOrder::XYX:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
                                 SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
@@ -681,7 +705,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::XZX:
+        case EulerOrder::XZX:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]),
                                 SQ(this->vec[0]) + SQ(this->vec[2]) - SQ(this->vec[1]) - SQ(this->vec[3]));
@@ -693,7 +717,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::YXY:
+        case EulerOrder::YXY:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] - this->vec[2] * this->vec[3]),
                                 SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
@@ -705,7 +729,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::YZY:
+        case EulerOrder::YZY:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[1] * this->vec[2] - this->vec[0] * this->vec[3]),
                                 SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[0]) - SQ(this->vec[3]));
@@ -717,7 +741,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::ZXZ:
+        case EulerOrder::ZXZ:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] + this->vec[1] * this->vec[3]),
                                 SQ(this->vec[0]) + SQ(this->vec[2]) - SQ(this->vec[1]) - SQ(this->vec[3]));
@@ -729,7 +753,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::ZYZ:
+        case EulerOrder::ZYZ:
         {
             tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[1] * this->vec[2] + this->vec[0] * this->vec[3]),
                                 SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[0]) - SQ(this->vec[3]));
@@ -743,7 +767,7 @@ namespace myMath
         }
         default:
         {
-            throw std::invalid_argument("Invalid Tait-Bryan Order");
+            throw std::invalid_argument("Invalid Euler Order");
         }
         }
 
@@ -757,7 +781,7 @@ namespace myMath
         this->vec[1] = x;
         this->vec[2] = y;
         this->vec[3] = z;
-        
+
         Normalize();
     }
 
@@ -768,111 +792,7 @@ namespace myMath
         this->vec[1] = (dcm[2][1] - dcm[1][2]) / (static_cast<T>(4.0) * this->vec[0]);
         this->vec[2] = (dcm[0][2] - dcm[2][0]) / (static_cast<T>(4.0) * this->vec[0]);
         this->vec[3] = (dcm[1][0] - dcm[0][1]) / (static_cast<T>(4.0) * this->vec[0]);
-        
-        Normalize();
-    }
 
-    template <typename T>
-    void Quaternion<T>::set(const Angle<T> &ang, const EulerOrder &rotOrder)
-    {
-        switch (rotOrder)
-        {
-        case EulerOrder::XYZ:
-        {
-            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
-                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
-                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) -
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
-            break;
-        }
-        case EulerOrder::XZY:
-        {
-            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
-                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
-                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) +
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
-            break;
-        }
-        case EulerOrder::YXZ:
-        {
-            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
-                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
-                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) -
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
-            break;
-        }
-        case EulerOrder::YZX:
-        {
-            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
-                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
-                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) -
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
-            break;
-        }
-        case EulerOrder::ZXY:
-        {
-            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
-                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
-                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) +
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
-            break;
-        }
-        case EulerOrder::ZYX:
-        {
-            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
-                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
-                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
-
-            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) -
-                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
-            break;
-        }
-        default:
-        {
-            throw std::invalid_argument("Invalid Euler Order");
-        }
-        }
-        
         Normalize();
     }
 
@@ -881,7 +801,111 @@ namespace myMath
     {
         switch (rotOrder)
         {
-        case TaitBryanOrder::XYX:
+        case TaitBryanOrder::XYZ:
+        {
+            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
+                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
+                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) -
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
+            break;
+        }
+        case TaitBryanOrder::XZY:
+        {
+            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
+                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
+                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) +
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
+            break;
+        }
+        case TaitBryanOrder::YXZ:
+        {
+            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
+                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
+                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) -
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
+            break;
+        }
+        case TaitBryanOrder::YZX:
+        {
+            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
+                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
+                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) -
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
+            break;
+        }
+        case TaitBryanOrder::ZXY:
+        {
+            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
+                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
+                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) +
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
+            break;
+        }
+        case TaitBryanOrder::ZYX:
+        {
+            this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[1] = std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) -
+                           std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[2] = std::cos(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2)) +
+                           std::sin(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2));
+
+            this->vec[3] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) * std::sin(ang[2] / static_cast<T>(2)) -
+                           std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Tait-Bryan Order");
+        }
+        }
+
+        Normalize();
+    }
+
+    template <typename T>
+    void Quaternion<T>::set(const Angle<T> &ang, const EulerOrder &rotOrder)
+    {
+        switch (rotOrder)
+        {
+        case EulerOrder::XYX:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) +
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
@@ -894,7 +918,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::XZX:
+        case EulerOrder::XZX:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) -
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
@@ -907,7 +931,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::YXY:
+        case EulerOrder::YXY:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) -
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
@@ -920,7 +944,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::YZY:
+        case EulerOrder::YZY:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) +
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
@@ -933,7 +957,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::ZXZ:
+        case EulerOrder::ZXZ:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) +
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
@@ -946,7 +970,7 @@ namespace myMath
 
             break;
         }
-        case TaitBryanOrder::ZYZ:
+        case EulerOrder::ZYZ:
         {
             this->vec[0] = std::cos(ang[0] / static_cast<T>(2)) * std::cos(ang[1] / static_cast<T>(2)) -
                            std::sin(ang[0] / static_cast<T>(2)) * std::sin(ang[1] / static_cast<T>(2)) * std::cos(ang[2] / static_cast<T>(2));
@@ -961,7 +985,7 @@ namespace myMath
         }
         default:
         {
-            throw std::invalid_argument("Invalid Tait-Bryan Order");
+            throw std::invalid_argument("Invalid Euler Order");
         }
         }
 
@@ -977,6 +1001,196 @@ namespace myMath
         this->vec[3] = v[2];
 
         Normalize();
+    }
+
+    template <typename T>
+    Angle<T> Quaternion<T>::rotate(const Angle<T> &ang, const TaitBryanOrder &rotOrder) const
+    {
+        Quaternion<T> q_rot = (*this * Quaternion<T>(0.0, ang) * this->conjugate());
+
+        Angle<T> ang_rot;
+
+        switch (rotOrder)
+        {
+        case TaitBryanOrder::XYZ:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] + q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::asin(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[2] - q_rot.vec[1] * q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[3] + q_rot.vec[1] * q_rot.vec[2]),
+                                    SQ(q_rot.vec[0]) + SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            break;
+        }
+        case TaitBryanOrder::XZY:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] - q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::asin(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[2] + q_rot.vec[1] * q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[3] - q_rot.vec[1] * q_rot.vec[2]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            break;
+        }
+        case TaitBryanOrder::YXZ:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[2] + q_rot.vec[1] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) + SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::asin(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] - q_rot.vec[2] * q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[3] - q_rot.vec[1] * q_rot.vec[2]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            break;
+        }
+        case TaitBryanOrder::YZX:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[2] - q_rot.vec[1] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::asin(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] + q_rot.vec[2] * q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[3] + q_rot.vec[1] * q_rot.vec[2]),
+                                    SQ(q_rot.vec[0]) + SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            break;
+        }
+        case TaitBryanOrder::ZXY:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[2] + q_rot.vec[1] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::asin(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] - q_rot.vec[2] * q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[3] - q_rot.vec[1] * q_rot.vec[2]),
+                                    SQ(q_rot.vec[0]) + SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            break;
+        }
+        case TaitBryanOrder::ZYX:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[2] - q_rot.vec[1] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::asin(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] + q_rot.vec[2] * q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[3] + q_rot.vec[1] * q_rot.vec[2]),
+                                    SQ(q_rot.vec[0]) + SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Tait-Bryan Order");
+        }
+        }
+
+        return ang_rot;
+    }
+
+    template <typename T>
+    Angle<T> Quaternion<T>::rotate(const Angle<T> &ang, const EulerOrder &rotOrder) const
+    {
+        Quaternion<T> q_rot = (*this * Quaternion<T>(0.0, ang) * this->conjugate());
+
+        Angle<T> ang_rot;
+
+        switch (rotOrder)
+        {
+        case EulerOrder::XYX:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] + q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::acos(SQ(q_rot.vec[0]) + SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] - q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            break;
+        }
+        case EulerOrder::XZX:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] - q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::acos(SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] + q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            break;
+        }
+        case EulerOrder::YXY:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] - q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::acos(SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] + q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            break;
+        }
+        case EulerOrder::YZY:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] + q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::acos(SQ(q_rot.vec[0]) + SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] - q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            break;
+        }
+        case EulerOrder::ZXZ:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] + q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::acos(SQ(q_rot.vec[0]) + SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] - q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            break;
+        }
+        case EulerOrder::ZYZ:
+        {
+            ang_rot[0] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] - q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[1] = std::acos(SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) + SQ(q_rot.vec[2]) - SQ(q_rot.vec[3]));
+
+            ang_rot[2] = std::atan2(static_cast<T>(2.0) * (q_rot.vec[0] * q_rot.vec[1] + q_rot.vec[2] * q_rot.vec[3]),
+                                    SQ(q_rot.vec[0]) - SQ(q_rot.vec[1]) - SQ(q_rot.vec[2]) + SQ(q_rot.vec[3]));
+
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Euler Order");
+        }
+        }
+    }
+
+    template <typename T>
+    DCM<T> Quaternion<T>::rotate(const DCM<T> &dcm) const
+    {
+        return (dcm.ToQuaternion() * (*this)).ToDCM();
+    }
+
+    template <typename T>
+    Quaternion<T> Quaternion<T>::rotate(const Quaternion<T> &q) const
+    {
+        return (q * (*this)).Normalize();
     }
 
 } // namespace myMath
