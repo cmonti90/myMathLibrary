@@ -17,7 +17,6 @@ namespace myMath
 
     enum class EulerOrder : unsigned int;
     enum class TaitBryanOrder : unsigned int;
-    enum Axis : unsigned int;
 
     template <typename T>
     class Quaternion : public Vector<T, 4u>

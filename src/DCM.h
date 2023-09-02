@@ -8,6 +8,9 @@
 namespace myMath
 {
     template <typename T>
+    class Angle;
+
+    template <typename T>
     class Quaternion;
     template <typename T>
     class DCM : public Matrix<T, 3, 3>
@@ -44,9 +47,12 @@ namespace myMath
 
         void Normalize();
         Quaternion<T> ToQuaternion() const;
+        Angle<T> ToEuler(const EulerOrder &rotOrder) const;
+        Angle<T> ToEuler(const TaitBryanOrder &rotOrder) const;
     };
 } // namespace myMath
 
+#include "Angle.h"
 #include "Quaternion.h"
 
 namespace myMath
@@ -196,6 +202,134 @@ namespace myMath
         q[3] = (this->mat[1][0] - this->mat[0][1]) / (static_cast<T>(4) * q[0]);
 
         return q.Normalize();
+    }
+
+    template <typename T>
+    Angle<T> DCM<T>::ToEuler(const EulerOrder &rotOrder) const
+    {
+        Angle<T> euler;
+
+        switch (rotOrder)
+        {
+        case EulerOrder::XYZ:
+        {
+            euler[0] = atan2(this->mat[1][2], this->mat[2][2]);
+            euler[1] = atan2(-this->mat[0][2], sqrt(this->mat[0][0] * this->mat[0][0] + this->mat[0][1] * this->mat[0][1]));
+            euler[2] = atan2(this->mat[0][1], this->mat[0][0]);
+
+            break;
+        }
+        case EulerOrder::XZY:
+        {
+            euler[0] = atan2(-this->mat[2][1], this->mat[1][1]);
+            euler[1] = atan2(this->mat[0][2], sqrt(this->mat[0][0] * this->mat[0][0] + this->mat[0][2] * this->mat[0][2]));
+            euler[2] = atan2(-this->mat[0][2], this->mat[0][0]);
+
+            break;
+        }
+        case EulerOrder::YXZ:
+        {
+            euler[0] = atan2(-this->mat[0][2], this->mat[2][2]);
+            euler[1] = atan2(this->mat[1][2], sqrt(this->mat[1][0] * this->mat[1][0] + this->mat[1][1] * this->mat[1][1]));
+            euler[2] = atan2(-this->mat[1][0], this->mat[1][1]);
+
+            break;
+        }
+        case EulerOrder::YZX:
+        {
+            euler[0] = atan2(this->mat[2][0], this->mat[0][0]);
+            euler[1] = atan2(-this->mat[1][0], sqrt(this->mat[1][1] * this->mat[1][1] + this->mat[1][2] * this->mat[1][2]));
+            euler[2] = atan2(this->mat[1][2], this->mat[1][1]);
+
+            break;
+        }
+        case EulerOrder::ZXY:
+        {
+            euler[0] = atan2(this->mat[1][0], this->mat[0][0]);
+            euler[1] = atan2(-this->mat[2][0], sqrt(this->mat[2][1] * this->mat[2][1] + this->mat[2][2] * this->mat[2][2]));
+            euler[2] = atan2(this->mat[2][1], this->mat[2][2]);
+
+            break;
+        }
+        case EulerOrder::ZYX:
+        {
+            euler[0] = atan2(-this->mat[0][1], this->mat[1][1]);
+            euler[1] = atan2(this->mat[2][0], sqrt(this->mat[2][1] * this->mat[2][1] + this->mat[2][2] * this->mat[2][2]));
+            euler[2] = atan2(-this->mat[2][1], this->mat[2][2]);
+
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Euler Order");
+        }
+        }
+
+        return euler;
+    }
+
+    template <typename T>
+    Angle<T> DCM<T>::ToEuler(const TaitBryanOrder &rotOrder) const
+    {
+        Angle<T> euler;
+
+        switch (rotOrder)
+        {
+        case TaitBryanOrder::XYX:
+        {
+            euler[0] = atan2(this->mat[0][1], -this->mat[0][2]);
+            euler[1] = acos(this->mat[0][0]);
+            euler[2] = atan2(this->mat[1][0], this->mat[2][0]);
+
+            break;
+        }
+        case TaitBryanOrder::XZX:
+        {
+            euler[0] = atan2(this->mat[0][2], this->mat[0][1]);
+            euler[1] = acos(this->mat[0][0]);
+            euler[2] = atan2(this->mat[2][0], -this->mat[1][0]);
+
+            break;
+        }
+        case TaitBryanOrder::YXY:
+        {
+            euler[0] = atan2(this->mat[1][0], this->mat[1][2]);
+            euler[1] = acos(this->mat[1][1]);
+            euler[2] = atan2(this->mat[0][1], -this->mat[2][1]);
+
+            break;
+        }
+        case TaitBryanOrder::YZY:
+        {
+            euler[0] = atan2(this->mat[1][2], -this->mat[1][0]);
+            euler[1] = acos(this->mat[1][1]);
+            euler[2] = atan2(this->mat[2][1], this->mat[0][1]);
+
+            break;
+        }
+        case TaitBryanOrder::ZXZ:
+        {
+            euler[0] = atan2(this->mat[2][1], this->mat[2][0]);
+            euler[1] = acos(this->mat[2][2]);
+            euler[2] = atan2(this->mat[1][2], -this->mat[0][2]);
+
+            break;
+        }
+        case TaitBryanOrder::ZYZ:
+        {
+            euler[0] = atan2(this->mat[2][0], -this->mat[2][1]);
+            euler[1] = acos(this->mat[2][2]);
+            euler[2] = atan2(this->mat[0][2], this->mat[1][2]);
+
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Tait-Bryan Order");
+        }
+        }
+
+        return euler;
     }
 
 } // namespace myMath
