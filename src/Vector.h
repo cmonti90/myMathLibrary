@@ -1,8 +1,7 @@
-#pragma once
-
 #ifndef E19DE42F_624A_4EBF_8117_D3009272C05E
 #define E19DE42F_624A_4EBF_8117_D3009272C05E
 
+#include "Constants.h"
 #include "BasicFunctions.h"
 #include <cmath>
 #include <initializer_list>
@@ -290,7 +289,7 @@ namespace myMath
     {
         for (unsigned int i{0u}; i < R; i++)
         {
-            if (this->vec[i] != obj.vec[i])
+            if (ABS(this->vec[i] - obj.vec[i]) > Constants::ZERO_THRESHOLD)
             {
                 return false;
             }
@@ -302,14 +301,15 @@ namespace myMath
     template <class T, unsigned int R>
     bool Vector<T, R>::operator!=(const Vector<T, R> &obj) const
     {
-        bool tmp{false};
-
         for (unsigned int i{0u}; i < R; i++)
         {
-            tmp = tmp || (this->vec[i] != obj.vec[i]);
+            if (ABS(this->vec[i] - obj.vec[i]) > Constants::ZERO_THRESHOLD)
+            {
+                return true;
+            }
         }
 
-        return tmp;
+        return false;
     }
 
     template <class T, unsigned int C>

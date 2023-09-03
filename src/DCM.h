@@ -255,7 +255,9 @@ namespace myMath
             q[3] = q3_mag;
         }
 
-        return q.Normalize();
+        q.Normalize();
+
+        return q;
     }
 
     template <typename T>
@@ -375,6 +377,13 @@ namespace myMath
         }
         }
 
+        DCM<T> check = euler.ToDCM(rotOrder);
+
+        if (*this != check)
+        {
+            std::cout << "WARNING! Conversion from DCM to Tait-Bryan sequence: " << static_cast<unsigned int>(rotOrder) << " is not possible!" << std::endl;
+        }
+
         return euler;
     }
 
@@ -397,33 +406,93 @@ namespace myMath
             else
             {
                 euler[0] = std::asin(this->mat[0][1] / std::sin(euler[1]));
-                euler[2] = std::acos(this->mat[1][0] / std::sin(euler[1]));
+                euler[2] = std::asin(this->mat[1][0] / std::sin(euler[1]));
             }
 
             break;
         }
         case EulerOrder::XZX:
         {
+            euler[1] = std::acos(this->mat[0][0]);
+
+            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for XZX rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::asin(this->mat[0][2] / std::sin(euler[1]));
+                euler[2] = std::asin(this->mat[2][0] / std::sin(euler[1]));
+            }
 
             break;
         }
         case EulerOrder::YXY:
         {
+            euler[1] = std::acos(this->mat[1][1]);
+
+            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for YXY rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::asin(this->mat[1][0] / std::sin(euler[1]));
+                euler[2] = std::asin(this->mat[0][1] / std::sin(euler[1]));
+            }
 
             break;
         }
         case EulerOrder::YZY:
         {
+            euler[1] = std::acos(this->mat[1][1]);
+
+            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for YZY rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::asin(this->mat[1][2] / std::sin(euler[1]));
+                euler[2] = std::asin(this->mat[2][1] / std::sin(euler[1]));
+            }
 
             break;
         }
         case EulerOrder::ZXZ:
         {
+            euler[1] = std::acos(this->mat[2][2]);
+
+            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for ZXZ rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::asin(this->mat[2][0] / std::sin(euler[1]));
+                euler[2] = std::asin(this->mat[0][2] / std::sin(euler[1]));
+            }
 
             break;
         }
         case EulerOrder::ZYZ:
         {
+            euler[1] = std::acos(this->mat[2][2]);
+
+            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for ZYZ rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::asin(this->mat[2][1] / std::sin(euler[1]));
+                euler[2] = std::asin(this->mat[1][2] / std::sin(euler[1]));
+            }
 
             break;
         }
@@ -431,6 +500,23 @@ namespace myMath
         {
             throw std::invalid_argument("Invalid Euler Order");
         }
+        }
+
+        DCM<T> check = euler.ToDCM(rotOrder);
+
+        if (*this != check)
+        {
+            std::cout << "WARNING! Conversion from DCM to Euler sequence: " << static_cast<unsigned int>(rotOrder) << " is not possible!" << std::endl;
+
+            std::cout << "DCM original: " << std::endl;
+            std::cout << this->mat[0][0] << " " << this->mat[0][1] << " " << this->mat[0][2] << std::endl;
+            std::cout << this->mat[1][0] << " " << this->mat[1][1] << " " << this->mat[1][2] << std::endl;
+            std::cout << this->mat[2][0] << " " << this->mat[2][1] << " " << this->mat[2][2] << std::endl;
+
+            std::cout << "DCM check: " << std::endl;
+            std::cout << check[0][0] << " " << check[0][1] << " " << check[0][2] << std::endl;
+            std::cout << check[1][0] << " " << check[1][1] << " " << check[1][2] << std::endl;
+            std::cout << check[2][0] << " " << check[2][1] << " " << check[2][2] << std::endl;
         }
 
         return euler;

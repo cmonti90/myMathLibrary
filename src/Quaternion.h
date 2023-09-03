@@ -77,9 +77,9 @@ namespace myMath
         Quaternion<T> Conjugate(void) const;
         Quaternion<T> Inverse(void) const;
         void Normalize(void);
-        DCM<T> ToDCM(void) const;
-        Angle<T> ToEuler(const TaitBryanOrder &rotOrder) const;
-        Angle<T> ToEuler(const EulerOrder &rotOrder) const;
+        DCM<T> ToDCM(void);
+        Angle<T> ToEuler(const TaitBryanOrder &rotOrder);
+        Angle<T> ToEuler(const EulerOrder &rotOrder);
 
         void set(const T &w, const T &x, const T &y, const T &z);
         void set(const DCM<T> &dcm);
@@ -365,7 +365,7 @@ namespace myMath
         tmp[1] = this->vec[0] * q[1] + this->vec[1] * q[0] + this->vec[2] * q[3] - this->vec[3] * q[2];
         tmp[2] = this->vec[0] * q[2] - this->vec[1] * q[3] + this->vec[2] * q[0] + this->vec[3] * q[1];
         tmp[3] = this->vec[0] * q[3] + this->vec[1] * q[2] - this->vec[2] * q[1] + this->vec[3] * q[0];
-        
+
         tmp.Normalize();
 
         return tmp;
@@ -641,60 +641,82 @@ namespace myMath
     template <typename T>
     void Quaternion<T>::Normalize(void)
     {
-        if (this->Magnitude() != static_cast<T>(0))
+        if (Magnitude() != static_cast<T>(0))
         {
-            *this /= this->Magnitude();
+            *this /= Magnitude();
         }
     }
 
     template <typename T>
-    DCM<T> Quaternion<T>::ToDCM(void) const
+    DCM<T> Quaternion<T>::ToDCM(void)
     {
-        DCM<T> tmp;
+        Normalize();
 
-        tmp[0][0] = SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]);
-        tmp[0][1] = static_cast<T>(2.0) * (this->vec[1] * this->vec[2] - this->vec[0] * this->vec[3]);
-        tmp[0][2] = static_cast<T>(2.0) * (this->vec[1] * this->vec[3] + this->vec[0] * this->vec[2]);
+        DCM<T> dcm;
 
-        tmp[1][0] = static_cast<T>(2.0) * (this->vec[1] * this->vec[2] + this->vec[0] * this->vec[3]);
-        tmp[1][1] = SQ(this->vec[0]) - SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[3]);
-        tmp[1][2] = static_cast<T>(2.0) * (this->vec[2] * this->vec[3] - this->vec[0] * this->vec[1]);
+        dcm[0][0] = SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]);
+        dcm[0][1] = static_cast<T>(2) * (this->vec[1] * this->vec[2] + this->vec[0] * this->vec[3]);
+        dcm[0][2] = static_cast<T>(2) * (this->vec[1] * this->vec[3] - this->vec[0] * this->vec[2]);
 
-        tmp[2][0] = static_cast<T>(2.0) * (this->vec[1] * this->vec[3] - this->vec[0] * this->vec[2]);
-        tmp[2][1] = static_cast<T>(2.0) * (this->vec[2] * this->vec[3] + this->vec[0] * this->vec[1]);
-        tmp[2][2] = SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]);
+        dcm[1][0] = static_cast<T>(2) * (this->vec[1] * this->vec[2] - this->vec[0] * this->vec[3]);
+        dcm[1][1] = SQ(this->vec[0]) - SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[3]);
+        dcm[1][2] = static_cast<T>(2) * (this->vec[2] * this->vec[3] + this->vec[0] * this->vec[1]);
 
-        return tmp;
+        dcm[2][0] = static_cast<T>(2) * (this->vec[1] * this->vec[3] + this->vec[0] * this->vec[2]);
+        dcm[2][1] = static_cast<T>(2) * (this->vec[2] * this->vec[3] - this->vec[0] * this->vec[1]);
+        dcm[2][2] = SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]);
+
+        return dcm;
     }
 
     template <typename T>
-    Angle<T> Quaternion<T>::ToEuler(const TaitBryanOrder &rotOrder) const
+    Angle<T> Quaternion<T>::ToEuler(const TaitBryanOrder &rotOrder)
     {
+        Normalize();
+
         Angle<T> tmp;
 
         switch (rotOrder)
         {
         case TaitBryanOrder::ZYX:
         {
-            tmp[0] = std::asin(static_cast<T>(2) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]));;
+            if (ABS(static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[1]) + SQ(this->vec[2]))) < Constants::ZERO_THRESHOLD ||
+                ABS(static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[2]) + SQ(this->vec[3]))) < Constants::ZERO_THRESHOLD)
+            {
+                tmp = static_cast<T>(0);
+                std::cout << "WARNING: Gimbal lock for ZYX rotation" << std::endl;
+            }
+            else
+            {
+                tmp[2] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
+                                    static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[1]) + SQ(this->vec[2])));
 
-            tmp[1] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[3] + this->vec[1] * this->vec[2]),
-                                SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]))
+                tmp[1] = std::asin(static_cast<T>(2) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]));
 
-            tmp[2] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
-                                static_cast<T>(1) - static_cast<T>(2) * SQ(this->vec[1]) + SQ(this->vec[2]))
+                tmp[0] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[3] + this->vec[1] * this->vec[2]),
+                                    static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[2]) + SQ(this->vec[3])));
+            }
 
             break;
         }
         case TaitBryanOrder::YZX:
         {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[3] - this->vec[1] * this->vec[2]),
-                                SQ(this->vec[0]) - SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[3]));
+            if (ABS(static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[1]) + SQ(this->vec[2]))) < Constants::ZERO_THRESHOLD ||
+                ABS(static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[0]) + SQ(this->vec[1]))) < Constants::ZERO_THRESHOLD)
+            {
+                tmp = static_cast<T>(0);
+                std::cout << "WARNING: Gimbal lock for YZX rotation" << std::endl;
+            }
+            else
+            {
+                tmp[2] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[3] - this->vec[1] * this->vec[2]),
+                                    static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[2]) + SQ(this->vec[3])));
 
-            tmp[1] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] + this->vec[1] * this->vec[3]),
-                                SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
+                tmp[1] = std::asin(static_cast<T>(2) * (this->vec[0] * this->vec[2] + this->vec[1] * this->vec[3]));
 
-            tmp[2] = std::asin(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] - this->vec[2] * this->vec[3]));
+                tmp[0] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[1] - this->vec[2] * this->vec[3]),
+                                    static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[1]) + SQ(this->vec[2])));
+            }
 
             break;
         }
@@ -756,8 +778,10 @@ namespace myMath
     }
 
     template <typename T>
-    Angle<T> Quaternion<T>::ToEuler(const EulerOrder &rotOrder) const
+    Angle<T> Quaternion<T>::ToEuler(const EulerOrder &rotOrder)
     {
+        Normalize();
+
         Angle<T> tmp;
 
         switch (rotOrder)
