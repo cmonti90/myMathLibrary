@@ -24,7 +24,7 @@ namespace myMath
         Matrix(const double (&x)[R][C]);
         Matrix(const Matrix<T, R, C> &obj);
         Matrix(const std::initializer_list<T> &x);
-        ~Matrix() = default;
+        virtual ~Matrix() = default;
 
         Vector<T, C> &operator[](const unsigned int i);
         const Vector<T, C> &operator[](const unsigned int i) const;

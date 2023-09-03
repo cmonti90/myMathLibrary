@@ -31,8 +31,11 @@ namespace myMath
         Quaternion(const Vector<T, 3u> &v);
         Quaternion(const T &w, const Angle<T> &v);
         Quaternion(const Angle<T> &ang, const TaitBryanOrder &rotOrder);
+        Quaternion(const Angle<T> &ang, const EulerOrder &rotOrder);
+        Quaternion(const DCM<T> &dcm);
+        Quaternion(const T ang, const Axis ax);
 
-        ~Quaternion() = default;
+        virtual ~Quaternion();
 
         Quaternion<T> operator=(const Quaternion<T> &q);
         Quaternion<T> operator=(const Vector<T, 4u> &q);
@@ -73,7 +76,7 @@ namespace myMath
         T Magnitude(void) const;
         Quaternion<T> Conjugate(void) const;
         Quaternion<T> Inverse(void) const;
-        Quaternion<T> &Normalize(void);
+        void Normalize(void);
         DCM<T> ToDCM(void) const;
         Angle<T> ToEuler(const TaitBryanOrder &rotOrder) const;
         Angle<T> ToEuler(const EulerOrder &rotOrder) const;
@@ -103,31 +106,26 @@ namespace myMath
     template <typename T>
     Quaternion<T>::Quaternion() : Vector<T, 4u>()
     {
-        Normalize();
     }
 
     template <typename T>
     Quaternion<T>::Quaternion(const T &w, const T &x, const T &y, const T &z) : Vector<T, 4u>({w, x, y, z})
     {
-        Normalize();
     }
 
     template <typename T>
     Quaternion<T>::Quaternion(const T (&q)[4]) : Vector<T, 4u>(q)
     {
-        Normalize();
     }
 
     template <typename T>
     Quaternion<T>::Quaternion(const Quaternion<T> &q) : Vector<T, 4u>(q)
     {
-        Normalize();
     }
 
     template <typename T>
     Quaternion<T>::Quaternion(const Vector<T, 4u> &q) : Vector<T, 4u>(q)
     {
-        Normalize();
     }
 
     template <typename T>
@@ -245,29 +243,87 @@ namespace myMath
             throw std::invalid_argument("Invalid Tait-Bryan Order");
         }
         }
+    }
 
-        Normalize();
+    template <typename T>
+    Quaternion<T>::Quaternion(const Angle<T> &ang, const EulerOrder &rotOrder) : Vector<T, 4u>()
+    {
+    }
+
+    template <typename T>
+    Quaternion<T>::Quaternion(const DCM<T> &dcm) : Vector<T, 4u>()
+    {
+        *this = dcm.ToQuaternion();
+    }
+
+    template <typename T>
+    Quaternion<T>::Quaternion(const T ang, const Axis ax) : Vector<T, 4u>()
+    {
+        switch (ax)
+        {
+        case Axis::X:
+        {
+            this->vec[0] = std::cos(ang / static_cast<T>(2));
+            this->vec[1] = std::sin(ang / static_cast<T>(2));
+            this->vec[2] = static_cast<T>(0.0);
+            this->vec[3] = static_cast<T>(0.0);
+
+            break;
+        }
+        case Axis::Y:
+        {
+            this->vec[0] = std::cos(ang / static_cast<T>(2));
+            this->vec[1] = static_cast<T>(0.0);
+            this->vec[2] = std::sin(ang / static_cast<T>(2));
+            this->vec[3] = static_cast<T>(0.0);
+
+            break;
+        }
+        case Axis::Z:
+        {
+            this->vec[0] = std::cos(ang / static_cast<T>(2));
+            this->vec[1] = static_cast<T>(0.0);
+            this->vec[2] = static_cast<T>(0.0);
+            this->vec[3] = std::sin(ang / static_cast<T>(2));
+
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Axis");
+
+            break;
+        }
+        }
+    }
+
+    template <typename T>
+    Quaternion<T>::~Quaternion()
+    {
     }
 
     template <typename T>
     Quaternion<T> Quaternion<T>::operator=(const Quaternion<T> &q)
     {
         std::memcpy(this->vec, q.vec, 4 * sizeof(T));
-        return this->Normalize();
+
+        return *this;
     }
 
     template <typename T>
     Quaternion<T> Quaternion<T>::operator=(const Vector<T, 4u> &q)
     {
         std::memcpy(this->vec, q.vec, 4 * sizeof(T));
-        return this->Normalize();
+
+        return *this;
     }
 
     template <typename T>
     Quaternion<T> Quaternion<T>::operator=(const T (&q)[4])
     {
         std::memcpy(this->vec, q, 4 * sizeof(T));
-        return this->Normalize();
+
+        return *this;
     }
 
     template <typename T>
@@ -280,7 +336,9 @@ namespace myMath
         tmp[2] = this->vec[0] * q[2] - this->vec[1] * q[3] + this->vec[2] * q[0] + this->vec[3] * q[1];
         tmp[3] = this->vec[0] * q[3] + this->vec[1] * q[2] - this->vec[2] * q[1] + this->vec[3] * q[0];
 
-        return tmp.Normalize();
+        tmp.Normalize();
+
+        return tmp;
     }
 
     template <typename T>
@@ -293,7 +351,9 @@ namespace myMath
         tmp[2] = this->vec[0] * q[2] - this->vec[1] * q[3] + this->vec[2] * q[0] + this->vec[3] * q[1];
         tmp[3] = this->vec[0] * q[3] + this->vec[1] * q[2] - this->vec[2] * q[1] + this->vec[3] * q[0];
 
-        return tmp.Normalize();
+        tmp.Normalize();
+
+        return tmp;
     }
 
     template <typename T>
@@ -305,8 +365,10 @@ namespace myMath
         tmp[1] = this->vec[0] * q[1] + this->vec[1] * q[0] + this->vec[2] * q[3] - this->vec[3] * q[2];
         tmp[2] = this->vec[0] * q[2] - this->vec[1] * q[3] + this->vec[2] * q[0] + this->vec[3] * q[1];
         tmp[3] = this->vec[0] * q[3] + this->vec[1] * q[2] - this->vec[2] * q[1] + this->vec[3] * q[0];
+        
+        tmp.Normalize();
 
-        return tmp.Normalize();
+        return tmp;
     }
 
     template <typename T>
@@ -319,7 +381,9 @@ namespace myMath
         this->vec[2] = tmp[0] * q[2] - tmp[1] * q[3] + tmp[2] * q[0] + tmp[3] * q[1];
         this->vec[3] = tmp[0] * q[3] + tmp[1] * q[2] - tmp[2] * q[1] + tmp[3] * q[0];
 
-        return this->Normalize();
+        Normalize();
+
+        return *this;
     }
 
     template <typename T>
@@ -332,7 +396,9 @@ namespace myMath
         this->vec[2] = tmp[0] * q[2] - tmp[1] * q[3] + tmp[2] * q[0] + tmp[3] * q[1];
         this->vec[3] = tmp[0] * q[3] + tmp[1] * q[2] - tmp[2] * q[1] + tmp[3] * q[0];
 
-        return this->Normalize();
+        Normalize();
+
+        return *this;
     }
 
     template <typename T>
@@ -345,7 +411,9 @@ namespace myMath
         this->vec[2] = tmp[0] * q[2] - tmp[1] * q[3] + tmp[2] * q[0] + tmp[3] * q[1];
         this->vec[3] = tmp[0] * q[3] + tmp[1] * q[2] - tmp[2] * q[1] + tmp[3] * q[0];
 
-        return this->Normalize();
+        Normalize();
+
+        return *this;
     }
 
     template <typename T>
@@ -358,7 +426,7 @@ namespace myMath
         tmp[2] += q[2];
         tmp[3] += q[3];
 
-        return tmp.Normalize();
+        return tmp;
     }
 
     template <typename T>
@@ -371,7 +439,7 @@ namespace myMath
         tmp[2] += q[2];
         tmp[3] += q[3];
 
-        return tmp.Normalize();
+        return tmp;
     }
 
     template <typename T>
@@ -384,7 +452,7 @@ namespace myMath
         tmp[2] += q[2];
         tmp[3] += q[3];
 
-        return tmp.Normalize();
+        return tmp;
     }
 
     template <typename T>
@@ -395,7 +463,7 @@ namespace myMath
         this->vec[2] += q[2];
         this->vec[3] += q[3];
 
-        return this->Normalize();
+        return *this;
     }
 
     template <typename T>
@@ -406,7 +474,7 @@ namespace myMath
         this->vec[2] += q[2];
         this->vec[3] += q[3];
 
-        return this->Normalize();
+        return *this;
     }
 
     template <typename T>
@@ -417,7 +485,7 @@ namespace myMath
         this->vec[2] += q[2];
         this->vec[3] += q[3];
 
-        return this->Normalize();
+        return *this;
     }
 
     template <typename T>
@@ -430,7 +498,7 @@ namespace myMath
         tmp[2] -= q[2];
         tmp[3] -= q[3];
 
-        return tmp.Normalize();
+        return tmp;
     }
 
     template <typename T>
@@ -443,7 +511,7 @@ namespace myMath
         tmp[2] -= q[2];
         tmp[3] -= q[3];
 
-        return tmp.Normalize();
+        return tmp;
     }
 
     template <typename T>
@@ -456,7 +524,7 @@ namespace myMath
         tmp[2] -= q[2];
         tmp[3] -= q[3];
 
-        return tmp.Normalize();
+        return tmp;
     }
 
     template <typename T>
@@ -467,7 +535,7 @@ namespace myMath
         this->vec[2] -= q[2];
         this->vec[3] -= q[3];
 
-        return this->Normalize();
+        return *this;
     }
 
     template <typename T>
@@ -478,7 +546,7 @@ namespace myMath
         this->vec[2] -= q[2];
         this->vec[3] -= q[3];
 
-        return this->Normalize();
+        return *this;
     }
 
     template <typename T>
@@ -489,7 +557,7 @@ namespace myMath
         this->vec[2] -= q[2];
         this->vec[3] -= q[3];
 
-        return this->Normalize();
+        return *this;
     }
 
     template <typename T>
@@ -502,7 +570,7 @@ namespace myMath
         tmp[2] /= q;
         tmp[3] /= q;
 
-        return tmp.Normalize();
+        return tmp;
     }
 
     template <typename T>
@@ -513,9 +581,7 @@ namespace myMath
         this->vec[2] /= q;
         this->vec[3] /= q;
 
-        Normalize();
-
-        return this->Normalize();
+        return *this;
     }
 
     template <typename T>
@@ -573,9 +639,12 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> &Quaternion<T>::Normalize(void)
+    void Quaternion<T>::Normalize(void)
     {
-        return *this /= this->Magnitude();
+        if (this->Magnitude() != static_cast<T>(0))
+        {
+            *this /= this->Magnitude();
+        }
     }
 
     template <typename T>
@@ -607,13 +676,13 @@ namespace myMath
         {
         case TaitBryanOrder::ZYX:
         {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
-                                SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]));
+            tmp[0] = std::asin(static_cast<T>(2) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]));;
 
-            tmp[1] = std::asin(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]));
+            tmp[1] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[3] + this->vec[1] * this->vec[2]),
+                                SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]))
 
-            tmp[2] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[3] + this->vec[1] * this->vec[2]),
-                                SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
+            tmp[2] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
+                                static_cast<T>(1) - static_cast<T>(2) * SQ(this->vec[1]) + SQ(this->vec[2]))
 
             break;
         }
@@ -1190,7 +1259,9 @@ namespace myMath
     template <typename T>
     Quaternion<T> Quaternion<T>::rotate(const Quaternion<T> &q) const
     {
-        return (q * (*this)).Normalize();
+        Quaternion<T> q_rot = (*this * q).Normalize();
+
+        return q_rot;
     }
 
 } // namespace myMath

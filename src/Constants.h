@@ -12,7 +12,7 @@ namespace myMath
     {
         DEFINE_MATH_CONSTEXPR( double, PI, 3.14159265358979323846264)
         DEFINE_MATH_CONSTEXPR( double, EULERS_NUM, 2.71828182845904523536)
-        DEFINE_MATH_CONSTEXPR( double, ZERO_THRESHOLD, 1.0e-16)
+        DEFINE_MATH_CONSTEXPR( double, ZERO_THRESHOLD, 1.0e-12)
 
         // Earth Parameters
         DEFINE_MATH_CONSTEXPR( double, GRAVITY_ACCEL, 9.8067)                    // m / sec

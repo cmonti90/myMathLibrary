@@ -22,7 +22,7 @@ namespace myMath
         Vector(const T (&x)[R]);
         Vector(const Vector<T, R> &obj);
         Vector(const std::initializer_list<T> &x);
-        ~Vector() = default;
+        virtual ~Vector() = default;
 
         T &operator[](const unsigned int i);
         const T &operator[](const unsigned int i) const;

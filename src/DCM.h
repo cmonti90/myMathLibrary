@@ -190,7 +190,7 @@ namespace myMath
     template <typename T>
     DCM<T> DCM<T>::operator-(void) const
     {
-        return static_cast<T>(-1)**this;
+        return static_cast<T>(-1) * *this;
     }
 
     template <typename T>
@@ -255,7 +255,6 @@ namespace myMath
             q[3] = q3_mag;
         }
 
-
         return q.Normalize();
     }
 
@@ -268,49 +267,105 @@ namespace myMath
         {
         case TaitBryanOrder::XYZ:
         {
-            euler[0] = atan2(this->mat[1][2], this->mat[2][2]);
-            euler[1] = atan2(-this->mat[0][2], sqrt(this->mat[0][0] * this->mat[0][0] + this->mat[0][1] * this->mat[0][1]));
-            euler[2] = atan2(this->mat[0][1], this->mat[0][0]);
+            euler[1] = std::asin(this->mat[2][0]);
+
+            if (ABS(std::cos(euler[1])) < Constants::ZERO_THRESHOLD ||
+                ABS(this->mat[2][2] / std::cos(euler[1])) < Constants::ZERO_THRESHOLD ||
+                ABS(this->mat[2][2] / std::cos(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for XYZ rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = -std::atan2(this->mat[2][1] / std::cos(euler[1]), this->mat[2][2] / std::cos(euler[1]));
+                euler[2] = -std::atan2(this->mat[1][0] / std::cos(euler[1]), this->mat[0][0] / std::cos(euler[1]));
+            }
 
             break;
         }
         case TaitBryanOrder::XZY:
         {
-            euler[0] = atan2(-this->mat[2][1], this->mat[1][1]);
-            euler[1] = atan2(this->mat[0][2], sqrt(this->mat[0][0] * this->mat[0][0] + this->mat[0][2] * this->mat[0][2]));
-            euler[2] = atan2(-this->mat[0][2], this->mat[0][0]);
+            euler[1] = std::asin(-this->mat[1][0]);
+
+            if (ABS(std::cos(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for XZY rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::acos(this->mat[1][1] / std::cos(euler[1]));
+                euler[2] = std::asin(this->mat[2][0] / std::cos(euler[1]));
+            }
 
             break;
         }
         case TaitBryanOrder::YXZ:
         {
-            euler[0] = atan2(-this->mat[0][2], this->mat[2][2]);
-            euler[1] = atan2(this->mat[1][2], sqrt(this->mat[1][0] * this->mat[1][0] + this->mat[1][1] * this->mat[1][1]));
-            euler[2] = atan2(-this->mat[1][0], this->mat[1][1]);
+            euler[1] = std::asin(-this->mat[2][1]);
+
+            if (ABS(std::cos(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for YXZ rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::asin(this->mat[2][0] / std::cos(euler[1]));
+                euler[2] = std::asin(this->mat[0][1] / std::cos(euler[1]));
+            }
 
             break;
         }
         case TaitBryanOrder::YZX:
         {
-            euler[0] = atan2(this->mat[2][0], this->mat[0][0]);
-            euler[1] = atan2(-this->mat[1][0], sqrt(this->mat[1][1] * this->mat[1][1] + this->mat[1][2] * this->mat[1][2]));
-            euler[2] = atan2(this->mat[1][2], this->mat[1][1]);
+            euler[1] = std::asin(this->mat[0][1]);
+
+            if (ABS(std::cos(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for YZX rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::asin(-this->mat[0][2] / std::cos(euler[1]));
+                euler[2] = std::asin(-this->mat[2][1] / std::cos(euler[1]));
+            }
 
             break;
         }
         case TaitBryanOrder::ZXY:
         {
-            euler[0] = atan2(this->mat[1][0], this->mat[0][0]);
-            euler[1] = atan2(-this->mat[2][0], sqrt(this->mat[2][1] * this->mat[2][1] + this->mat[2][2] * this->mat[2][2]));
-            euler[2] = atan2(this->mat[2][1], this->mat[2][2]);
+            euler[1] = std::asin(this->mat[1][2]);
+
+            if (ABS(std::cos(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for ZXY rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::asin(-this->mat[1][0] / std::cos(euler[1]));
+                euler[2] = std::asin(-this->mat[0][2] / std::cos(euler[1]));
+            }
 
             break;
         }
         case TaitBryanOrder::ZYX:
         {
-            euler[0] = atan2(-this->mat[0][1], this->mat[1][1]);
-            euler[1] = atan2(this->mat[2][0], sqrt(this->mat[2][1] * this->mat[2][1] + this->mat[2][2] * this->mat[2][2]));
-            euler[2] = atan2(-this->mat[2][1], this->mat[2][2]);
+            euler[1] = std::asin(-this->mat[0][2]);
+
+            if (ABS(std::cos(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for ZYX rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::asin(this->mat[0][1] / std::cos(euler[1]));
+                euler[2] = std::asin(this->mat[1][2] / std::cos(euler[1]));
+            }
 
             break;
         }
@@ -332,49 +387,43 @@ namespace myMath
         {
         case EulerOrder::XYX:
         {
-            euler[0] = atan2(this->mat[0][1], -this->mat[0][2]);
-            euler[1] = acos(this->mat[0][0]);
-            euler[2] = atan2(this->mat[1][0], this->mat[2][0]);
+            euler[1] = std::acos(this->mat[0][0]);
+
+            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            {
+                euler = static_cast<T>(0);
+                std::cout << "WARNING! Gimbal Lock for XYX rotation" << std::endl;
+            }
+            else
+            {
+                euler[0] = std::asin(this->mat[0][1] / std::sin(euler[1]));
+                euler[2] = std::acos(this->mat[1][0] / std::sin(euler[1]));
+            }
 
             break;
         }
         case EulerOrder::XZX:
         {
-            euler[0] = atan2(this->mat[0][2], this->mat[0][1]);
-            euler[1] = acos(this->mat[0][0]);
-            euler[2] = atan2(this->mat[2][0], -this->mat[1][0]);
 
             break;
         }
         case EulerOrder::YXY:
         {
-            euler[0] = atan2(this->mat[1][0], this->mat[1][2]);
-            euler[1] = acos(this->mat[1][1]);
-            euler[2] = atan2(this->mat[0][1], -this->mat[2][1]);
 
             break;
         }
         case EulerOrder::YZY:
         {
-            euler[0] = atan2(this->mat[1][2], -this->mat[1][0]);
-            euler[1] = acos(this->mat[1][1]);
-            euler[2] = atan2(this->mat[2][1], this->mat[0][1]);
 
             break;
         }
         case EulerOrder::ZXZ:
         {
-            euler[0] = atan2(this->mat[2][1], this->mat[2][0]);
-            euler[1] = acos(this->mat[2][2]);
-            euler[2] = atan2(this->mat[1][2], -this->mat[0][2]);
 
             break;
         }
         case EulerOrder::ZYZ:
         {
-            euler[0] = atan2(this->mat[2][0], -this->mat[2][1]);
-            euler[1] = acos(this->mat[2][2]);
-            euler[2] = atan2(this->mat[0][2], this->mat[1][2]);
 
             break;
         }
