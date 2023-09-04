@@ -600,13 +600,13 @@ namespace myMath
     template <typename T>
     bool Quaternion<T>::operator==(const Quaternion<T> &q) const
     {
-        return (this->vec[0] == q[0] && this->vec[1] == q[1] && this->vec[2] == q[2] && this->vec[3] == q[3]);
+        return Vector<T, 4>::operator==(q);
     }
 
     template <typename T>
     bool Quaternion<T>::operator!=(const Quaternion<T> &q) const
     {
-        return (this->vec[0] != q[0] || this->vec[1] != q[1] || this->vec[2] != q[2] || this->vec[3] != q[3]);
+        return Vector<T, 4>::operator!=(q);
     }
 
     template <typename T>
@@ -631,9 +631,9 @@ namespace myMath
     template <typename T>
     Quaternion<T> Quaternion<T>::Inverse(void) const
     {
-        Quaternion<T> tmp = this->Conjugate();
+        Quaternion<T> tmp = Conjugate();
 
-        tmp /= SQ(this->Magnitude());
+        tmp /= SQ(Magnitude());
 
         return tmp;
     }
@@ -674,107 +674,7 @@ namespace myMath
     {
         Normalize();
 
-        Angle<T> tmp;
-
-        switch (rotOrder)
-        {
-        case TaitBryanOrder::ZYX:
-        {
-            if (ABS(static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[1]) + SQ(this->vec[2]))) < Constants::ZERO_THRESHOLD ||
-                ABS(static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[2]) + SQ(this->vec[3]))) < Constants::ZERO_THRESHOLD)
-            {
-                tmp = static_cast<T>(0);
-                std::cout << "WARNING: Gimbal lock for ZYX rotation" << std::endl;
-            }
-            else
-            {
-                tmp[2] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
-                                    static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[1]) + SQ(this->vec[2])));
-
-                tmp[1] = std::asin(static_cast<T>(2) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]));
-
-                tmp[0] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[3] + this->vec[1] * this->vec[2]),
-                                    static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[2]) + SQ(this->vec[3])));
-            }
-
-            break;
-        }
-        case TaitBryanOrder::YZX:
-        {
-            if (ABS(static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[1]) + SQ(this->vec[2]))) < Constants::ZERO_THRESHOLD ||
-                ABS(static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[0]) + SQ(this->vec[1]))) < Constants::ZERO_THRESHOLD)
-            {
-                tmp = static_cast<T>(0);
-                std::cout << "WARNING: Gimbal lock for YZX rotation" << std::endl;
-            }
-            else
-            {
-                tmp[2] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[3] - this->vec[1] * this->vec[2]),
-                                    static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[2]) + SQ(this->vec[3])));
-
-                tmp[1] = std::asin(static_cast<T>(2) * (this->vec[0] * this->vec[2] + this->vec[1] * this->vec[3]));
-
-                tmp[0] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[1] - this->vec[2] * this->vec[3]),
-                                    static_cast<T>(1) - static_cast<T>(2) * (SQ(this->vec[1]) + SQ(this->vec[2])));
-            }
-
-            break;
-        }
-        case TaitBryanOrder::ZXY:
-        {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[3] + this->vec[1] * this->vec[2]),
-                                SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]));
-
-            tmp[1] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]),
-                                SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            tmp[2] = std::asin(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]));
-
-            break;
-        }
-        case TaitBryanOrder::YXZ:
-        {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] + this->vec[1] * this->vec[3]),
-                                SQ(this->vec[0]) - SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            tmp[1] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[3] - this->vec[1] * this->vec[2]),
-                                SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            tmp[2] = std::asin(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] - this->vec[2] * this->vec[3]));
-
-            break;
-        }
-        case TaitBryanOrder::XZY:
-        {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]),
-                                SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]));
-
-            tmp[1] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[3] + this->vec[1] * this->vec[2]),
-                                SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            tmp[2] = std::asin(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]));
-
-            break;
-        }
-        case TaitBryanOrder::XYZ:
-        {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
-                                SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]));
-
-            tmp[1] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]),
-                                SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            tmp[2] = std::asin(static_cast<T>(2.0) * (this->vec[0] * this->vec[3] + this->vec[1] * this->vec[2]));
-
-            break;
-        }
-        default:
-        {
-            throw std::invalid_argument("Invalid Tait-Bryan Order");
-        }
-        }
-
-        return tmp;
+        return ToDCM().ToEuler(rotOrder);
     }
 
     template <typename T>
@@ -782,89 +682,7 @@ namespace myMath
     {
         Normalize();
 
-        Angle<T> tmp;
-
-        switch (rotOrder)
-        {
-        case EulerOrder::XYX:
-        {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
-                                SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            tmp[1] = std::acos(SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            tmp[2] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] - this->vec[2] * this->vec[3]),
-                                SQ(this->vec[0]) - SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            break;
-        }
-        case EulerOrder::XZX:
-        {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]),
-                                SQ(this->vec[0]) + SQ(this->vec[2]) - SQ(this->vec[1]) - SQ(this->vec[3]));
-
-            tmp[1] = std::acos(SQ(this->vec[0]) + SQ(this->vec[2]) - SQ(this->vec[1]) - SQ(this->vec[3]));
-
-            tmp[2] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] + this->vec[1] * this->vec[3]),
-                                SQ(this->vec[0]) - SQ(this->vec[2]) + SQ(this->vec[1]) - SQ(this->vec[3]));
-
-            break;
-        }
-        case EulerOrder::YXY:
-        {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] - this->vec[2] * this->vec[3]),
-                                SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            tmp[1] = std::acos(SQ(this->vec[0]) + SQ(this->vec[1]) - SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            tmp[2] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
-                                SQ(this->vec[0]) - SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[3]));
-
-            break;
-        }
-        case EulerOrder::YZY:
-        {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[1] * this->vec[2] - this->vec[0] * this->vec[3]),
-                                SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[0]) - SQ(this->vec[3]));
-
-            tmp[1] = std::acos(SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[0]) - SQ(this->vec[3]));
-
-            tmp[2] = std::atan2(static_cast<T>(2.0) * (this->vec[1] * this->vec[2] + this->vec[0] * this->vec[3]),
-                                SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[0]) - SQ(this->vec[3]));
-
-            break;
-        }
-        case EulerOrder::ZXZ:
-        {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] + this->vec[1] * this->vec[3]),
-                                SQ(this->vec[0]) + SQ(this->vec[2]) - SQ(this->vec[1]) - SQ(this->vec[3]));
-
-            tmp[1] = std::acos(SQ(this->vec[0]) + SQ(this->vec[2]) - SQ(this->vec[1]) - SQ(this->vec[3]));
-
-            tmp[2] = std::atan2(static_cast<T>(2.0) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]),
-                                SQ(this->vec[0]) - SQ(this->vec[2]) + SQ(this->vec[1]) - SQ(this->vec[3]));
-
-            break;
-        }
-        case EulerOrder::ZYZ:
-        {
-            tmp[0] = std::atan2(static_cast<T>(2.0) * (this->vec[1] * this->vec[2] + this->vec[0] * this->vec[3]),
-                                SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[0]) - SQ(this->vec[3]));
-
-            tmp[1] = std::acos(SQ(this->vec[1]) + SQ(this->vec[2]) - SQ(this->vec[0]) - SQ(this->vec[3]));
-
-            tmp[2] = std::atan2(static_cast<T>(2.0) * (this->vec[1] * this->vec[2] - this->vec[0] * this->vec[3]),
-                                SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[0]) - SQ(this->vec[3]));
-
-            break;
-        }
-        default:
-        {
-            throw std::invalid_argument("Invalid Euler Order");
-        }
-        }
-
-        return tmp;
+        return ToDCM().ToEuler(rotOrder);
     }
 
     template <typename T>
@@ -1099,7 +917,7 @@ namespace myMath
     template <typename T>
     Angle<T> Quaternion<T>::rotate(const Angle<T> &ang, const TaitBryanOrder &rotOrder) const
     {
-        Quaternion<T> q_rot = (*this * Quaternion<T>(0.0, ang) * this->conjugate());
+        Quaternion<T> q_rot = (*this * Quaternion<T>(0.0, ang) * Conjugate());
 
         Angle<T> ang_rot;
 
@@ -1189,7 +1007,7 @@ namespace myMath
     template <typename T>
     Angle<T> Quaternion<T>::rotate(const Angle<T> &ang, const EulerOrder &rotOrder) const
     {
-        Quaternion<T> q_rot = (*this * Quaternion<T>(0.0, ang) * this->conjugate());
+        Quaternion<T> q_rot = (*this * Quaternion<T>(0.0, ang) * Conjugate());
 
         Angle<T> ang_rot;
 
