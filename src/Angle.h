@@ -32,7 +32,8 @@ namespace myMath
     {
         X,
         Y,
-        Z
+        Z,
+        ALL
     };
 
     template <typename T>
@@ -78,12 +79,12 @@ namespace myMath
         DCM<T> ToDCM(const EulerOrder &rotOrder) const;
         Quaternion<T> ToQuaternion(const TaitBryanOrder &rotOrder) const;
         Quaternion<T> ToQuaternion(const EulerOrder &rotOrder) const;
-        Angle<T> rotate(const Axis &axis, const T &angle) const;
-        Angle<T> rotate(const Vector<T, 3u> &axis, const T &angle) const;
-        Angle<T> rotate(const DCM<T> &dcm, const TaitBryanOrder &rotOrder) const;
-        Angle<T> rotate(const DCM<T> &dcm, const EulerOrder &rotOrder) const;
-        Angle<T> rotate(const Quaternion<T> &q, const TaitBryanOrder &rotOrder) const;
-        Angle<T> rotate(const Quaternion<T> &q, const EulerOrder &rotOrder) const;
+        void rotate(const T &angle, const Axis &axis);
+        void rotate(const T angle, const Vector<T, 3u> &axis);
+        void rotate(const DCM<T> &dcm, const TaitBryanOrder &rotOrder);
+        void rotate(const DCM<T> &dcm, const EulerOrder &rotOrder);
+        void rotate(const Quaternion<T> &q, const TaitBryanOrder &rotOrder);
+        void rotate(const Quaternion<T> &q, const EulerOrder &rotOrder);
     };
 } // namespace myMath
 
@@ -582,7 +583,7 @@ namespace myMath
             q1 = Quaternion<T>(this->vec[0], Axis::Z);
             q2 = Quaternion<T>(this->vec[1], Axis::X);
             q3 = Quaternion<T>(this->vec[2], Axis::Z);
-            
+
             break;
         }
         case EulerOrder::ZYZ:
@@ -600,6 +601,39 @@ namespace myMath
         }
 
         return (q1 * q2 * q3);
+    }
+
+    template <typename T>
+    void Angle<T>::rotate(const T &angle, const Axis &axis)
+    {
+        switch (axis)
+        {
+        case Axis::X:
+        {
+            this->vec[0] += angle;
+            break;
+        }
+        case Axis::Y:
+        {
+            this->vec[1] += angle;
+            break;
+        }
+        case Axis::Z:
+        {
+            this->vec[2] += angle;
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Axis");
+        }
+        }
+    }
+
+    template <typename T>
+    void Angle<T>::rotate(const T ang, const Vector<T, 3u> &ax)
+    {
+        
     }
 
 } // namespace myMath

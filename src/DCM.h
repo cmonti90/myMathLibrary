@@ -49,6 +49,11 @@ namespace myMath
         bool operator==(const DCM<T> &dcm) const;
         bool operator!=(const DCM<T> &dcm) const;
 
+        static DCM<T> Identity(void)
+        {
+            return DCM<T>(Matrix<T, 3, 3>::Identity());
+        }
+
         void Normalize();
         Quaternion<T> ToQuaternion() const;
         Angle<T> ToEuler(const TaitBryanOrder &rotOrder) const;
@@ -381,7 +386,7 @@ namespace myMath
 
         if (*this != check)
         {
-            std::cout << "WARNING! Conversion from DCM to Tait-Bryan sequence: " << static_cast<unsigned int>(rotOrder) << " is not possible!" << std::endl;
+            std::cout << "WARNING! Conversion to Tait-Bryan sequence: " << static_cast<unsigned int>(rotOrder) << " is not possible!" << std::endl;
         }
 
         return euler;
@@ -398,15 +403,24 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[0][0]);
 
-            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
             {
-                euler = static_cast<T>(0);
-                std::cout << "WARNING! Gimbal Lock for XYX rotation" << std::endl;
+                euler[0] = std::atan2(this->mat[1][2], this->mat[1][1]);
+                euler[2] = static_cast<T>(0);
             }
             else
             {
-                euler[0] = std::asin(this->mat[0][1] / std::sin(euler[1]));
-                euler[2] = std::asin(this->mat[1][0] / std::sin(euler[1]));
+                euler[0] = std::atan2(this->mat[0][1], -this->mat[0][2]);
+                euler[2] = std::atan2(this->mat[1][0], this->mat[2][0]);
+
+                if (ABS(euler[0]) < Constants::ZERO_THRESHOLD)
+                {
+                    euler[1] = std::atan2(-this->mat[0][2], this->mat[0][0]);
+                }
+                else
+                {
+                    euler[1] = std::atan2(this->mat[0][1] / std::sin(euler[0]), this->mat[0][0]);
+                }
             }
 
             break;
@@ -415,15 +429,24 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[0][0]);
 
-            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
             {
-                euler = static_cast<T>(0);
-                std::cout << "WARNING! Gimbal Lock for XZX rotation" << std::endl;
+                euler[0] = std::atan2(this->mat[1][2], this->mat[1][1]);
+                euler[2] = static_cast<T>(0);
             }
             else
             {
-                euler[0] = std::asin(this->mat[0][2] / std::sin(euler[1]));
-                euler[2] = std::asin(this->mat[2][0] / std::sin(euler[1]));
+                euler[0] = std::atan2(this->mat[0][2], this->mat[0][1]);
+                euler[2] = std::atan2(this->mat[2][0], -this->mat[1][0]);
+
+                if (ABS(euler[0]) < Constants::ZERO_THRESHOLD)
+                {
+                    euler[1] = std::atan2(this->mat[0][1], this->mat[0][0]);
+                }
+                else
+                {
+                    euler[1] = std::atan2(this->mat[0][2] / std::sin(euler[0]), this->mat[0][0]);
+                }
             }
 
             break;
@@ -432,15 +455,24 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[1][1]);
 
-            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
             {
-                euler = static_cast<T>(0);
-                std::cout << "WARNING! Gimbal Lock for YXY rotation" << std::endl;
+                euler[0] = std::atan2(this->mat[2][0], this->mat[2][2]);
+                euler[2] = static_cast<T>(0);
             }
             else
             {
-                euler[0] = std::asin(this->mat[1][0] / std::sin(euler[1]));
-                euler[2] = std::asin(this->mat[0][1] / std::sin(euler[1]));
+                euler[0] = std::atan2(this->mat[1][0], this->mat[1][2]);
+                euler[2] = std::atan2(this->mat[0][1], -this->mat[2][1]);
+
+                if (ABS(euler[0]) < Constants::ZERO_THRESHOLD)
+                {
+                    euler[1] = std::atan2(this->mat[1][2], this->mat[1][1]);
+                }
+                else
+                {
+                    euler[1] = std::atan2(this->mat[1][0] / std::sin(euler[0]), this->mat[1][1]);
+                }
             }
 
             break;
@@ -449,15 +481,24 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[1][1]);
 
-            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
             {
-                euler = static_cast<T>(0);
-                std::cout << "WARNING! Gimbal Lock for YZY rotation" << std::endl;
+                euler[0] = std::atan2(-this->mat[0][2], this->mat[0][0]);
+                euler[2] = static_cast<T>(0);
             }
             else
             {
-                euler[0] = std::asin(this->mat[1][2] / std::sin(euler[1]));
-                euler[2] = std::asin(this->mat[2][1] / std::sin(euler[1]));
+                euler[0] = std::atan2(this->mat[1][2], -this->mat[1][0]);
+                euler[2] = std::atan2(this->mat[2][1], this->mat[0][1]);
+
+                if (ABS(euler[0]) < Constants::ZERO_THRESHOLD)
+                {
+                    euler[1] = std::atan2(-this->mat[1][0], this->mat[1][1]);
+                }
+                else
+                {
+                    euler[1] = std::atan2(this->mat[1][2] / std::sin(euler[0]), this->mat[1][1]);
+                }
             }
 
             break;
@@ -466,15 +507,24 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[2][2]);
 
-            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
             {
-                euler = static_cast<T>(0);
-                std::cout << "WARNING! Gimbal Lock for ZXZ rotation" << std::endl;
+                euler[0] = std::atan2(this->mat[0][1], this->mat[0][0]);
+                euler[2] = static_cast<T>(0);
             }
             else
             {
-                euler[0] = std::asin(this->mat[2][0] / std::sin(euler[1]));
-                euler[2] = std::asin(this->mat[0][2] / std::sin(euler[1]));
+                euler[0] = std::atan2(this->mat[2][0], -this->mat[2][1]);
+                euler[2] = std::atan2(this->mat[0][2], this->mat[1][2]);
+
+                if (ABS(euler[0]) < Constants::ZERO_THRESHOLD)
+                {
+                    euler[1] = std::atan2(-this->mat[2][1], this->mat[2][2]);
+                }
+                else
+                {
+                    euler[1] = std::atan2(this->mat[2][0] / std::sin(euler[0]), this->mat[2][2]);
+                }
             }
 
             break;
@@ -483,15 +533,25 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[2][2]);
 
-            if (ABS(std::sin(euler[1])) < Constants::ZERO_THRESHOLD)
+            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
             {
-                euler = static_cast<T>(0);
-                std::cout << "WARNING! Gimbal Lock for ZYZ rotation" << std::endl;
+                euler[0] = std::atan2(this->mat[0][1], this->mat[0][0]);
+                euler[2] = static_cast<T>(0);
             }
             else
             {
-                euler[0] = std::asin(this->mat[2][1] / std::sin(euler[1]));
-                euler[2] = std::asin(this->mat[1][2] / std::sin(euler[1]));
+                euler[0] = std::atan2(this->mat[2][1], this->mat[2][0]);
+
+                if (ABS(std::cos(euler[0])) < Constants::ZERO_THRESHOLD)
+                {
+                    euler[1] = std::atan2(this->mat[2][1], this->mat[2][2]);
+                    euler[2] = std::atan2(this->mat[1][2], -this->mat[1][1]);
+                }
+                else
+                {
+                    euler[1] = std::atan2(this->mat[2][0] / std::cos(euler[0]), this->mat[2][2]);
+                    euler[2] = std::atan2(this->mat[1][2], -this->mat[0][2]);
+                }
             }
 
             break;
@@ -506,17 +566,7 @@ namespace myMath
 
         if (*this != check)
         {
-            std::cout << "WARNING! Conversion from DCM to Euler sequence: " << static_cast<unsigned int>(rotOrder) << " is not possible!" << std::endl;
-
-            std::cout << "DCM original: " << std::endl;
-            std::cout << this->mat[0][0] << " " << this->mat[0][1] << " " << this->mat[0][2] << std::endl;
-            std::cout << this->mat[1][0] << " " << this->mat[1][1] << " " << this->mat[1][2] << std::endl;
-            std::cout << this->mat[2][0] << " " << this->mat[2][1] << " " << this->mat[2][2] << std::endl;
-
-            std::cout << "DCM check: " << std::endl;
-            std::cout << check[0][0] << " " << check[0][1] << " " << check[0][2] << std::endl;
-            std::cout << check[1][0] << " " << check[1][1] << " " << check[1][2] << std::endl;
-            std::cout << check[2][0] << " " << check[2][1] << " " << check[2][2] << std::endl;
+            std::cout << "WARNING! Conversion to Euler sequence: " << static_cast<unsigned int>(rotOrder) << " is not possible!" << std::endl;
         }
 
         return euler;
