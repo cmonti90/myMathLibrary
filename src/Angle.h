@@ -85,6 +85,11 @@ namespace myMath
         void rotate(const DCM<T> &dcm, const EulerOrder &rotOrder);
         void rotate(const Quaternion<T> &q, const TaitBryanOrder &rotOrder);
         void rotate(const Quaternion<T> &q, const EulerOrder &rotOrder);
+
+        T wrapZeroToTwoPi(const T angle);
+        T wrapMinusPiToPi(const T angle);
+        void wrapAnglesZeroToTwoPi(const Axis ax = Axis::ALL);
+        void wrapAnglesMinusPiToPi(const Axis ax = Axis::ALL);
     };
 } // namespace myMath
 
@@ -610,17 +615,17 @@ namespace myMath
         {
         case Axis::X:
         {
-            this->vec[0] += angle;
+            
             break;
         }
         case Axis::Y:
         {
-            this->vec[1] += angle;
+            
             break;
         }
         case Axis::Z:
         {
-            this->vec[2] += angle;
+            
             break;
         }
         default:
@@ -634,6 +639,69 @@ namespace myMath
     void Angle<T>::rotate(const T ang, const Vector<T, 3u> &ax)
     {
         
+    }
+
+    template <typename T>
+    T Angle<T>::wrapZeroToTwoPi(const T ang)
+    {
+        return fmod(ang, static_cast<T>(2.0 * Constants::PI));
+    }
+
+    template <typename T>
+    T Angle<T>::wrapMinusPiToPi(const T ang)
+    {
+        T tmp{fmod(ang, static_cast<T>(2.0 * Constants::PI))};
+
+        if (tmp > static_cast<T>(Constants::PI))
+        {
+            tmp -= static_cast<T>(2.0 * Constants::PI);
+        }
+        else if (tmp < static_cast<T>(-Constants::PI))
+        {
+            tmp += static_cast<T>(2.0 * Constants::PI);
+        }
+
+        return tmp;
+    }
+
+    template <typename T>
+    void Angle<T>::wrapAnglesZeroToTwoPi(const Axis ax)
+    {
+        if (ax == Axis::ALL)
+        {
+            wrapAnglesZeroToTwoPi(Axis::X);
+            wrapAnglesZeroToTwoPi(Axis::Y);
+            wrapAnglesZeroToTwoPi(Axis::Z);
+        }
+        else
+        {
+            if (ax > Axis::Z)
+            {
+                throw std::invalid_argument("Invalid Axis");
+            }
+
+            this->vec[ax] = wrapZeroToTwoPi(this->vec[ax]);
+        }
+    }
+
+    template <typename T>
+    void Angle<T>::wrapAnglesMinusPiToPi(const Axis ax)
+    {
+        if (ax == Axis::ALL)
+        {
+            wrapAnglesMinusPiToPi(Axis::X);
+            wrapAnglesMinusPiToPi(Axis::Y);
+            wrapAnglesMinusPiToPi(Axis::Z);
+        }
+        else
+        {
+            if (ax > Axis::Z)
+            {
+                throw std::invalid_argument("Invalid Axis");
+            }
+
+            this->vec[ax] = wrapMinusPiToPi(this->vec[ax]);
+        }
     }
 
 } // namespace myMath
