@@ -644,24 +644,31 @@ namespace myMath
     template <typename T>
     T Angle<T>::wrapZeroToTwoPi(const T ang)
     {
-        return fmod(ang, static_cast<T>(2.0 * Constants::PI));
+        if (ang < static_cast<T>(0.0))
+        {
+            return fmod(ang, static_cast<T>(2.0 * Constants::PI)) + static_cast<T>(2.0 * Constants::PI);
+        }
+        else if ( ang > static_cast<T>(2.0 * Constants::PI))
+        {
+            return fmod(ang, static_cast<T>(2.0 * Constants::PI));
+        }
+        
+        return ang;
     }
 
     template <typename T>
     T Angle<T>::wrapMinusPiToPi(const T ang)
     {
-        T tmp{fmod(ang, static_cast<T>(2.0 * Constants::PI))};
-
-        if (tmp > static_cast<T>(Constants::PI))
+        if (ang < static_cast<T>(-Constants::PI))
         {
-            tmp -= static_cast<T>(2.0 * Constants::PI);
+            return fmod(ang, static_cast<T>(2.0 * Constants::PI)) + static_cast<T>(2.0 * Constants::PI);
         }
-        else if (tmp < static_cast<T>(-Constants::PI))
+        else if (ang > static_cast<T>(Constants::PI))
         {
-            tmp += static_cast<T>(2.0 * Constants::PI);
+            return fmod(ang, static_cast<T>(2.0 * Constants::PI)) - static_cast<T>(2.0 * Constants::PI);
         }
 
-        return tmp;
+        return ang;
     }
 
     template <typename T>
