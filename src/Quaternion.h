@@ -80,7 +80,6 @@ namespace myMath
         DCM<T> ToDCM(void);
         Angle<T> ToEuler(const TaitBryanOrder &rotOrder);
         Angle<T> ToEuler(const EulerOrder &rotOrder);
-        void getTaitBryanAngles(Angle<T> &ang);
 
         void set(const T &w, const T &x, const T &y, const T &z);
         void set(const DCM<T> &dcm);
@@ -93,6 +92,7 @@ namespace myMath
         Angle<T> rotate(const Angle<T> &ang, const EulerOrder &rotOrder, const EulerOrder &rotOrder2);
         DCM<T> rotate(const DCM<T> &dcm);
         Quaternion<T> rotate(const Quaternion<T> &q);
+        Vector<T, 3u> rotate(const Vector<T, 3u> &vec);
     };
 } // namespace myMath
 
@@ -692,17 +692,19 @@ namespace myMath
     }
 
     template <typename T>
-    void Quaternion<T>::getTaitBryanAngles(Angle<T> &ang)
+    Vector<T, 3u> Quaternion<T>::rotate(const Vector<T, 3u> &vec)
     {
-        Normalize();
+        Vector<T, 3u> vec_rot;
 
-        ang[0] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
-                            SQ(this->vec[0]) - SQ(this->vec[1]) - SQ(this->vec[2]) + SQ(this->vec[3]));
+        Quaternion<T> q_vec{static_cast<T>(0.0), vec};
 
-        ang[1] = std::asin(static_cast<T>(2) * (this->vec[0] * this->vec[2] - this->vec[1] * this->vec[3]));
+        Quaternion<T> q_rot = (*this) * q_vec * Conjugate();
 
-        ang[2] = std::atan2(static_cast<T>(2) * (this->vec[0] * this->vec[1] + this->vec[2] * this->vec[3]),
-                            SQ(this->vec[0]) + SQ(this->vec[3]) - SQ(this->vec[1]) - SQ(this->vec[2]));
+        vec_rot[0] = q_rot[1];
+        vec_rot[1] = q_rot[2];
+        vec_rot[2] = q_rot[3];
+
+        return vec_rot;
     }
 
 } // namespace myMath

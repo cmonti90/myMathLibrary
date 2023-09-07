@@ -300,20 +300,7 @@ namespace myMath
         {
             euler[1] = std::asin(-this->mat[1][0]);
 
-            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
-            {
-                euler[2] = std::atan2(this->mat[2][0], this->mat[0][0]);
-
-                if (ABS(euler[2]) < Constants::ZERO_THRESHOLD)
-                {
-                    euler[0] = std::atan2(this->mat[1][2], this->mat[2][2]);
-                }
-                else
-                {
-                    euler[0] = std::atan2(this->mat[0][1], -this->mat[0][2]);
-                }
-            }
-            else if (ABS(ABS(euler[1]) - Constants::PI / 2.0) < Constants::ZERO_THRESHOLD)
+            if (ABS(ABS(euler[1]) - Constants::PI / 2.0) < Constants::ZERO_THRESHOLD)
             {
                 // std::cout << "WARNING! Gimbal Lock for XZY rotation" << std::endl;
 
