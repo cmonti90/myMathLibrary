@@ -650,7 +650,7 @@ namespace myMath
     template <typename T>
     Quaternion<T> DCM<T>::Rotate(const Quaternion<T> &q) const
     {
-        return this->ToQuaternion() * q;
+        return q * ToQuaternion();
     }
 
     template <typename T>
