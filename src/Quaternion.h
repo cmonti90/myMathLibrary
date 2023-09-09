@@ -650,7 +650,7 @@ namespace myMath
     {
         Normalize();
 
-        return (*this * ang.ToQuaternion(rotOrder)).ToEuler(rotOrderOut);
+        return (ang.ToQuaternion(rotOrder) * (*this)).ToEuler(rotOrderOut);
     }
 
     template <typename T>
@@ -658,7 +658,7 @@ namespace myMath
     {
         Normalize();
 
-        return (*this * ang.ToQuaternion(rotOrder)).ToEuler(rotOrderOut);
+        return (ang.ToQuaternion(rotOrder) * (*this)).ToEuler(rotOrderOut);
     }
 
     template <typename T>
@@ -666,7 +666,7 @@ namespace myMath
     {
         Normalize();
 
-        return (*this * ang.ToQuaternion(rotOrder)).ToEuler(rotOrderOut);
+        return (ang.ToQuaternion(rotOrder) * (*this)).ToEuler(rotOrderOut);
     }
 
     template <typename T>
@@ -674,7 +674,7 @@ namespace myMath
     {
         Normalize();
 
-        return ((*this) * dcm.ToQuaternion()).ToDCM();
+        return (dcm.ToQuaternion() * (*this)).ToDCM();
     }
 
     template <typename T>
@@ -682,7 +682,7 @@ namespace myMath
     {
         Normalize();
 
-        Quaternion<T> q_rot = (*this) * q;
+        Quaternion<T> q_rot = q * (*this);
 
         q_rot.Normalize();
 
