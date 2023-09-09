@@ -1,6 +1,9 @@
 #ifndef D01103EE_17E6_4BA7_9F31_064A6885444F
 #define D01103EE_17E6_4BA7_9F31_064A6885444F
 
+#include "Constants.h"
+
+#include <cmath>
 namespace myMath
 {
     /////////////////////////////////
@@ -23,6 +26,15 @@ namespace myMath
 
     template <typename T>
     T MIN(const T x, const T y);
+
+    template <typename T>
+    T wrapZeroToTwoPi(const T ang);
+
+    template <typename T>
+    T wrapMinusPiToPi(const T ang);
+
+    template <typename T>
+    bool isZero(const T x);
 
 
     /////////////////////////////////
@@ -85,6 +97,42 @@ namespace myMath
     inline T MIN(const T x, const T y)
     {
         return (x < y ? x : y);
+    }
+
+    template <typename T>
+    inline T wrapZeroToTwoPi(const T ang)
+    {
+        if (ang < static_cast<T>(0.0))
+        {
+            return fmod(ang, static_cast<T>(2.0 * Constants::PI)) + static_cast<T>(2.0 * Constants::PI);
+        }
+        else if ( ang > static_cast<T>(2.0 * Constants::PI))
+        {
+            return fmod(ang, static_cast<T>(2.0 * Constants::PI));
+        }
+        
+        return ang;
+    }
+
+    template <typename T>
+    inline T wrapMinusPiToPi(const T ang)
+    {
+        if (ang < static_cast<T>(-Constants::PI))
+        {
+            return fmod(ang, static_cast<T>(2.0 * Constants::PI)) + static_cast<T>(2.0 * Constants::PI);
+        }
+        else if (ang > static_cast<T>(Constants::PI))
+        {
+            return fmod(ang, static_cast<T>(2.0 * Constants::PI)) - static_cast<T>(2.0 * Constants::PI);
+        }
+
+        return ang;
+    }
+
+    template <typename T>
+    inline bool isZero(const T x)
+    {
+        return (ABS(static_cast<double>(x)) < Constants::ZERO_THRESHOLD);
     }
 }
 

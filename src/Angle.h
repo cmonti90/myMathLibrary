@@ -1,6 +1,8 @@
 #ifndef B4D2FB34_E82B_4930_84AF_12D1E557452E
 #define B4D2FB34_E82B_4930_84AF_12D1E557452E
 
+#include "BasicFunctions.h"
+#include "Rotation.h"
 #include "Vector.h"
 
 #include <cmath>
@@ -8,34 +10,6 @@
 
 namespace myMath
 {
-    enum class TaitBryanOrder : unsigned int
-    {
-        XYZ,
-        XZY,
-        YXZ,
-        YZX,
-        ZXY,
-        ZYX
-    };
-
-    enum class EulerOrder : unsigned int
-    {
-        XYX,
-        XZX,
-        YXY,
-        YZY,
-        ZXZ,
-        ZYZ
-    };
-
-    enum Axis : unsigned int
-    {
-        X,
-        Y,
-        Z,
-        ALL
-    };
-
     template <typename T>
     class DCM;
 
@@ -75,19 +49,26 @@ namespace myMath
         bool operator!=(const Angle<T> &obj) const;
 
         void Normalize();
+
         DCM<T> ToDCM(const TaitBryanOrder &rotOrder) const;
         DCM<T> ToDCM(const EulerOrder &rotOrder) const;
+
         Quaternion<T> ToQuaternion(const TaitBryanOrder &rotOrder) const;
         Quaternion<T> ToQuaternion(const EulerOrder &rotOrder) const;
-        void rotate(const T &angle, const Axis &axis);
-        void rotate(const T angle, const Vector<T, 3u> &axis);
-        void rotate(const DCM<T> &dcm, const TaitBryanOrder &rotOrder);
-        void rotate(const DCM<T> &dcm, const EulerOrder &rotOrder);
-        void rotate(const Quaternion<T> &q, const TaitBryanOrder &rotOrder);
-        void rotate(const Quaternion<T> &q, const EulerOrder &rotOrder);
 
-        T wrapZeroToTwoPi(const T angle);
-        T wrapMinusPiToPi(const T angle);
+        Angle<T> Rotate(const TaitBryanOrder &rotOrder, const Angle<T> &ang, const TaitBryanOrder &rotOrder2, const TaitBryanOrder &rotOrderOut) const;
+        Angle<T> Rotate(const TaitBryanOrder &rotOrder, const Angle<T> &ang, const EulerOrder &rotOrder2, const TaitBryanOrder &rotOrderOut) const;
+        Angle<T> Rotate(const EulerOrder &rotOrder, const Angle<T> &ang, const TaitBryanOrder &rotOrder2, const TaitBryanOrder &rotOrderOut) const;
+        Angle<T> Rotate(const EulerOrder &rotOrder, const Angle<T> &ang, const EulerOrder &rotOrder2, const EulerOrder &rotOrderOut) const;
+        Angle<T> Rotate(const EulerOrder &rotOrder, const Angle<T> &ang, const EulerOrder &rotOrder2, const TaitBryanOrder &rotOrderOut) const;
+
+        Vector<T, 3u> Rotate(const TaitBryanOrder &rotOrder, const Vector<T, 3u> &vec) const;
+        Vector<T, 3u> Rotate(const EulerOrder &rotOrder, const Vector<T, 3u> &vec) const;
+        DCM<T> Rotate(const TaitBryanOrder &rotOrder, const DCM<T> &dcm) const;
+        DCM<T> Rotate(const EulerOrder &rotOrder, const DCM<T> &dcm) const;
+        Quaternion<T> Rotate(const TaitBryanOrder &rotOrder, const Quaternion<T> &q) const;
+        Quaternion<T> Rotate(const EulerOrder &rotOrder, const Quaternion<T> &q) const;
+
         void wrapAnglesZeroToTwoPi(const Axis ax = Axis::ALL);
         void wrapAnglesMinusPiToPi(const Axis ax = Axis::ALL);
     };
@@ -609,66 +590,69 @@ namespace myMath
     }
 
     template <typename T>
-    void Angle<T>::rotate(const T &angle, const Axis &axis)
+    Angle<T> Angle<T>::Rotate(const TaitBryanOrder &rotOrder, const Angle<T> &ang, const TaitBryanOrder &rotOrder2, const TaitBryanOrder &rotOrderOut) const
     {
-        switch (axis)
-        {
-        case Axis::X:
-        {
-            
-            break;
-        }
-        case Axis::Y:
-        {
-            
-            break;
-        }
-        case Axis::Z:
-        {
-            
-            break;
-        }
-        default:
-        {
-            throw std::invalid_argument("Invalid Axis");
-        }
-        }
+        return (ToDCM(rotOrder) * ang.ToDCM(rotOrder2)).ToEuler(rotOrderOut);
     }
 
     template <typename T>
-    void Angle<T>::rotate(const T ang, const Vector<T, 3u> &ax)
+    Angle<T> Angle<T>::Rotate(const TaitBryanOrder &rotOrder, const Angle<T> &ang, const EulerOrder &rotOrder2, const TaitBryanOrder &rotOrderOut) const
     {
-        
+        return (ToDCM(rotOrder) * ang.ToDCM(rotOrder2)).ToEuler(rotOrderOut);
     }
 
     template <typename T>
-    T Angle<T>::wrapZeroToTwoPi(const T ang)
+    Angle<T> Angle<T>::Rotate(const EulerOrder &rotOrder, const Angle<T> &ang, const TaitBryanOrder &rotOrder2, const TaitBryanOrder &rotOrderOut) const
     {
-        if (ang < static_cast<T>(0.0))
-        {
-            return fmod(ang, static_cast<T>(2.0 * Constants::PI)) + static_cast<T>(2.0 * Constants::PI);
-        }
-        else if ( ang > static_cast<T>(2.0 * Constants::PI))
-        {
-            return fmod(ang, static_cast<T>(2.0 * Constants::PI));
-        }
-        
-        return ang;
+        return (ToDCM(rotOrder) * ang.ToDCM(rotOrder2)).ToEuler(rotOrderOut);
     }
 
     template <typename T>
-    T Angle<T>::wrapMinusPiToPi(const T ang)
+    Angle<T> Angle<T>::Rotate(const EulerOrder &rotOrder, const Angle<T> &ang, const EulerOrder &rotOrder2, const EulerOrder &rotOrderOut) const
     {
-        if (ang < static_cast<T>(-Constants::PI))
-        {
-            return fmod(ang, static_cast<T>(2.0 * Constants::PI)) + static_cast<T>(2.0 * Constants::PI);
-        }
-        else if (ang > static_cast<T>(Constants::PI))
-        {
-            return fmod(ang, static_cast<T>(2.0 * Constants::PI)) - static_cast<T>(2.0 * Constants::PI);
-        }
+        return (ToDCM(rotOrder) * ang.ToDCM(rotOrder2)).ToEuler(rotOrderOut);
+    }
 
-        return ang;
+    template <typename T>
+    Angle<T> Angle<T>::Rotate(const EulerOrder &rotOrder, const Angle<T> &ang, const EulerOrder &rotOrder2, const TaitBryanOrder &rotOrderOut) const
+    {
+        return (ToDCM(rotOrder) * ang.ToDCM(rotOrder2)).ToEuler(rotOrderOut);
+    }
+
+    template <typename T>
+    Vector<T, 3u> Angle<T>::Rotate(const TaitBryanOrder &rotOrder, const Vector<T, 3u> &vec) const
+    {
+        return (ToDCM(rotOrder) * vec);
+    }
+
+    template <typename T>
+    Vector<T, 3u> Angle<T>::Rotate(const EulerOrder &rotOrder, const Vector<T, 3u> &vec) const
+    {
+        return (ToDCM(rotOrder) * vec);
+    }
+
+    template <typename T>
+    DCM<T> Angle<T>::Rotate(const TaitBryanOrder &rotOrder, const DCM<T> &dcm) const
+    {
+        return (ToDCM(rotOrder) * dcm);
+    }
+
+    template <typename T>
+    DCM<T> Angle<T>::Rotate(const EulerOrder &rotOrder, const DCM<T> &dcm) const
+    {
+        return (ToDCM(rotOrder) * dcm);
+    }
+
+    template <typename T>
+    Quaternion<T> Angle<T>::Rotate(const TaitBryanOrder &rotOrder, const Quaternion<T> &qat) const
+    {
+        return (qat * ToQuaternion(rotOrder));
+    }
+
+    template <typename T>
+    Quaternion<T> Angle<T>::Rotate(const EulerOrder &rotOrder, const Quaternion<T> &qat) const
+    {
+        return (qat * ToQuaternion(rotOrder));
     }
 
     template <typename T>

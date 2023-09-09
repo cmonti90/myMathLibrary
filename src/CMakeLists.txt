@@ -17,6 +17,7 @@ set(HEADERS
             Matrix.h
             MatrixFunctions.h
             Quaternion.h
+            Rotation.h
             Vector.h
 )
 

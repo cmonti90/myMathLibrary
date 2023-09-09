@@ -2,6 +2,7 @@
 #define BE2979E6_492C_41FF_9CAF_296D652FCB38
 
 #include "BasicFunctions.h"
+#include "Rotation.h"
 #include "Vector.h"
 
 #include <cmath>
@@ -14,9 +15,6 @@ namespace myMath
 
     template <typename T>
     class Angle;
-
-    enum class TaitBryanOrder : unsigned int;
-    enum class EulerOrder : unsigned int;
 
     template <typename T>
     class Quaternion : public Vector<T, 4u>
@@ -41,31 +39,31 @@ namespace myMath
         Quaternion<T> operator=(const Vector<T, 4u> &q);
         Quaternion<T> operator=(const T (&q)[4]);
 
-        Quaternion<T> operator*(const Quaternion<T> &q);
-        Quaternion<T> operator*(const Vector<T, 4u> &q);
-        Quaternion<T> operator*(const T (&q)[4]);
+        Quaternion<T> operator*(const Quaternion<T> &q) const;
+        Quaternion<T> operator*(const Vector<T, 4u> &q) const;
+        Quaternion<T> operator*(const T (&q)[4]) const;
 
         Quaternion<T> &operator*=(const Quaternion<T> &q);
         Quaternion<T> &operator*=(const Vector<T, 4u> &q);
         Quaternion<T> &operator*=(const T (&q)[4]);
 
-        Quaternion<T> operator+(const Quaternion<T> &q);
-        Quaternion<T> operator+(const Vector<T, 4u> &q);
-        Quaternion<T> operator+(const T (&q)[4]);
+        Quaternion<T> operator+(const Quaternion<T> &q) const;
+        Quaternion<T> operator+(const Vector<T, 4u> &q) const;
+        Quaternion<T> operator+(const T (&q)[4]) const;
 
         Quaternion<T> &operator+=(const Quaternion<T> &q);
         Quaternion<T> &operator+=(const Vector<T, 4u> &q);
         Quaternion<T> &operator+=(const T (&q)[4]);
 
-        Quaternion<T> operator-(const Quaternion<T> &q);
-        Quaternion<T> operator-(const Vector<T, 4u> &q);
-        Quaternion<T> operator-(const T (&q)[4]);
+        Quaternion<T> operator-(const Quaternion<T> &q) const;
+        Quaternion<T> operator-(const Vector<T, 4u> &q) const;
+        Quaternion<T> operator-(const T (&q)[4]) const;
 
         Quaternion<T> &operator-=(const Quaternion<T> &q);
         Quaternion<T> &operator-=(const Vector<T, 4u> &q);
         Quaternion<T> &operator-=(const T (&q)[4]);
 
-        Quaternion<T> operator/(const T &q);
+        Quaternion<T> operator/(const T &q) const;
         Quaternion<T> &operator/=(const T &q);
 
         Quaternion<T> operator-(void) const;
@@ -87,12 +85,12 @@ namespace myMath
         void set(const Angle<T> &ang, const EulerOrder &rotOrder);
         void set(const Vector<T, 3u> &v);
 
-        Angle<T> rotate(const Angle<T> &ang, const TaitBryanOrder &rotOrder, const TaitBryanOrder &rotOrder2);
-        Angle<T> rotate(const Angle<T> &ang, const EulerOrder &rotOrder, const TaitBryanOrder &rotOrder2);
-        Angle<T> rotate(const Angle<T> &ang, const EulerOrder &rotOrder, const EulerOrder &rotOrder2);
-        DCM<T> rotate(const DCM<T> &dcm);
-        Quaternion<T> rotate(const Quaternion<T> &q);
-        Vector<T, 3u> rotate(const Vector<T, 3u> &vec);
+        Angle<T> Rotate(const Angle<T> &ang, const TaitBryanOrder &rotOrder, const TaitBryanOrder &rotOrder2);
+        Angle<T> Rotate(const Angle<T> &ang, const EulerOrder &rotOrder, const TaitBryanOrder &rotOrder2);
+        Angle<T> Rotate(const Angle<T> &ang, const EulerOrder &rotOrder, const EulerOrder &rotOrder2);
+        DCM<T> Rotate(const DCM<T> &dcm);
+        Quaternion<T> Rotate(const Quaternion<T> &q);
+        Vector<T, 3u> Rotate(const Vector<T, 3u> &vec, const RotType &rotType = RotType::ACTIVE);
     };
 } // namespace myMath
 
@@ -234,7 +232,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::operator*(const Quaternion<T> &q)
+    Quaternion<T> Quaternion<T>::operator*(const Quaternion<T> &q) const
     {
         Quaternion<T> qat;
 
@@ -249,7 +247,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::operator*(const Vector<T, 4u> &q)
+    Quaternion<T> Quaternion<T>::operator*(const Vector<T, 4u> &q) const
     {
         Quaternion<T> qat;
 
@@ -264,7 +262,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::operator*(const T (&q)[4])
+    Quaternion<T> Quaternion<T>::operator*(const T (&q)[4]) const
     {
         Quaternion<T> qat;
 
@@ -324,7 +322,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::operator+(const Quaternion<T> &q)
+    Quaternion<T> Quaternion<T>::operator+(const Quaternion<T> &q) const
     {
         Quaternion<T> qat{*this};
 
@@ -337,7 +335,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::operator+(const Vector<T, 4u> &q)
+    Quaternion<T> Quaternion<T>::operator+(const Vector<T, 4u> &q) const
     {
         Quaternion<T> qat{*this};
 
@@ -350,7 +348,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::operator+(const T (&q)[4])
+    Quaternion<T> Quaternion<T>::operator+(const T (&q)[4]) const
     {
         Quaternion<T> qat{*this};
 
@@ -396,7 +394,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::operator-(const Quaternion<T> &q)
+    Quaternion<T> Quaternion<T>::operator-(const Quaternion<T> &q) const
     {
         Quaternion<T> qat{*this};
 
@@ -409,7 +407,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::operator-(const Vector<T, 4u> &q)
+    Quaternion<T> Quaternion<T>::operator-(const Vector<T, 4u> &q) const
     {
         Quaternion<T> tmp{*this};
 
@@ -422,7 +420,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::operator-(const T (&q)[4])
+    Quaternion<T> Quaternion<T>::operator-(const T (&q)[4]) const
     {
         Quaternion<T> tmp{*this};
 
@@ -468,7 +466,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::operator/(const T &q)
+    Quaternion<T> Quaternion<T>::operator/(const T &q) const
     {
         Quaternion<T> tmp{*this};
 
@@ -648,7 +646,7 @@ namespace myMath
     }
 
     template <typename T>
-    Angle<T> Quaternion<T>::rotate(const Angle<T> &ang, const TaitBryanOrder &rotOrder, const TaitBryanOrder &rotOrderOut)
+    Angle<T> Quaternion<T>::Rotate(const Angle<T> &ang, const TaitBryanOrder &rotOrder, const TaitBryanOrder &rotOrderOut)
     {
         Normalize();
 
@@ -656,7 +654,7 @@ namespace myMath
     }
 
     template <typename T>
-    Angle<T> Quaternion<T>::rotate(const Angle<T> &ang, const EulerOrder &rotOrder, const TaitBryanOrder &rotOrderOut)
+    Angle<T> Quaternion<T>::Rotate(const Angle<T> &ang, const EulerOrder &rotOrder, const TaitBryanOrder &rotOrderOut)
     {
         Normalize();
 
@@ -664,7 +662,7 @@ namespace myMath
     }
 
     template <typename T>
-    Angle<T> Quaternion<T>::rotate(const Angle<T> &ang, const EulerOrder &rotOrder, const EulerOrder &rotOrderOut)
+    Angle<T> Quaternion<T>::Rotate(const Angle<T> &ang, const EulerOrder &rotOrder, const EulerOrder &rotOrderOut)
     {
         Normalize();
 
@@ -672,7 +670,7 @@ namespace myMath
     }
 
     template <typename T>
-    DCM<T> Quaternion<T>::rotate(const DCM<T> &dcm)
+    DCM<T> Quaternion<T>::Rotate(const DCM<T> &dcm)
     {
         Normalize();
 
@@ -680,7 +678,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T> Quaternion<T>::rotate(const Quaternion<T> &q)
+    Quaternion<T> Quaternion<T>::Rotate(const Quaternion<T> &q)
     {
         Normalize();
 
@@ -692,13 +690,35 @@ namespace myMath
     }
 
     template <typename T>
-    Vector<T, 3u> Quaternion<T>::rotate(const Vector<T, 3u> &vec)
+    Vector<T, 3u> Quaternion<T>::Rotate(const Vector<T, 3u> &vec, const RotType &rotType)
     {
         Vector<T, 3u> vec_rot;
 
         Quaternion<T> q_vec{static_cast<T>(0.0), vec};
 
-        Quaternion<T> q_rot = (*this) * q_vec * Conjugate();
+        Quaternion<T> q_rot;
+
+        switch (rotType)
+        {
+        case RotType::ACTIVE:
+        {
+            q_rot = Inverse() * q_vec * (*this);
+
+            break;
+        }
+        case RotType::PASSIVE:
+        {
+            q_rot = (*this) * q_vec * Inverse();
+
+            break;
+        }
+        default:
+        {
+            throw std::invalid_argument("Invalid Rotation Type");
+
+            break;
+        }
+        }
 
         vec_rot[0] = q_rot[1];
         vec_rot[1] = q_rot[2];

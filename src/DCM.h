@@ -1,6 +1,8 @@
 #ifndef BA9453AD_D478_47EC_9001_44325F419B41
 #define BA9453AD_D478_47EC_9001_44325F419B41
 
+#include "BasicFunctions.h"
+#include "Rotation.h"
 #include "Matrix.h"
 
 #include <cmath>
@@ -13,6 +15,7 @@ namespace myMath
 
     template <typename T>
     class Quaternion;
+
     template <typename T>
     class DCM : public Matrix<T, 3, 3>
     {
@@ -23,20 +26,19 @@ namespace myMath
         DCM(const T (&m)[9]);
 
         DCM<T> operator=(const DCM<T> &dcm);
-
         DCM<T> operator=(const Matrix<T, 3, 3> &m);
         DCM<T> operator=(const T (&m)[3][3]);
         DCM<T> operator=(const T (&m)[9]);
 
-        DCM<T> operator*(const DCM<T> &dcm);
-        DCM<T> operator*(const Matrix<T, 3, 3> &m);
+        DCM<T> operator*(const DCM<T> &dcm) const;
+        DCM<T> operator*(const Matrix<T, 3, 3> &m) const;
 
         template <unsigned int C>
-        Matrix<T, 3, C> operator*(const Matrix<T, 3, C> &m);
+        Matrix<T, 3, C> operator*(const Matrix<T, 3, C> &m) const;
 
         template <unsigned int C>
-        DCM<T> operator*(const T (&m)[3][C]);
-        DCM<T> operator*(const T (&m)[9]);
+        DCM<T> operator*(const T (&m)[3][C]) const;
+        DCM<T> operator*(const T (&m)[9]) const;
 
         DCM<T> &operator*=(const DCM<T> &dcm);
 
@@ -58,6 +60,13 @@ namespace myMath
         Quaternion<T> ToQuaternion() const;
         Angle<T> ToEuler(const TaitBryanOrder &rotOrder) const;
         Angle<T> ToEuler(const EulerOrder &rotOrder) const;
+
+        Angle<T> Rotate(const Angle<T> &angle, const TaitBryanOrder &rotOrder, const TaitBryanOrder rotOrderOut) const;
+        Angle<T> Rotate(const Angle<T> &angle, const EulerOrder &rotOrder, const TaitBryanOrder rotOrderOut) const;
+        Angle<T> Rotate(const Angle<T> &angle, const EulerOrder &rotOrder, const EulerOrder rotOrderOut) const;
+        DCM<T> Rotate(const DCM<T> &dcm) const;
+        Quaternion<T> Rotate(const Quaternion<T> &q) const;
+        Vector<T, 3u> Rotate(const Vector<T, 3u> &v) const;
     };
 } // namespace myMath
 
@@ -133,33 +142,33 @@ namespace myMath
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator*(const DCM<T> &dcm)
+    DCM<T> DCM<T>::operator*(const DCM<T> &dcm) const
     {
         return DCM<T>(Matrix<T, 3, 3>::operator*(dcm));
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator*(const Matrix<T, 3, 3> &m)
+    DCM<T> DCM<T>::operator*(const Matrix<T, 3, 3> &m) const
     {
         return DCM<T>(Matrix<T, 3, 3>::operator*(m));
     }
 
     template <typename T>
     template <unsigned int C>
-    Matrix<T, 3, C> DCM<T>::operator*(const Matrix<T, 3, C> &m)
+    Matrix<T, 3, C> DCM<T>::operator*(const Matrix<T, 3, C> &m) const
     {
         return Matrix<T, 3, C>::operator*(m);
     }
 
     template <typename T>
     template <unsigned int C>
-    DCM<T> DCM<T>::operator*(const T (&m)[3][C])
+    DCM<T> DCM<T>::operator*(const T (&m)[3][C]) const
     {
         return DCM<T>(Matrix<T, 3, C>::operator*(m));
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator*(const T (&rhs)[9])
+    DCM<T> DCM<T>::operator*(const T (&rhs)[9]) const
     {
         return *this * DCM<T>(rhs);
     }
@@ -276,7 +285,7 @@ namespace myMath
         {
             euler[1] = std::asin(this->mat[2][0]);
 
-            if (ABS(ABS(euler[1]) - Constants::PI / 2.0) < Constants::ZERO_THRESHOLD)
+            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
             {
                 // std::cout << "WARNING! Gimbal Lock for XYZ rotation" << std::endl;
 
@@ -288,7 +297,7 @@ namespace myMath
                 euler[0] = std::atan2(-this->mat[2][1], this->mat[2][2]);
                 euler[2] = std::atan2(-this->mat[1][0], this->mat[0][0]);
 
-                if (ABS((-std::cos(euler[1]) * std::sin(euler[0])) - (this->mat[2][1])) > Constants::ZERO_THRESHOLD)
+                if (!isZero((-std::cos(euler[1]) * std::sin(euler[0])) - (this->mat[2][1])))
                 {
                     euler[1] = Constants::PI - euler[1];
                 }
@@ -300,7 +309,7 @@ namespace myMath
         {
             euler[1] = std::asin(-this->mat[1][0]);
 
-            if (ABS(ABS(euler[1]) - Constants::PI / 2.0) < Constants::ZERO_THRESHOLD)
+            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
             {
                 // std::cout << "WARNING! Gimbal Lock for XZY rotation" << std::endl;
 
@@ -312,7 +321,7 @@ namespace myMath
                 euler[0] = std::atan2(this->mat[1][2], this->mat[1][1]);
                 euler[2] = std::atan2(this->mat[2][0], this->mat[0][0]);
 
-                if (ABS((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[1][1])) > Constants::ZERO_THRESHOLD)
+                if (!isZero((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[1][1])))
                 {
                     euler[1] = Constants::PI - euler[1];
                 }
@@ -324,7 +333,7 @@ namespace myMath
         {
             euler[1] = std::asin(-this->mat[2][1]);
 
-            if (ABS(ABS(euler[1]) - Constants::PI / 2.0) < Constants::ZERO_THRESHOLD)
+            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
             {
                 // std::cout << "WARNING! Gimbal Lock for YXZ rotation" << std::endl;
 
@@ -336,7 +345,7 @@ namespace myMath
                 euler[0] = std::atan2(this->mat[2][0], this->mat[2][2]);
                 euler[2] = std::atan2(this->mat[0][1], this->mat[1][1]);
 
-                if (ABS((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[2][2])) > Constants::ZERO_THRESHOLD)
+                if (!isZero((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[2][2])))
                 {
                     euler[1] = Constants::PI - euler[1];
                 }
@@ -348,7 +357,7 @@ namespace myMath
         {
             euler[1] = std::asin(this->mat[0][1]);
 
-            if (ABS(ABS(euler[1]) - Constants::PI / 2.0) < Constants::ZERO_THRESHOLD)
+            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
             {
                 // std::cout << "WARNING! Gimbal Lock for YZX rotation" << std::endl;
 
@@ -360,7 +369,7 @@ namespace myMath
                 euler[0] = std::atan2(-this->mat[0][2], this->mat[0][0]);
                 euler[2] = std::atan2(-this->mat[2][1], this->mat[1][1]);
 
-                if (ABS((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[0][0])) > Constants::ZERO_THRESHOLD)
+                if (!isZero((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[0][0])))
                 {
                     euler[1] = Constants::PI - euler[1];
                 }
@@ -372,7 +381,7 @@ namespace myMath
         {
             euler[1] = std::asin(this->mat[1][2]);
 
-            if (ABS(ABS(euler[1]) - Constants::PI / 2.0) < Constants::ZERO_THRESHOLD)
+            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
             {
                 // std::cout << "WARNING! Gimbal Lock for ZXY rotation" << std::endl;
 
@@ -384,7 +393,7 @@ namespace myMath
                 euler[0] = std::atan2(-this->mat[1][0], this->mat[1][1]);
                 euler[2] = std::atan2(-this->mat[0][2], this->mat[2][2]);
 
-                if (ABS((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[1][1])) > Constants::ZERO_THRESHOLD)
+                if (!isZero((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[1][1])))
                 {
                     euler[1] = Constants::PI - euler[1];
                 }
@@ -396,7 +405,7 @@ namespace myMath
         {
             euler[1] = std::asin(-this->mat[0][2]);
 
-            if (ABS(ABS(euler[1]) - Constants::PI / 2.0) < Constants::ZERO_THRESHOLD)
+            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
             {
                 // std::cout << "WARNING! Gimbal Lock for ZYX rotation" << std::endl;
 
@@ -408,7 +417,7 @@ namespace myMath
                 euler[0] = std::atan2(this->mat[0][1], this->mat[0][0]);
                 euler[2] = std::atan2(this->mat[1][2], this->mat[2][2]);
 
-                if (ABS((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[0][0])) > Constants::ZERO_THRESHOLD)
+                if (!isZero((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[0][0])))
                 {
                     euler[1] = Constants::PI - euler[1];
                 }
@@ -445,7 +454,7 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[0][0]);
 
-            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
+            if (isZero(euler[1]))
             {
                 euler[0] = std::atan2(this->mat[1][2], this->mat[1][1]);
                 euler[2] = static_cast<T>(0);
@@ -455,7 +464,7 @@ namespace myMath
                 euler[0] = std::atan2(this->mat[0][1], -this->mat[0][2]);
                 euler[2] = std::atan2(this->mat[1][0], this->mat[2][0]);
 
-                if (ABS(euler[0]) < Constants::ZERO_THRESHOLD)
+                if (isZero(euler[0]))
                 {
                     euler[1] = std::atan2(-this->mat[0][2], this->mat[0][0]);
                 }
@@ -471,7 +480,7 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[0][0]);
 
-            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
+            if (isZero(euler[1]))
             {
                 euler[0] = std::atan2(this->mat[1][2], this->mat[1][1]);
                 euler[2] = static_cast<T>(0);
@@ -481,7 +490,7 @@ namespace myMath
                 euler[0] = std::atan2(this->mat[0][2], this->mat[0][1]);
                 euler[2] = std::atan2(this->mat[2][0], -this->mat[1][0]);
 
-                if (ABS(euler[0]) < Constants::ZERO_THRESHOLD)
+                if (isZero(euler[0]))
                 {
                     euler[1] = std::atan2(this->mat[0][1], this->mat[0][0]);
                 }
@@ -497,7 +506,7 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[1][1]);
 
-            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
+            if (isZero(euler[1]))
             {
                 euler[0] = std::atan2(this->mat[2][0], this->mat[2][2]);
                 euler[2] = static_cast<T>(0);
@@ -507,7 +516,7 @@ namespace myMath
                 euler[0] = std::atan2(this->mat[1][0], this->mat[1][2]);
                 euler[2] = std::atan2(this->mat[0][1], -this->mat[2][1]);
 
-                if (ABS(euler[0]) < Constants::ZERO_THRESHOLD)
+                if (isZero(euler[0]))
                 {
                     euler[1] = std::atan2(this->mat[1][2], this->mat[1][1]);
                 }
@@ -523,7 +532,7 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[1][1]);
 
-            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
+            if (isZero(euler[1]))
             {
                 euler[0] = std::atan2(-this->mat[0][2], this->mat[0][0]);
                 euler[2] = static_cast<T>(0);
@@ -533,7 +542,7 @@ namespace myMath
                 euler[0] = std::atan2(this->mat[1][2], -this->mat[1][0]);
                 euler[2] = std::atan2(this->mat[2][1], this->mat[0][1]);
 
-                if (ABS(euler[0]) < Constants::ZERO_THRESHOLD)
+                if (isZero(euler[0]))
                 {
                     euler[1] = std::atan2(-this->mat[1][0], this->mat[1][1]);
                 }
@@ -549,7 +558,7 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[2][2]);
 
-            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
+            if (isZero(euler[1]))
             {
                 euler[0] = std::atan2(this->mat[0][1], this->mat[0][0]);
                 euler[2] = static_cast<T>(0);
@@ -559,7 +568,7 @@ namespace myMath
                 euler[0] = std::atan2(this->mat[2][0], -this->mat[2][1]);
                 euler[2] = std::atan2(this->mat[0][2], this->mat[1][2]);
 
-                if (ABS(euler[0]) < Constants::ZERO_THRESHOLD)
+                if (isZero(euler[0]))
                 {
                     euler[1] = std::atan2(-this->mat[2][1], this->mat[2][2]);
                 }
@@ -575,7 +584,7 @@ namespace myMath
         {
             euler[1] = std::acos(this->mat[2][2]);
 
-            if (ABS(euler[1]) < Constants::ZERO_THRESHOLD)
+            if (isZero(euler[1]))
             {
                 euler[0] = std::atan2(this->mat[0][1], this->mat[0][0]);
                 euler[2] = static_cast<T>(0);
@@ -584,7 +593,7 @@ namespace myMath
             {
                 euler[0] = std::atan2(this->mat[2][1], this->mat[2][0]);
 
-                if (ABS(std::cos(euler[0])) < Constants::ZERO_THRESHOLD)
+                if (isZero(std::cos(euler[0])))
                 {
                     euler[1] = std::atan2(this->mat[2][1], this->mat[2][2]);
                     euler[2] = std::atan2(this->mat[1][2], -this->mat[1][1]);
@@ -612,6 +621,42 @@ namespace myMath
         }
 
         return euler;
+    }
+
+    template <typename T>
+    Angle<T> DCM<T>::Rotate(const Angle<T> &angle, const TaitBryanOrder &rotOrder, const TaitBryanOrder rotOrderOut) const
+    {
+        return ((*this) * angle.ToDCM(rotOrder)).ToEuler(rotOrderOut);
+    }
+
+    template <typename T>
+    Angle<T> DCM<T>::Rotate(const Angle<T> &angle, const EulerOrder &rotOrder, const TaitBryanOrder rotOrderOut) const
+    {
+        return ((*this) * angle.ToDCM(rotOrder)).ToEuler(rotOrderOut);
+    }
+
+    template <typename T>
+    Angle<T> DCM<T>::Rotate(const Angle<T> &angle, const EulerOrder &rotOrder, const EulerOrder rotOrderOut) const
+    {
+        return ((*this) * angle.ToDCM(rotOrder)).ToEuler(rotOrderOut);
+    }
+
+    template <typename T>
+    DCM<T> DCM<T>::Rotate(const DCM<T> &dcm) const
+    {
+        return (*this) * dcm;
+    }
+
+    template <typename T>
+    Quaternion<T> DCM<T>::Rotate(const Quaternion<T> &q) const
+    {
+        return this->ToQuaternion() * q;
+    }
+
+    template <typename T>
+    Vector<T, 3u> DCM<T>::Rotate(const Vector<T, 3u> &v) const
+    {
+        return (*this) * v;
     }
 
 } // namespace myMath
