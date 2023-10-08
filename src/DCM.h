@@ -19,54 +19,62 @@ namespace myMath
     template <typename T>
     class DCM : public Matrix<T, 3, 3>
     {
-    public:
+      public:
         DCM();
-        DCM(const Matrix<T, 3, 3> &m);
-        DCM(const T (&m)[3][3]);
-        DCM(const T (&m)[9]);
+        DCM( const Matrix<T, 3, 3>& m );
+        DCM( const T ( &m )[3][3] );
+        DCM( const T ( &m )[9] );
 
-        DCM<T> operator=(const DCM<T> &dcm);
-        DCM<T> operator=(const Matrix<T, 3, 3> &m);
-        DCM<T> operator=(const T (&m)[3][3]);
-        DCM<T> operator=(const T (&m)[9]);
+        DCM<T>& operator=( const DCM<T>& dcm );
+        DCM<T>& operator=( const Matrix<T, 3, 3>& m );
+        DCM<T>& operator=( const T ( &m )[3][3] );
+        DCM<T>& operator=( const T ( &m )[9] );
 
-        DCM<T> operator*(const DCM<T> &dcm) const;
-        DCM<T> operator*(const Matrix<T, 3, 3> &m) const;
-
-        template <unsigned int C>
-        Matrix<T, 3, C> operator*(const Matrix<T, 3, C> &m) const;
+        DCM<T> operator*( const DCM<T>& dcm ) const;
+        DCM<T> operator*( const Matrix<T, 3, 3>& m ) const;
 
         template <unsigned int C>
-        DCM<T> operator*(const T (&m)[3][C]) const;
-        DCM<T> operator*(const T (&m)[9]) const;
+        Matrix<T, 3, C> operator*( const Matrix<T, 3, C>& m ) const;
 
-        DCM<T> &operator*=(const DCM<T> &dcm);
+        template <unsigned int C>
+        DCM<T> operator*( const T ( &m )[3][C] ) const;
+        Vector<T, 3u> operator*( const Vector<T, 3u>& v ) const;
 
-        DCM<T> &operator*=(const Matrix<T, 3, 3> &m);
-        DCM<T> &operator*=(const T (&m)[3][3]);
-        DCM<T> &operator*=(const T (&m)[9]);
+        DCM<T>& operator*=( const DCM<T>& dcm );
 
-        DCM<T> operator-(void) const;
+        DCM<T>& operator*=( const Matrix<T, 3, 3>& m );
+        DCM<T>& operator*=( const T ( &m )[3][3] );
+        DCM<T>& operator*=( const T ( &m )[9] );
 
-        bool operator==(const DCM<T> &dcm) const;
-        bool operator!=(const DCM<T> &dcm) const;
+        DCM<T> operator-( void ) const;
 
-        static DCM<T> Identity(void)
+        bool operator==( const DCM<T>& dcm ) const;
+        bool operator!=( const DCM<T>& dcm ) const;
+
+        static DCM<T> Identity( void )
         {
-            return DCM<T>(Matrix<T, 3, 3>::Identity());
+            DCM<T> identityMat( static_cast<T>( 0 ) );
+
+            for ( unsigned int i{0u}; i < 3u; i++ )
+            {
+                identityMat[i][i] = static_cast<T>( 1 );
+            }
+
+            return identityMat;
         }
 
+        DCM<T> Transpose() const;
         void Normalize();
         Quaternion<T> ToQuaternion() const;
-        Angle<T> ToEuler(const TaitBryanOrder &rotOrder) const;
-        Angle<T> ToEuler(const EulerOrder &rotOrder) const;
+        Angle<T> ToEuler( const TaitBryanOrder& rotOrder ) const;
+        Angle<T> ToEuler( const EulerOrder& rotOrder ) const;
 
-        Angle<T> Rotate(const Angle<T> &angle, const TaitBryanOrder &rotOrder, const TaitBryanOrder rotOrderOut) const;
-        Angle<T> Rotate(const Angle<T> &angle, const EulerOrder &rotOrder, const TaitBryanOrder rotOrderOut) const;
-        Angle<T> Rotate(const Angle<T> &angle, const EulerOrder &rotOrder, const EulerOrder rotOrderOut) const;
-        DCM<T> Rotate(const DCM<T> &dcm) const;
-        Quaternion<T> Rotate(const Quaternion<T> &q) const;
-        Vector<T, 3u> Rotate(const Vector<T, 3u> &v) const;
+        Angle<T> Rotate( const Angle<T>& angle, const TaitBryanOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const;
+        Angle<T> Rotate( const Angle<T>& angle, const EulerOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const;
+        Angle<T> Rotate( const Angle<T>& angle, const EulerOrder& rotOrder, const EulerOrder rotOrderOut ) const;
+        DCM<T> Rotate( const DCM<T>& dcm ) const;
+        Quaternion<T> Rotate( const Quaternion<T>& q ) const;
+        Vector<T, 3u> Rotate( const Vector<T, 3u>& v ) const;
     };
 } // namespace myMath
 
@@ -85,21 +93,21 @@ namespace myMath
     }
 
     template <typename T>
-    DCM<T>::DCM(const Matrix<T, 3, 3> &m) : Matrix<T, 3, 3>(m)
+    DCM<T>::DCM( const Matrix<T, 3, 3>& m ) : Matrix<T, 3, 3>( m )
     {
     }
 
     template <typename T>
-    DCM<T>::DCM(const T (&m)[3][3]) : Matrix<T, 3, 3>(m)
+    DCM<T>::DCM( const T ( &m )[3][3] ) : Matrix<T, 3, 3>( m )
     {
     }
 
     template <typename T>
-    DCM<T>::DCM(const T (&m)[9]) : Matrix<T, 3, 3>()
+    DCM<T>::DCM( const T ( &m )[9] ) : Matrix<T, 3, 3>()
     {
-        for (unsigned int i{0u}; i < 3u; i++)
+        for ( unsigned int i{0u}; i < 3u; i++ )
         {
-            for (unsigned int j{0u}; j < 3u; j++)
+            for ( unsigned int j{0u}; j < 3u; j++ )
             {
                 this->mat[i][j] = m[i * 3u + j];
             }
@@ -107,32 +115,32 @@ namespace myMath
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator=(const DCM<T> &dcm)
+    DCM<T>& DCM<T>::operator=( const DCM<T>& dcm )
     {
-        Matrix<T, 3, 3>::operator=(dcm);
+        Matrix<T, 3, 3>::operator=( dcm );
         return *this;
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator=(const Matrix<T, 3, 3> &m)
+    DCM<T>& DCM<T>::operator=( const Matrix<T, 3, 3>& m )
     {
-        Matrix<T, 3, 3>::operator=(m);
+        Matrix<T, 3, 3>::operator=( m );
         return *this;
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator=(const T (&m)[3][3])
+    DCM<T>& DCM<T>::operator=( const T ( &m )[3][3] )
     {
-        Matrix<T, 3, 3>::operator=(m);
+        Matrix<T, 3, 3>::operator=( m );
         return *this;
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator=(const T (&m)[9])
+    DCM<T>& DCM<T>::operator=( const T ( &m )[9] )
     {
-        for (unsigned int i{0u}; i < 3u; i++)
+        for ( unsigned int i{0u}; i < 3u; i++ )
         {
-            for (unsigned int j{0u}; j < 3u; j++)
+            for ( unsigned int j{0u}; j < 3u; j++ )
             {
                 this->mat[i][j] = m[i * 3u + j];
             }
@@ -142,87 +150,157 @@ namespace myMath
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator*(const DCM<T> &dcm) const
+    DCM<T> DCM<T>::operator*( const DCM<T>& dcm ) const
     {
-        return DCM<T>(Matrix<T, 3, 3>::operator*(dcm));
+        DCM<T> tmp;
+
+        for ( unsigned int i{0u}; i < 3u; i++ )
+        {
+            for ( unsigned int j{0u}; j < 3u; j++ )
+            {
+                T tmp_sum = static_cast<T>( 0.0 );
+
+                for ( unsigned int k{0u}; k < 3u; k++ )
+                {
+                    tmp_sum += this->mat[i][k] * dcm[k][j];
+                }
+
+                tmp[i][j] = tmp_sum;
+            }
+        }
+
+        return tmp;
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator*(const Matrix<T, 3, 3> &m) const
+    DCM<T> DCM<T>::operator*( const Matrix<T, 3, 3>& m ) const
     {
-        return DCM<T>(Matrix<T, 3, 3>::operator*(m));
+        DCM<T> tmp;
+
+        for ( unsigned int i{0u}; i < 3u; i++ )
+        {
+            for ( unsigned int j{0u}; j < 3u; j++ )
+            {
+                T tmp_sum = static_cast<T>( 0.0 );
+
+                for ( unsigned int k{0u}; k < 3u; k++ )
+                {
+                    tmp_sum += this->mat[i][k] * m[k][j];
+                }
+
+                tmp[i][j] = tmp_sum;
+            }
+        }
+
+        return tmp;
     }
 
     template <typename T>
     template <unsigned int C>
-    Matrix<T, 3, C> DCM<T>::operator*(const Matrix<T, 3, C> &m) const
+    Matrix<T, 3, C> DCM<T>::operator*( const Matrix<T, 3, C>& m ) const
     {
-        return Matrix<T, 3, C>::operator*(m);
+        Matrix<T, 3u, C> tmp;
+
+        for ( unsigned int i{0u}; i < 3u; i++ )
+        {
+            for ( unsigned int j{0u}; j < C; j++ )
+            {
+                T tmp_sum = static_cast<T>( 0.0 );
+
+                for ( unsigned int k{0u}; k < 3u; k++ )
+                {
+                    tmp_sum += this->mat[i][k] * m[k][j];
+                }
+
+                tmp[i][j] = tmp_sum;
+            }
+        }
+
+        return tmp;
     }
 
     template <typename T>
-    template <unsigned int C>
-    DCM<T> DCM<T>::operator*(const T (&m)[3][C]) const
+    Vector<T, 3u> DCM<T>::operator*( const Vector<T, 3u>& v ) const
     {
-        return DCM<T>(Matrix<T, 3, C>::operator*(m));
+        Vector<T, 3u> tmp{0.0};
+
+        for ( unsigned int i{0u}; i < 3u; i++ )
+        {
+            for ( unsigned int j{0u}; j < 3u; j++ )
+            {
+                tmp.vec[i] += this->mat[i][j] * v[j];
+            }
+        }
+
+        return tmp;
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator*(const T (&rhs)[9]) const
+    DCM<T>& DCM<T>::operator*=( const DCM<T>& dcm )
     {
-        return *this * DCM<T>(rhs);
-    }
-
-    template <typename T>
-    DCM<T> &DCM<T>::operator*=(const DCM<T> &dcm)
-    {
-        Matrix<T, 3, 3>::operator*=(dcm);
+        Matrix<T, 3, 3>::operator*=( dcm );
         return *this;
     }
 
     template <typename T>
-    DCM<T> &DCM<T>::operator*=(const Matrix<T, 3, 3> &m)
+    DCM<T>& DCM<T>::operator*=( const Matrix<T, 3, 3>& m )
     {
-        Matrix<T, 3, 3>::operator*=(m);
+        Matrix<T, 3, 3>::operator*=( m );
         return *this;
     }
 
     template <typename T>
-    DCM<T> &DCM<T>::operator*=(const T (&m)[3][3])
+    DCM<T>& DCM<T>::operator*=( const T ( &m )[3][3] )
     {
-        Matrix<T, 3, 3>::operator*=(m);
+        Matrix<T, 3, 3>::operator*=( m );
         return *this;
     }
 
     template <typename T>
-    DCM<T> &DCM<T>::operator*=(const T (&m)[9])
+    DCM<T>& DCM<T>::operator*=( const T ( &m )[9] )
     {
-        Matrix<T, 3, 3>::operator*=(m);
+        Matrix<T, 3, 3>::operator*=( m );
         return *this;
     }
 
     template <typename T>
-    DCM<T> DCM<T>::operator-(void) const
+    DCM<T> DCM<T>::operator-( void ) const
     {
-        return static_cast<T>(-1) * *this;
+        return static_cast<T>( -1 ) * *this;
     }
 
     template <typename T>
-    bool DCM<T>::operator==(const DCM<T> &dcm) const
+    bool DCM<T>::operator==( const DCM<T>& dcm ) const
     {
-        return Matrix<T, 3, 3>::operator==(dcm);
+        return Matrix<T, 3, 3>::operator==( dcm );
     }
 
     template <typename T>
-    bool DCM<T>::operator!=(const DCM<T> &dcm) const
+    bool DCM<T>::operator!=( const DCM<T>& dcm ) const
     {
-        return Matrix<T, 3, 3>::operator!=(dcm);
+        return Matrix<T, 3, 3>::operator!=( dcm );
+    }
+
+    template <typename T>
+    DCM<T> DCM<T>::Transpose() const
+    {
+        DCM<T> tmp;
+
+        for ( unsigned int i{0u}; i < 3u; i++ )
+        {
+            for ( unsigned int j{0u}; j < 3u; j++ )
+            {
+                tmp[i][j] = this->mat[j][i];
+            }
+        }
+
+        return tmp;
     }
 
     template <typename T>
     void DCM<T>::Normalize()
     {
-        for (unsigned int i{0u}; i < 3u; i++)
+        for ( unsigned int i{0u}; i < 3u; i++ )
         {
             this->mat[i].Normalize();
         }
@@ -233,39 +311,39 @@ namespace myMath
     {
         Quaternion<T> q;
 
-        T q0_mag = std::sqrt((static_cast<T>(1) + this->mat[0][0] + this->mat[1][1] + this->mat[2][2])) / static_cast<T>(2);
-        T q1_mag = std::sqrt((static_cast<T>(1) + this->mat[0][0] - this->mat[1][1] - this->mat[2][2])) / static_cast<T>(2);
-        T q2_mag = std::sqrt((static_cast<T>(1) - this->mat[0][0] + this->mat[1][1] - this->mat[2][2])) / static_cast<T>(2);
-        T q3_mag = std::sqrt((static_cast<T>(1) - this->mat[0][0] - this->mat[1][1] + this->mat[2][2])) / static_cast<T>(2);
+        T q0_mag = std::sqrt( ( static_cast<T>( 1 ) + this->mat[0][0] + this->mat[1][1] + this->mat[2][2] ) ) / static_cast<T>( 2 );
+        T q1_mag = std::sqrt( ( static_cast<T>( 1 ) + this->mat[0][0] - this->mat[1][1] - this->mat[2][2] ) ) / static_cast<T>( 2 );
+        T q2_mag = std::sqrt( ( static_cast<T>( 1 ) - this->mat[0][0] + this->mat[1][1] - this->mat[2][2] ) ) / static_cast<T>( 2 );
+        T q3_mag = std::sqrt( ( static_cast<T>( 1 ) - this->mat[0][0] - this->mat[1][1] + this->mat[2][2] ) ) / static_cast<T>( 2 );
 
-        T q_max = MAX(q0_mag, MAX(q1_mag, MAX(q2_mag, q3_mag)));
+        T q_max = MAX( q0_mag, MAX( q1_mag, MAX( q2_mag, q3_mag ) ) );
 
-        if (q_max == q0_mag)
+        if ( q_max == q0_mag )
         {
             q[0] = q0_mag;
-            q[1] = (this->mat[1][2] - this->mat[2][1]) / (static_cast<T>(4) * q0_mag);
-            q[2] = (this->mat[2][0] - this->mat[0][2]) / (static_cast<T>(4) * q0_mag);
-            q[3] = (this->mat[0][1] - this->mat[1][0]) / (static_cast<T>(4) * q0_mag);
+            q[1] = ( this->mat[1][2] - this->mat[2][1] ) / ( static_cast<T>( 4 ) * q0_mag );
+            q[2] = ( this->mat[2][0] - this->mat[0][2] ) / ( static_cast<T>( 4 ) * q0_mag );
+            q[3] = ( this->mat[0][1] - this->mat[1][0] ) / ( static_cast<T>( 4 ) * q0_mag );
         }
-        else if (q_max == q1_mag)
+        else if ( q_max == q1_mag )
         {
-            q[0] = (this->mat[1][2] - this->mat[2][1]) / (static_cast<T>(4) * q1_mag);
+            q[0] = ( this->mat[1][2] - this->mat[2][1] ) / ( static_cast<T>( 4 ) * q1_mag );
             q[1] = q1_mag;
-            q[2] = (this->mat[0][1] + this->mat[1][0]) / (static_cast<T>(4) * q1_mag);
-            q[3] = (this->mat[2][0] + this->mat[0][2]) / (static_cast<T>(4) * q1_mag);
+            q[2] = ( this->mat[0][1] + this->mat[1][0] ) / ( static_cast<T>( 4 ) * q1_mag );
+            q[3] = ( this->mat[2][0] + this->mat[0][2] ) / ( static_cast<T>( 4 ) * q1_mag );
         }
-        else if (q_max == q2_mag)
+        else if ( q_max == q2_mag )
         {
-            q[0] = (this->mat[2][0] - this->mat[0][2]) / (static_cast<T>(4) * q2_mag);
-            q[1] = (this->mat[0][1] + this->mat[1][0]) / (static_cast<T>(4) * q2_mag);
+            q[0] = ( this->mat[2][0] - this->mat[0][2] ) / ( static_cast<T>( 4 ) * q2_mag );
+            q[1] = ( this->mat[0][1] + this->mat[1][0] ) / ( static_cast<T>( 4 ) * q2_mag );
             q[2] = q2_mag;
-            q[3] = (this->mat[1][2] + this->mat[2][1]) / (static_cast<T>(4) * q2_mag);
+            q[3] = ( this->mat[1][2] + this->mat[2][1] ) / ( static_cast<T>( 4 ) * q2_mag );
         }
         else
         {
-            q[0] = (this->mat[0][1] - this->mat[1][0]) / (static_cast<T>(4) * q3_mag);
-            q[1] = (this->mat[2][0] + this->mat[0][2]) / (static_cast<T>(4) * q3_mag);
-            q[2] = (this->mat[1][2] + this->mat[2][1]) / (static_cast<T>(4) * q3_mag);
+            q[0] = ( this->mat[0][1] - this->mat[1][0] ) / ( static_cast<T>( 4 ) * q3_mag );
+            q[1] = ( this->mat[2][0] + this->mat[0][2] ) / ( static_cast<T>( 4 ) * q3_mag );
+            q[2] = ( this->mat[1][2] + this->mat[2][1] ) / ( static_cast<T>( 4 ) * q3_mag );
             q[3] = q3_mag;
         }
 
@@ -275,388 +353,423 @@ namespace myMath
     }
 
     template <typename T>
-    Angle<T> DCM<T>::ToEuler(const TaitBryanOrder &rotOrder) const
+    Angle<T> DCM<T>::ToEuler( const TaitBryanOrder& rotOrder ) const
     {
+        Angle<T> euler1;
+        Angle<T> euler2;
         Angle<T> euler;
 
-        switch (rotOrder)
+        switch ( rotOrder )
         {
-        case TaitBryanOrder::XYZ:
-        {
-            euler[1] = std::asin(this->mat[2][0]);
-
-            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
-            {
-                // std::cout << "WARNING! Gimbal Lock for XYZ rotation" << std::endl;
-
-                euler[0] = std::atan2(this->mat[0][1], this->mat[1][1]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(-this->mat[2][1], this->mat[2][2]);
-                euler[2] = std::atan2(-this->mat[1][0], this->mat[0][0]);
-
-                if (!isZero((-std::cos(euler[1]) * std::sin(euler[0])) - (this->mat[2][1])))
+            case TaitBryanOrder::XYZ:
                 {
-                    euler[1] = Constants::PI - euler[1];
+                    euler1[1] = std::asin( this->mat[2][0] );
+
+                    if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[0][1], this->mat[1][1] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = Constants::PI - euler1[1];
+
+                        T cos_euler1_1 = std::cos( euler1[1] );
+                        T cos_euler2_1 = std::cos( euler2[1] );
+
+                        euler1[0] = std::atan2( -this->mat[2][1] / cos_euler1_1, this->mat[2][2] / cos_euler1_1 );
+                        euler1[2] = std::atan2( -this->mat[1][0] / cos_euler1_1, this->mat[0][0] / cos_euler1_1 );
+
+                        euler2[0] = std::atan2( -this->mat[2][1] / cos_euler2_1, this->mat[2][2] / cos_euler2_1 );
+                        euler2[2] = std::atan2( -this->mat[1][0] / cos_euler2_1, this->mat[0][0] / cos_euler2_1 );
+                    }
+
+                    break;
                 }
-            }
-
-            break;
-        }
-        case TaitBryanOrder::XZY:
-        {
-            euler[1] = std::asin(-this->mat[1][0]);
-
-            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
-            {
-                // std::cout << "WARNING! Gimbal Lock for XZY rotation" << std::endl;
-
-                euler[0] = std::atan2(this->mat[0][2], this->mat[2][2]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(this->mat[1][2], this->mat[1][1]);
-                euler[2] = std::atan2(this->mat[2][0], this->mat[0][0]);
-
-                if (!isZero((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[1][1])))
+            case TaitBryanOrder::XZY:
                 {
-                    euler[1] = Constants::PI - euler[1];
+                    euler1[1] = std::asin( -this->mat[1][0] );
+
+                    if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[0][2], this->mat[2][2] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = Constants::PI - euler1[1];
+
+                        T cos_euler1_1 = std::cos( euler1[1] );
+                        T cos_euler2_1 = std::cos( euler2[1] );
+
+                        euler1[0] = std::atan2( this->mat[1][2] / cos_euler1_1, this->mat[1][1] / cos_euler1_1 );
+                        euler1[2] = std::atan2( this->mat[2][0] / cos_euler1_1, this->mat[0][0] / cos_euler1_1 );
+
+                        euler2[0] = std::atan2( this->mat[1][2] / cos_euler2_1, this->mat[1][1] / cos_euler2_1 );
+                        euler2[2] = std::atan2( this->mat[2][0] / cos_euler2_1, this->mat[0][0] / cos_euler2_1 );
+                    }
+
+                    break;
                 }
-            }
-
-            break;
-        }
-        case TaitBryanOrder::YXZ:
-        {
-            euler[1] = std::asin(-this->mat[2][1]);
-
-            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
-            {
-                // std::cout << "WARNING! Gimbal Lock for YXZ rotation" << std::endl;
-
-                euler[0] = std::atan2(this->mat[1][0], this->mat[0][0]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(this->mat[2][0], this->mat[2][2]);
-                euler[2] = std::atan2(this->mat[0][1], this->mat[1][1]);
-
-                if (!isZero((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[2][2])))
+            case TaitBryanOrder::YXZ:
                 {
-                    euler[1] = Constants::PI - euler[1];
+                    euler1[1] = std::asin( -this->mat[2][1] );
+
+                    if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[1][0], this->mat[0][0] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = Constants::PI - euler1[1];
+
+                        T cos_euler1_1 = std::cos( euler1[1] );
+                        T cos_euler2_1 = std::cos( euler2[1] );
+
+                        euler1[0] = std::atan2( this->mat[2][0] / cos_euler1_1, this->mat[2][2] / cos_euler1_1 );
+                        euler1[2] = std::atan2( this->mat[0][1] / cos_euler1_1, this->mat[1][1] / cos_euler1_1 );
+
+                        euler2[0] = std::atan2( this->mat[2][0] / cos_euler2_1, this->mat[2][2] / cos_euler2_1 );
+                        euler2[2] = std::atan2( this->mat[0][1] / cos_euler2_1, this->mat[1][1] / cos_euler2_1 );
+                    }
+
+                    break;
                 }
-            }
-
-            break;
-        }
-        case TaitBryanOrder::YZX:
-        {
-            euler[1] = std::asin(this->mat[0][1]);
-
-            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
-            {
-                // std::cout << "WARNING! Gimbal Lock for YZX rotation" << std::endl;
-
-                euler[0] = std::atan2(this->mat[1][2], this->mat[2][2]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(-this->mat[0][2], this->mat[0][0]);
-                euler[2] = std::atan2(-this->mat[2][1], this->mat[1][1]);
-
-                if (!isZero((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[0][0])))
+            case TaitBryanOrder::YZX:
                 {
-                    euler[1] = Constants::PI - euler[1];
+                    euler1[1] = std::asin( this->mat[0][1] );
+
+                    if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[1][2], this->mat[2][2] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = Constants::PI - euler1[1];
+
+                        T cos_euler1_1 = std::cos( euler1[1] );
+                        T cos_euler2_1 = std::cos( euler2[1] );
+
+                        euler1[0] = std::atan2( -this->mat[0][2] / cos_euler1_1, this->mat[0][0] / cos_euler1_1 );
+                        euler1[2] = std::atan2( -this->mat[2][1] / cos_euler1_1, this->mat[1][1] / cos_euler1_1 );
+
+                        euler2[0] = std::atan2( -this->mat[0][2] / cos_euler2_1, this->mat[0][0] / cos_euler2_1 );
+                        euler2[2] = std::atan2( -this->mat[2][1] / cos_euler2_1, this->mat[1][1] / cos_euler2_1 );
+                    }
+
+                    break;
                 }
-            }
-
-            break;
-        }
-        case TaitBryanOrder::ZXY:
-        {
-            euler[1] = std::asin(this->mat[1][2]);
-
-            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
-            {
-                // std::cout << "WARNING! Gimbal Lock for ZXY rotation" << std::endl;
-
-                euler[0] = std::atan2(this->mat[0][1], this->mat[0][0]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(-this->mat[1][0], this->mat[1][1]);
-                euler[2] = std::atan2(-this->mat[0][2], this->mat[2][2]);
-
-                if (!isZero((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[1][1])))
+            case TaitBryanOrder::ZXY:
                 {
-                    euler[1] = Constants::PI - euler[1];
+                    euler1[1] = std::asin( this->mat[1][2] );
+
+                    if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[0][1], this->mat[0][0] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = Constants::PI - euler1[1];
+
+                        T cos_euler1_1 = std::cos( euler1[1] );
+                        T cos_euler2_1 = std::cos( euler2[1] );
+
+                        euler1[0] = std::atan2( -this->mat[1][0] / cos_euler1_1, this->mat[1][1] / cos_euler1_1 );
+                        euler1[2] = std::atan2( -this->mat[0][2] / cos_euler1_1, this->mat[2][2] / cos_euler1_1 );
+
+                        euler2[0] = std::atan2( -this->mat[1][0] / cos_euler2_1, this->mat[1][1] / cos_euler2_1 );
+                        euler2[2] = std::atan2( -this->mat[0][2] / cos_euler2_1, this->mat[2][2] / cos_euler2_1 );
+                    }
+
+                    break;
                 }
-            }
-
-            break;
-        }
-        case TaitBryanOrder::ZYX:
-        {
-            euler[1] = std::asin(-this->mat[0][2]);
-
-            if (isZero(ABS(euler[1]) - Constants::PI / 2.0))
-            {
-                // std::cout << "WARNING! Gimbal Lock for ZYX rotation" << std::endl;
-
-                euler[0] = std::atan2(this->mat[2][1], this->mat[1][1]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(this->mat[0][1], this->mat[0][0]);
-                euler[2] = std::atan2(this->mat[1][2], this->mat[2][2]);
-
-                if (!isZero((std::cos(euler[0]) * std::cos(euler[1])) - (this->mat[0][0])))
+            case TaitBryanOrder::ZYX:
                 {
-                    euler[1] = Constants::PI - euler[1];
+                    euler1[1] = std::asin( -this->mat[0][2] );
+
+                    if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[2][1], this->mat[1][1] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = Constants::PI - euler1[1];
+
+                        T cos_euler1_1 = std::cos( euler1[1] );
+                        T cos_euler2_1 = std::cos( euler2[1] );
+
+                        euler1[0] = std::atan2( this->mat[0][1] / cos_euler1_1, this->mat[0][0] / cos_euler1_1 );
+                        euler1[2] = std::atan2( this->mat[1][2] / cos_euler1_1, this->mat[2][2] / cos_euler1_1 );
+
+                        euler2[0] = std::atan2( this->mat[0][1] / cos_euler2_1, this->mat[0][0] / cos_euler2_1 );
+                        euler2[2] = std::atan2( this->mat[1][2] / cos_euler2_1, this->mat[2][2] / cos_euler2_1 );
+                    }
+
+                    break;
                 }
-            }
-
-            break;
+            default:
+                {
+                    throw std::invalid_argument( "Invalid Tait-Bryan Order" );
+                }
         }
-        default:
+
+
+        euler1.wrapAnglesMinusPiToPi();
+        euler2.wrapAnglesMinusPiToPi();
+
+        euler = euler1.Magnitude() < euler2.Magnitude() ? euler1 : euler2;
+        DCM<T> check = euler.ToDCM( rotOrder );
+
+        if ( *this != check )
         {
-            throw std::invalid_argument("Invalid Tait-Bryan Order");
-        }
-        }
-
-        euler.wrapAnglesMinusPiToPi();
-
-        DCM<T> check = euler.ToDCM(rotOrder);
-
-        if (*this != check)
-        {
-            std::cout << "WARNING! Conversion to Tait-Bryan sequence: " << static_cast<unsigned int>(rotOrder) << " is not possible!" << std::endl;
+            std::cout << "WARNING! Conversion to Tait-Bryan sequence: " << static_cast<unsigned int>( rotOrder ) << " is not possible!" << std::endl;
         }
 
         return euler;
     }
 
     template <typename T>
-    Angle<T> DCM<T>::ToEuler(const EulerOrder &rotOrder) const
+    Angle<T> DCM<T>::ToEuler( const EulerOrder& rotOrder ) const
     {
+        Angle<T> euler1;
+        Angle<T> euler2;
         Angle<T> euler;
 
-        switch (rotOrder)
+        switch ( rotOrder )
         {
-        case EulerOrder::XYX:
-        {
-            euler[1] = std::acos(this->mat[0][0]);
-
-            if (isZero(euler[1]))
-            {
-                euler[0] = std::atan2(this->mat[1][2], this->mat[1][1]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(this->mat[0][1], -this->mat[0][2]);
-                euler[2] = std::atan2(this->mat[1][0], this->mat[2][0]);
-
-                if (isZero(euler[0]))
+            case EulerOrder::XYX:
                 {
-                    euler[1] = std::atan2(-this->mat[0][2], this->mat[0][0]);
-                }
-                else
-                {
-                    euler[1] = std::atan2(this->mat[0][1] / std::sin(euler[0]), this->mat[0][0]);
-                }
-            }
+                    euler1[1] = std::acos( this->mat[0][0] );
 
-            break;
+                    if ( isZero( euler1[1] ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[1][2], this->mat[1][1] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = -euler1[1];
+
+                        T sin_euler1_1 = std::sin( euler1[1] );
+                        T sin_euler2_1 = std::sin( euler2[1] );
+
+                        euler1[0] = std::atan2( this->mat[0][1] / sin_euler1_1, -this->mat[0][2] / sin_euler1_1 );
+                        euler1[2] = std::atan2( this->mat[1][0] / sin_euler1_1, this->mat[2][0] / sin_euler1_1 );
+
+                        euler2[0] = std::atan2( this->mat[0][1] / sin_euler2_1, -this->mat[0][2] / sin_euler2_1 );
+                        euler2[2] = std::atan2( this->mat[1][0] / sin_euler2_1, this->mat[2][0] / sin_euler2_1 );
+                    }
+
+                    break;
+                }
+            case EulerOrder::XZX:
+                {
+                    euler1[1] = std::acos( this->mat[0][0] );
+
+                    if ( isZero( euler1[1] ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[1][2], this->mat[1][1] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = -euler1[1];
+
+                        T sin_euler1_1 = std::sin( euler1[1] );
+                        T sin_euler2_1 = std::sin( euler2[1] );
+
+                        euler1[0] = std::atan2( this->mat[0][2] / sin_euler1_1, this->mat[0][1] / sin_euler1_1);
+                        euler1[2] = std::atan2( this->mat[2][0] / sin_euler1_1, -this->mat[1][0]  / sin_euler1_1);
+
+                        euler2[0] = std::atan2( this->mat[0][2] / sin_euler2_1, this->mat[0][1] / sin_euler2_1);
+                        euler2[2] = std::atan2( this->mat[2][0] / sin_euler2_1, -this->mat[1][0]  / sin_euler2_1);
+                    }
+
+                    break;
+                }
+            case EulerOrder::YXY:
+                {
+                    euler1[1] = std::acos( this->mat[1][1] );
+
+                    if ( isZero( euler1[1] ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[2][0], this->mat[2][2] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = -euler1[1];
+
+                        T sin_euler1_1 = std::sin( euler1[1] );
+                        T sin_euler2_1 = std::sin( euler2[1] );
+
+                        euler1[0] = std::atan2( this->mat[1][0] / sin_euler1_1, this->mat[1][2] / sin_euler1_1 );
+                        euler1[2] = std::atan2( this->mat[0][1] / sin_euler1_1, -this->mat[2][1] / sin_euler1_1 );
+
+                        euler2[0] = std::atan2( this->mat[1][0] / sin_euler2_1, this->mat[1][2] / sin_euler2_1 );
+                        euler2[2] = std::atan2( this->mat[0][1] / sin_euler2_1, -this->mat[2][1] / sin_euler2_1 );
+                    }
+
+                    break;
+                }
+            case EulerOrder::YZY:
+                {
+                    euler1[1] = std::acos( this->mat[1][1] );
+
+                    if ( isZero( euler1[1] ) )
+                    {
+                        euler1[0] = std::atan2( -this->mat[0][2], this->mat[0][0] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = -euler1[1];
+
+                        T sin_euler1_1 = std::sin( euler1[1] );
+                        T sin_euler2_1 = std::sin( euler2[1] );
+
+                        euler1[0] = std::atan2( this->mat[1][2] / sin_euler1_1, -this->mat[1][0] / sin_euler1_1);
+                        euler1[2] = std::atan2( this->mat[2][1] / sin_euler1_1, this->mat[0][1] / sin_euler1_1 );
+
+                        euler2[0] = std::atan2( this->mat[1][2] / sin_euler2_1, -this->mat[1][0] / sin_euler2_1);
+                        euler2[2] = std::atan2( this->mat[2][1] / sin_euler2_1, this->mat[0][1] / sin_euler2_1 );
+                    }
+
+                    break;
+                }
+            case EulerOrder::ZXZ:
+                {
+                    euler1[1] = std::acos( this->mat[2][2] );
+
+                    if ( isZero( euler1[1] ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[0][1], this->mat[0][0] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = -euler1[1];
+
+                        T sin_euler1_1 = std::sin( euler1[1] );
+                        T sin_euler2_1 = std::sin( euler2[1] );
+
+                        euler1[0] = std::atan2( this->mat[2][0] / sin_euler1_1, -this->mat[2][1] / sin_euler1_1 );
+                        euler1[2] = std::atan2( this->mat[0][2] / sin_euler1_1, this->mat[1][2] / sin_euler1_1 );
+
+                        euler2[0] = std::atan2( this->mat[2][0] / sin_euler2_1, -this->mat[2][1] / sin_euler2_1 );
+                        euler2[2] = std::atan2( this->mat[0][2] / sin_euler2_1, this->mat[1][2] / sin_euler2_1 );
+                    }
+
+                    break;
+                }
+            case EulerOrder::ZYZ:
+                {
+                    euler1[1] = std::acos( this->mat[2][2] );
+
+                    if ( isZero( euler1[1] ) )
+                    {
+                        euler1[0] = std::atan2( this->mat[0][1], this->mat[0][0] );
+                        euler1[2] = static_cast<T>( 0 );
+
+                        euler2 = euler1;
+                    }
+                    else
+                    {
+                        euler2[1] = -euler1[1];
+
+                        T sin_euler1_1 = std::sin( euler1[1] );
+                        T sin_euler2_1 = std::sin( euler2[1] );
+
+                        euler1[0] = std::atan2( this->mat[2][1] / sin_euler1_1, this->mat[2][0] / sin_euler1_1 );
+                        euler1[2] = std::atan2( this->mat[1][2] / sin_euler1_1, -this->mat[0][2] / sin_euler1_1 );
+
+                        euler2[0] = std::atan2( this->mat[2][1] / sin_euler2_1, this->mat[2][0] / sin_euler2_1 );
+                        euler2[2] = std::atan2( this->mat[1][2] / sin_euler2_1, -this->mat[0][2] / sin_euler2_1 );
+                    }
+
+                    break;
+                }
+            default:
+                {
+                    throw std::invalid_argument( "Invalid Euler Order" );
+                }
         }
-        case EulerOrder::XZX:
+
+        euler1.wrapAnglesMinusPiToPi();
+        euler2.wrapAnglesMinusPiToPi();
+
+        euler = euler1.Magnitude() < euler2.Magnitude() ? euler1 : euler2;
+
+        DCM<T> check = euler.ToDCM( rotOrder );
+
+        if ( *this != check )
         {
-            euler[1] = std::acos(this->mat[0][0]);
-
-            if (isZero(euler[1]))
-            {
-                euler[0] = std::atan2(this->mat[1][2], this->mat[1][1]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(this->mat[0][2], this->mat[0][1]);
-                euler[2] = std::atan2(this->mat[2][0], -this->mat[1][0]);
-
-                if (isZero(euler[0]))
-                {
-                    euler[1] = std::atan2(this->mat[0][1], this->mat[0][0]);
-                }
-                else
-                {
-                    euler[1] = std::atan2(this->mat[0][2] / std::sin(euler[0]), this->mat[0][0]);
-                }
-            }
-
-            break;
-        }
-        case EulerOrder::YXY:
-        {
-            euler[1] = std::acos(this->mat[1][1]);
-
-            if (isZero(euler[1]))
-            {
-                euler[0] = std::atan2(this->mat[2][0], this->mat[2][2]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(this->mat[1][0], this->mat[1][2]);
-                euler[2] = std::atan2(this->mat[0][1], -this->mat[2][1]);
-
-                if (isZero(euler[0]))
-                {
-                    euler[1] = std::atan2(this->mat[1][2], this->mat[1][1]);
-                }
-                else
-                {
-                    euler[1] = std::atan2(this->mat[1][0] / std::sin(euler[0]), this->mat[1][1]);
-                }
-            }
-
-            break;
-        }
-        case EulerOrder::YZY:
-        {
-            euler[1] = std::acos(this->mat[1][1]);
-
-            if (isZero(euler[1]))
-            {
-                euler[0] = std::atan2(-this->mat[0][2], this->mat[0][0]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(this->mat[1][2], -this->mat[1][0]);
-                euler[2] = std::atan2(this->mat[2][1], this->mat[0][1]);
-
-                if (isZero(euler[0]))
-                {
-                    euler[1] = std::atan2(-this->mat[1][0], this->mat[1][1]);
-                }
-                else
-                {
-                    euler[1] = std::atan2(this->mat[1][2] / std::sin(euler[0]), this->mat[1][1]);
-                }
-            }
-
-            break;
-        }
-        case EulerOrder::ZXZ:
-        {
-            euler[1] = std::acos(this->mat[2][2]);
-
-            if (isZero(euler[1]))
-            {
-                euler[0] = std::atan2(this->mat[0][1], this->mat[0][0]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(this->mat[2][0], -this->mat[2][1]);
-                euler[2] = std::atan2(this->mat[0][2], this->mat[1][2]);
-
-                if (isZero(euler[0]))
-                {
-                    euler[1] = std::atan2(-this->mat[2][1], this->mat[2][2]);
-                }
-                else
-                {
-                    euler[1] = std::atan2(this->mat[2][0] / std::sin(euler[0]), this->mat[2][2]);
-                }
-            }
-
-            break;
-        }
-        case EulerOrder::ZYZ:
-        {
-            euler[1] = std::acos(this->mat[2][2]);
-
-            if (isZero(euler[1]))
-            {
-                euler[0] = std::atan2(this->mat[0][1], this->mat[0][0]);
-                euler[2] = static_cast<T>(0);
-            }
-            else
-            {
-                euler[0] = std::atan2(this->mat[2][1], this->mat[2][0]);
-
-                if (isZero(std::cos(euler[0])))
-                {
-                    euler[1] = std::atan2(this->mat[2][1], this->mat[2][2]);
-                    euler[2] = std::atan2(this->mat[1][2], -this->mat[1][1]);
-                }
-                else
-                {
-                    euler[1] = std::atan2(this->mat[2][0] / std::cos(euler[0]), this->mat[2][2]);
-                    euler[2] = std::atan2(this->mat[1][2], -this->mat[0][2]);
-                }
-            }
-
-            break;
-        }
-        default:
-        {
-            throw std::invalid_argument("Invalid Euler Order");
-        }
-        }
-
-        DCM<T> check = euler.ToDCM(rotOrder);
-
-        if (*this != check)
-        {
-            std::cout << "WARNING! Conversion to Euler sequence: " << static_cast<unsigned int>(rotOrder) << " is not possible!" << std::endl;
+            std::cout << "WARNING! Conversion to Euler sequence: " << static_cast<unsigned int>( rotOrder ) << " is not possible!" << std::endl;
         }
 
         return euler;
     }
 
     template <typename T>
-    Angle<T> DCM<T>::Rotate(const Angle<T> &angle, const TaitBryanOrder &rotOrder, const TaitBryanOrder rotOrderOut) const
+    Angle<T> DCM<T>::Rotate( const Angle<T>& angle, const TaitBryanOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const
     {
-        return ((*this) * angle.ToDCM(rotOrder)).ToEuler(rotOrderOut);
+        return ( ( *this ) * angle.ToDCM( rotOrder ) ).ToEuler( rotOrderOut );
     }
 
     template <typename T>
-    Angle<T> DCM<T>::Rotate(const Angle<T> &angle, const EulerOrder &rotOrder, const TaitBryanOrder rotOrderOut) const
+    Angle<T> DCM<T>::Rotate( const Angle<T>& angle, const EulerOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const
     {
-        return ((*this) * angle.ToDCM(rotOrder)).ToEuler(rotOrderOut);
+        return ( ( *this ) * angle.ToDCM( rotOrder ) ).ToEuler( rotOrderOut );
     }
 
     template <typename T>
-    Angle<T> DCM<T>::Rotate(const Angle<T> &angle, const EulerOrder &rotOrder, const EulerOrder rotOrderOut) const
+    Angle<T> DCM<T>::Rotate( const Angle<T>& angle, const EulerOrder& rotOrder, const EulerOrder rotOrderOut ) const
     {
-        return ((*this) * angle.ToDCM(rotOrder)).ToEuler(rotOrderOut);
+        return ( ( *this ) * angle.ToDCM( rotOrder ) ).ToEuler( rotOrderOut );
     }
 
     template <typename T>
-    DCM<T> DCM<T>::Rotate(const DCM<T> &dcm) const
+    DCM<T> DCM<T>::Rotate( const DCM<T>& dcm ) const
     {
-        return (*this) * dcm;
+        return ( *this ) * dcm;
     }
 
     template <typename T>
-    Quaternion<T> DCM<T>::Rotate(const Quaternion<T> &q) const
+    Quaternion<T> DCM<T>::Rotate( const Quaternion<T>& q ) const
     {
         return q * ToQuaternion();
     }
 
     template <typename T>
-    Vector<T, 3u> DCM<T>::Rotate(const Vector<T, 3u> &v) const
+    Vector<T, 3u> DCM<T>::Rotate( const Vector<T, 3u>& v ) const
     {
-        return (*this) * v;
+        return ( *this ) * v;
     }
 
 } // namespace myMath

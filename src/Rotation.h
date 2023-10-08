@@ -25,7 +25,7 @@ namespace myMath
         ZYZ
     };
 
-        enum Axis : unsigned int
+    enum Axis : unsigned int
     {
         X,
         Y,

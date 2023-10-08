@@ -28,10 +28,10 @@ namespace myMath
 
         virtual ~Angle();
 
-        Angle<T> operator=(const T x);
-        Angle<T> operator=(const T (&x)[3u]);
-        Angle<T> operator=(const Vector<T, 3u> &obj);
-        Angle<T> operator=(const Angle<T> &obj);
+        Angle<T>& operator=(const T x);
+        Angle<T>& operator=(const T (&x)[3u]);
+        Angle<T>& operator=(const Vector<T, 3u> &obj);
+        Angle<T>& operator=(const Angle<T> &obj);
 
         Angle<T> operator+(const Angle<T> &obj) const;
         Angle<T> operator-(const Angle<T> &obj) const;
@@ -113,28 +113,28 @@ namespace myMath
     }
 
     template <typename T>
-    Angle<T> Angle<T>::operator=(const T x)
+    Angle<T>& Angle<T>::operator=(const T x)
     {
         Vector<T, 3u>::operator=(x);
         return *this;
     }
 
     template <typename T>
-    Angle<T> Angle<T>::operator=(const T (&x)[3u])
+    Angle<T>& Angle<T>::operator=(const T (&x)[3u])
     {
         Vector<T, 3u>::operator=(x);
         return *this;
     }
 
     template <typename T>
-    Angle<T> Angle<T>::operator=(const Vector<T, 3u> &obj)
+    Angle<T>& Angle<T>::operator=(const Vector<T, 3u> &obj)
     {
         Vector<T, 3u>::operator=(obj);
         return *this;
     }
 
     template <typename T>
-    Angle<T> Angle<T>::operator=(const Angle<T> &obj)
+    Angle<T>& Angle<T>::operator=(const Angle<T> &obj)
     {
         Vector<T, 3u>::operator=(static_cast<Vector<T, 3u>>(obj));
         return *this;
@@ -519,6 +519,8 @@ namespace myMath
             throw std::invalid_argument("Invalid Tait-Bryan Order");
         }
         }
+
+        qat.Normalize();
 
         return qat;
     }

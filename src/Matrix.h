@@ -56,20 +56,19 @@ namespace myMath
         T Minor(unsigned int i, unsigned int j) const;
         T Determinant(void) const;
         Matrix<T, R, C> Inverse(void) const;
-        Matrix<T, R, C> Transpose(void) const;
+        Matrix<T, C, R> Transpose(void) const;
         void TransposeInPlace(void);
         void Invert(void);
 
         static Matrix<T, R, C> Identity(void)
         {
-            Matrix<T, R, C> identityMat(0.0);
+            Matrix<T, R, C> identityMat(static_cast<T>(0));
 
-            if (R == C)
+            static_assert(R == C, "Identity matrix must be square");
+
+            for (unsigned int i{0u}; i < R; i++)
             {
-                for (unsigned int i{0u}; i < R; i++)
-                {
-                    identityMat.mat[i].vec[i] = static_cast<T>(1.0);
-                }
+                identityMat.mat[i].vec[i] = static_cast<T>(1);
             }
 
             return identityMat;
@@ -588,13 +587,13 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    Matrix<T, R, C> Matrix<T, R, C>::Transpose(void) const
+    Matrix<T, C, R> Matrix<T, R, C>::Transpose(void) const
     {
-        Matrix<T, R, C> tmpMat{*this};
+        Matrix<T, C, R> tmpMat{*this};
 
-        for (unsigned int i{0u}; i < R; i++)
+        for (unsigned int i{0u}; i < C; i++)
         {
-            for (unsigned int j{0u}; j < C; j++)
+            for (unsigned int j{0u}; j < R; j++)
             {
                 tmpMat.mat[i].vec[j] = this->mat[j].vec[i];
             }
