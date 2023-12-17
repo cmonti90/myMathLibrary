@@ -11,40 +11,40 @@ namespace myMath
     //         DECLARATIONS        //
     /////////////////////////////////
     template <class T, unsigned int R>
-    T Dot(const Vector<T, R> &lhs, const Vector<T, R> &rhs);
+    T DotProduct( const Vector<T, R>& lhs, const Vector<T, R>& rhs );
 
     template <class T, unsigned int R>
-    Vector<T, R> Cross(const Vector<T, R> &lhs, const Vector<T, R> &rhs);
+    Vector<T, R> CrossProduct( const Vector<T, R>& lhs, const Vector<T, R>& rhs );
 
     template <class T, unsigned int R>
-    T Magnitude(const Vector<T, R> &obj);
+    T Magnitude( const Vector<T, R>& obj );
 
     template <class T, unsigned int R, unsigned int C>
-    Matrix<T, C, R> Transpose(const Matrix<T, R, C> &obj);
+    Matrix<T, C, R> Transpose( const Matrix<T, R, C>& obj );
 
     template <class T, unsigned int R, unsigned int C>
-    Matrix<T, R, C> OuterProduct(const Vector<T, R> &lhs, const Vector<T, C> &rhs);
+    Matrix<T, R, C> OuterProduct( const Vector<T, R>& lhs, const Vector<T, C>& rhs );
 
     /////////////////////////////////
     //         DEFINITIONS         //
     /////////////////////////////////
     template <class T, unsigned int R>
-    T Magnitude(const Vector<T, R> &obj)
+    T Magnitude( const Vector<T, R>& obj )
     {
-        T tmp = static_cast<T>(0.0);
+        T tmp = static_cast<T>( 0.0 );
 
-        for (unsigned int i{0u}; i < R; i++)
+        for ( unsigned int i{0u}; i < R; i++ )
         {
-            tmp += SQ(obj.vec[i], 2);
+            tmp += SQ( obj.vec[i], 2 );
         }
     }
 
     template <class T, unsigned int R>
-    T Dot(const Vector<T, R> &lhs, const Vector<T, R> &rhs)
+    T DotProduct( const Vector<T, R>& lhs, const Vector<T, R>& rhs )
     {
-        T prod{static_cast<T>(0.0)};
+        T prod{static_cast<T>( 0.0 )};
 
-        for (unsigned int i{0u}; i < R; i++)
+        for ( unsigned int i{0u}; i < R; i++ )
         {
             prod += lhs.vec[i] * rhs.vec[i];
         }
@@ -53,23 +53,23 @@ namespace myMath
     }
 
     template <class T, unsigned int R>
-    Vector<T, R> Cross(const Vector<T, R> &lhs, const Vector<T, R> &rhs)
+    Vector<T, R> CrossProduct( const Vector<T, R>& lhs, const Vector<T, R>& rhs )
     {
-        if (R == 2u || R == 3u)
+        if ( R == 2u || R == 3u )
         {
-            Vector<T, R> prod{static_cast<T>(0.0)};
-            Matrix<T, R, R> concat{static_cast<T>(0.0)};
+            Vector<T, R> prod{static_cast<T>( 0.0 )};
+            Matrix<T, R, R> concat{static_cast<T>( 0.0 )};
 
-            for (unsigned int i{0u}; i < R; i++)
+            for ( unsigned int i{0u}; i < R; i++ )
             {
-                concat.mat[0][i] = static_cast<T>(2 * ((i + 2) % 2 == 0) - 1);
+                concat.mat[0][i] = static_cast<T>( 2 * ( ( i + 2 ) % 2 == 0 ) - 1 );
                 concat.mat[1][i] = lhs.vec[i];
                 concat.mat[2][i] = rhs.vec[i];
             }
 
-            for (unsigned int i{0u}; i < R; i++)
+            for ( unsigned int i{0u}; i < R; i++ )
             {
-                prod.vec[i] = concat.Minor(0, i);
+                prod.vec[i] = concat.Minor( 0, i );
             }
 
             return prod;
@@ -83,13 +83,13 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    Matrix<T, C, R> Transpose(const Matrix<T, R, C> &obj)
+    Matrix<T, C, R> Transpose( const Matrix<T, R, C>& obj )
     {
         Matrix<T, C, R> tmp;
 
-        for (unsigned int i{0u}; i < R; i++)
+        for ( unsigned int i{0u}; i < R; i++ )
         {
-            for (unsigned int j{0u}; j < C; j++)
+            for ( unsigned int j{0u}; j < C; j++ )
             {
                 tmp[j][i] = obj[i][j];
             }
@@ -99,13 +99,13 @@ namespace myMath
     }
 
     template <class T, unsigned int R, unsigned int C>
-    Matrix<T, R, C> OuterProduct(const Vector<T, R> &lhs, const Vector<T, C> &rhs)
+    Matrix<T, R, C> OuterProduct( const Vector<T, R>& lhs, const Vector<T, C>& rhs )
     {
-        Matrix<T, R, C> tmp{static_cast<T>(0.0)};
+        Matrix<T, R, C> tmp{static_cast<T>( 0.0 )};
 
-        for (unsigned int i{0u}; i < R; i++)
+        for ( unsigned int i{0u}; i < R; i++ )
         {
-            for (unsigned int j{0u}; j < C; j++)
+            for ( unsigned int j{0u}; j < C; j++ )
             {
                 tmp.mat[i][j] = lhs.vec[i] * rhs.vec[j];
             }
