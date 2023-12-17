@@ -21,7 +21,9 @@ namespace myMath
         DEFINE_MATH_CONSTEXPR( double, EARTH_SEALEVEL_RADIUS, 6378167.0 )           // m
         DEFINE_MATH_CONSTEXPR( double, EARTH_ROTATION_RATE, 7.2921159e-5 )          // rad / sec
         DEFINE_MATH_CONSTEXPR( double, EARTH_MASS, 5.9722e24 )                      // kg
-        DEFINE_MATH_CONSTEXPR( double, EARTH_GM, 3.9860e14 )                        // m^3 / sec^2
+        DEFINE_MATH_CONSTEXPR( double, EARTH_MU, 3.9860e14 )                        // m^3 / sec^2
+        DEFINE_MATH_CONSTEXPR( double, EARTH_J2, 1.082e-3 )                         // -
+        DEFINE_MATH_CONSTEXPR( double, EARTH_J3, -2.5e-6 )                          // -
         DEFINE_MATH_CONSTEXPR( double, UNIVERSAL_GRAVITATIONAL_CONST, 6.67430e-11 ) // m^3 / (kg * sec^2)
 
         // Astronomical Parameters
