@@ -136,6 +136,7 @@ namespace myMath
         }
         if ( static_cast<unsigned int>( x.size() ) != ( R * C ) )
         {
+            std::cout << "Initializer list has incorrect size of " << x.size() << " instead of " << ( R * C ) << std::endl;
             throw std::invalid_argument( "Initializer list has incorrect size of " + std::to_string( x.size() ) + " instead of " + std::to_string( ( R * C ) ) + "" );
         }
         else if ( x.size() == 0 )
@@ -144,7 +145,13 @@ namespace myMath
         }
         else
         {
-            std::copy( x.begin(), x.end(), this->mat );
+            for ( unsigned int i{0u}; i < R; i++ )
+            {
+                for ( unsigned int j{0u}; j < C; j++ )
+                {
+                    this->mat[i][j] = *( x.begin() + ( i * C + j ) );
+                }
+            }
         }
     }
 
