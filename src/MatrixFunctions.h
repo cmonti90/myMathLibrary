@@ -4,34 +4,38 @@
 #include "BasicFunctions.h"
 #include "Vector.h"
 #include "Matrix.h"
+#include "DCM.h"
 
 namespace myMath
 {
     /////////////////////////////////
     //         DECLARATIONS        //
     /////////////////////////////////
-    template <class T, unsigned int R>
-    T DotProduct( const Vector<T, R>& lhs, const Vector<T, R>& rhs );
+    template < class T, unsigned int R >
+    T DotProduct( const Vector< T, R >& lhs, const Vector< T, R >& rhs );
 
-    template <class T, unsigned int R>
-    Vector<T, R> CrossProduct( const Vector<T, R>& lhs, const Vector<T, R>& rhs );
+    template < class T, unsigned int R >
+    Vector< T, R > CrossProduct( const Vector< T, R >& lhs, const Vector< T, R >& rhs );
 
-    template <class T, unsigned int R>
-    T Magnitude( const Vector<T, R>& obj );
+    template < class T, unsigned int R >
+    T Magnitude( const Vector< T, R >& obj );
 
-    template <class T, unsigned int R, unsigned int C>
-    Matrix<T, C, R> Transpose( const Matrix<T, R, C>& obj );
+    template < class T, unsigned int R, unsigned int C >
+    Matrix< T, C, R > Transpose( const Matrix< T, R, C >& obj );
 
-    template <class T, unsigned int R, unsigned int C>
-    Matrix<T, R, C> OuterProduct( const Vector<T, R>& lhs, const Vector<T, C>& rhs );
+    template < class T >
+    DCM< T > Transpose( const DCM< T >& obj );
+
+    template < class T, unsigned int R, unsigned int C >
+    Matrix< T, R, C > OuterProduct( const Vector< T, R >& lhs, const Vector< T, C >& rhs );
 
     /////////////////////////////////
     //         DEFINITIONS         //
     /////////////////////////////////
-    template <class T, unsigned int R>
-    T Magnitude( const Vector<T, R>& obj )
+    template < class T, unsigned int R >
+    T Magnitude( const Vector< T, R >& obj )
     {
-        T tmp = static_cast<T>( 0.0 );
+        T tmp = static_cast< T >( 0.0 );
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -39,10 +43,10 @@ namespace myMath
         }
     }
 
-    template <class T, unsigned int R>
-    T DotProduct( const Vector<T, R>& lhs, const Vector<T, R>& rhs )
+    template < class T, unsigned int R >
+    T DotProduct( const Vector< T, R >& lhs, const Vector< T, R >& rhs )
     {
-        T prod{static_cast<T>( 0.0 )};
+        T prod{static_cast< T >( 0.0 )};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -52,17 +56,17 @@ namespace myMath
         return prod;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R> CrossProduct( const Vector<T, R>& lhs, const Vector<T, R>& rhs )
+    template < class T, unsigned int R >
+    Vector< T, R > CrossProduct( const Vector< T, R >& lhs, const Vector< T, R >& rhs )
     {
         if ( R == 2u || R == 3u )
         {
-            Vector<T, R> prod{static_cast<T>( 0.0 )};
-            Matrix<T, R, R> concat{static_cast<T>( 0.0 )};
+            Vector< T, R > prod{static_cast< T >( 0.0 )};
+            Matrix<T, R, R> concat{static_cast< T >( 0.0 )};
 
             for ( unsigned int i{0u}; i < R; i++ )
             {
-                concat.mat[0][i] = static_cast<T>( 2 * ( ( i + 2 ) % 2 == 0 ) - 1 );
+                concat.mat[0][i] = static_cast< T >( 2 * ( ( i + 2 ) % 2 == 0 ) - 1 );
                 concat.mat[1][i] = lhs.vec[i];
                 concat.mat[2][i] = rhs.vec[i];
             }
@@ -76,14 +80,14 @@ namespace myMath
         }
         else
         {
-            Vector<T, R> tmp{0.0};
+            Vector< T, R > tmp{0.0};
 
             return tmp;
         }
     }
 
-    template <class T, unsigned int R, unsigned int C>
-    Matrix<T, C, R> Transpose( const Matrix<T, R, C>& obj )
+    template < class T, unsigned int R, unsigned int C >
+    Matrix<T, C, R> Transpose( const Matrix< T, R, C >& obj )
     {
         Matrix<T, C, R> tmp;
 
@@ -98,10 +102,26 @@ namespace myMath
         return tmp;
     }
 
-    template <class T, unsigned int R, unsigned int C>
-    Matrix<T, R, C> OuterProduct( const Vector<T, R>& lhs, const Vector<T, C>& rhs )
+    template < class T >
+    DCM< T > Transpose( const DCM< T >& obj )
     {
-        Matrix<T, R, C> tmp{static_cast<T>( 0.0 )};
+        DCM< T > tmp;
+
+        for ( unsigned int i{0u}; i <3u; i++ )
+        {
+            for ( unsigned int j{0u}; j < 3u; j++ )
+            {
+                tmp[j][i] = obj[i][j];
+            }
+        }
+
+        return tmp;
+    }
+
+    template < class T, unsigned int R, unsigned int C >
+    Matrix< T, R, C > OuterProduct( const Vector< T, R >& lhs, const Vector<T, C>& rhs )
+    {
+        Matrix< T, R, C > tmp{static_cast< T >( 0.0 )};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
