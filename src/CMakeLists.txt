@@ -6,6 +6,9 @@ set(version 1.0.0)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+set(PROJ_COMPILE_DEFS 
+    "DEBUG")
+
 set(SOURCES mathlib.cpp)
 
 set(HEADERS 
@@ -31,8 +34,12 @@ set_property(TARGET ${target} APPEND PROPERTY
   COMPATIBLE_INTERFACE_STRING myMathLib_MAJOR_VERSION
 )
 
+target_compile_definitions(${target} PRIVATE DEBUG)
+
 target_include_directories(${target} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
                                             "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+
+target_link_options(${target} PUBLIC  -fPIC)
 
 install(TARGETS ${target}
         EXPORT ${exportedTarget}

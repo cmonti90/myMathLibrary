@@ -526,6 +526,7 @@ namespace myMath
             default:
                 {
                     throw std::invalid_argument( "Invalid Tait-Bryan Order" );
+                    break;
                 }
         }
 
@@ -534,12 +535,15 @@ namespace myMath
         euler2.wrapAnglesMinusPiToPi();
 
         euler = euler1.Magnitude() < euler2.Magnitude() ? euler1 : euler2;
+
+        #ifdef DEBUG
         DCM<T> check = euler.ToDCM( rotOrder );
 
         if ( *this != check )
         {
             std::cout << "WARNING! Conversion to Tait-Bryan sequence: " << static_cast<unsigned int>( rotOrder ) << " is not possible!" << std::endl;
         }
+        #endif
 
         return euler;
     }
@@ -598,11 +602,11 @@ namespace myMath
                         T sin_euler1_1 = std::sin( euler1[1] );
                         T sin_euler2_1 = std::sin( euler2[1] );
 
-                        euler1[0] = std::atan2( this->mat[0][2] / sin_euler1_1, this->mat[0][1] / sin_euler1_1);
-                        euler1[2] = std::atan2( this->mat[2][0] / sin_euler1_1, -this->mat[1][0]  / sin_euler1_1);
+                        euler1[0] = std::atan2( this->mat[0][2] / sin_euler1_1, this->mat[0][1] / sin_euler1_1 );
+                        euler1[2] = std::atan2( this->mat[2][0] / sin_euler1_1, -this->mat[1][0]  / sin_euler1_1 );
 
-                        euler2[0] = std::atan2( this->mat[0][2] / sin_euler2_1, this->mat[0][1] / sin_euler2_1);
-                        euler2[2] = std::atan2( this->mat[2][0] / sin_euler2_1, -this->mat[1][0]  / sin_euler2_1);
+                        euler2[0] = std::atan2( this->mat[0][2] / sin_euler2_1, this->mat[0][1] / sin_euler2_1 );
+                        euler2[2] = std::atan2( this->mat[2][0] / sin_euler2_1, -this->mat[1][0]  / sin_euler2_1 );
                     }
 
                     break;
@@ -652,10 +656,10 @@ namespace myMath
                         T sin_euler1_1 = std::sin( euler1[1] );
                         T sin_euler2_1 = std::sin( euler2[1] );
 
-                        euler1[0] = std::atan2( this->mat[1][2] / sin_euler1_1, -this->mat[1][0] / sin_euler1_1);
+                        euler1[0] = std::atan2( this->mat[1][2] / sin_euler1_1, -this->mat[1][0] / sin_euler1_1 );
                         euler1[2] = std::atan2( this->mat[2][1] / sin_euler1_1, this->mat[0][1] / sin_euler1_1 );
 
-                        euler2[0] = std::atan2( this->mat[1][2] / sin_euler2_1, -this->mat[1][0] / sin_euler2_1);
+                        euler2[0] = std::atan2( this->mat[1][2] / sin_euler2_1, -this->mat[1][0] / sin_euler2_1 );
                         euler2[2] = std::atan2( this->mat[2][1] / sin_euler2_1, this->mat[0][1] / sin_euler2_1 );
                     }
 

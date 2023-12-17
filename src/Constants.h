@@ -119,7 +119,51 @@ namespace myMath
 #define F_TO_R(temp) \
     (temp + 459.67)
 
+#define R_TO_K(temp) \
+    (temp * 5.0 / 9.0)
 
+#define R_TO_C(temp) \
+    ((temp - 491.67) * 5.0 / 9.0)
+
+#define R_TO_F(temp) \
+    (temp - 459.67)
+
+        // Time Conversions
+        DEFINE_MATH_CONSTEXPR( double, SEC_TO_MIN, 1.0 / 60.0 )
+        DEFINE_MATH_CONSTEXPR( double, SEC_TO_HR, 1.0 / 3600.0 )
+        DEFINE_MATH_CONSTEXPR( double, SEC_TO_DAY, 1.0 / 86400.0 )
+        DEFINE_MATH_CONSTEXPR( double, SEC_TO_WEEK, 1.0 / 604800.0 )
+        DEFINE_MATH_CONSTEXPR( double, SEC_TO_YEAR, 1.0 / 31557600.0 )
+
+        DEFINE_MATH_CONSTEXPR( double, MIN_TO_SEC, 60.0 )
+        DEFINE_MATH_CONSTEXPR( double, MIN_TO_HR, 1.0 / 60.0 )
+        DEFINE_MATH_CONSTEXPR( double, MIN_TO_DAY, 1.0 / 1440.0 )
+        DEFINE_MATH_CONSTEXPR( double, MIN_TO_WEEK, 1.0 / 10080.0 )
+        DEFINE_MATH_CONSTEXPR( double, MIN_TO_YEAR, 1.0 / 525960.0 )
+
+        DEFINE_MATH_CONSTEXPR( double, HR_TO_SEC, 3600.0 )
+        DEFINE_MATH_CONSTEXPR( double, HR_TO_MIN, 60.0 )
+        DEFINE_MATH_CONSTEXPR( double, HR_TO_DAY, 1.0 / 24.0 )
+        DEFINE_MATH_CONSTEXPR( double, HR_TO_WEEK, 1.0 / 168.0 )
+        DEFINE_MATH_CONSTEXPR( double, HR_TO_YEAR, 1.0 / 8766.0 )
+
+        DEFINE_MATH_CONSTEXPR( double, DAY_TO_SEC, 86400.0 )
+        DEFINE_MATH_CONSTEXPR( double, DAY_TO_MIN, 1440.0 )
+        DEFINE_MATH_CONSTEXPR( double, DAY_TO_HR, 24.0 )
+        DEFINE_MATH_CONSTEXPR( double, DAY_TO_WEEK, 1.0 / 7.0 )
+        DEFINE_MATH_CONSTEXPR( double, DAY_TO_YEAR, 1.0 / 365.25 )
+
+        DEFINE_MATH_CONSTEXPR( double, WEEK_TO_SEC, 604800.0 )
+        DEFINE_MATH_CONSTEXPR( double, WEEK_TO_MIN, 10080.0 )
+        DEFINE_MATH_CONSTEXPR( double, WEEK_TO_HR, 168.0 )
+        DEFINE_MATH_CONSTEXPR( double, WEEK_TO_DAY, 7.0 )
+        DEFINE_MATH_CONSTEXPR( double, WEEK_TO_YEAR, 1.0 / 52.17857 )
+
+        DEFINE_MATH_CONSTEXPR( double, YEAR_TO_SEC, 31557600.0 )
+        DEFINE_MATH_CONSTEXPR( double, YEAR_TO_MIN, 525960.0 )
+        DEFINE_MATH_CONSTEXPR( double, YEAR_TO_HR, 8766.0 )
+        DEFINE_MATH_CONSTEXPR( double, YEAR_TO_DAY, 365.25 )
+        DEFINE_MATH_CONSTEXPR( double, YEAR_TO_WEEK, 52.17857 )
 
     }
 }

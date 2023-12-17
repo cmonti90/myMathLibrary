@@ -14,7 +14,7 @@ namespace myMath
     T Dot(const Vector<T, R> &lhs, const Vector<T, R> &rhs);
 
     template <class T, unsigned int R>
-    T Cross(const Vector<T, R> &lhs, const Vector<T, R> &rhs);
+    Vector<T, R> Cross(const Vector<T, R> &lhs, const Vector<T, R> &rhs);
 
     template <class T, unsigned int R>
     T Magnitude(const Vector<T, R> &obj);

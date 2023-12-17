@@ -123,7 +123,7 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T>::Quaternion( const Quaternion<T>& q ) : Vector<T, 4u>( q )
+    Quaternion<T>::Quaternion( const Quaternion<T>& q ) : Vector<T, 4u>( static_cast < Vector<T, 4u>>( q ) )
     {
     }
 

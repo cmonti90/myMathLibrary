@@ -103,7 +103,7 @@ namespace myMath
     }
 
     template <typename T>
-    Angle<T>::Angle(const Angle<T> &ang) : Vector<T, 3u>(static_cast<Vector<T, 3u>>(static_cast<Vector<T, 3u>>(ang)))
+    Angle<T>::Angle(const Angle<T> &ang) : Vector<T, 3u>(static_cast<Vector<T, 3u>>(ang))
     {
     }
 

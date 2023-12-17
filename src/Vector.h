@@ -13,41 +13,42 @@ namespace myMath
     template <class T, unsigned int R>
     class Vector
     {
-        public:
-            T vec[R];
+      public:
+        T vec[R];
 
-            Vector();
-            Vector( const T& x );
-            Vector( const T ( &x )[R] );
-            Vector( const Vector<T, R>& obj );
-            Vector( const std::initializer_list<T>& x );
-            virtual ~Vector() = default;
+        Vector();
+        Vector( const T& x );
+        Vector( const T ( &x )[R] );
+        Vector( const Vector<T, R>& obj );
+        Vector( const std::initializer_list<T>& x );
 
-            T& operator[]( const unsigned int i );
-            const T& operator[]( const unsigned int i ) const;
+        virtual ~Vector() = default;
 
-            Vector<T, R>& operator=( const T& x );
-            Vector<T, R>& operator=( const T ( &x )[R] );
-            Vector<T, R>& operator=( const Vector<T, R>& obj );
-            Vector<T, R>& operator=( const std::initializer_list<T>& x );
+        T& operator[]( const unsigned int i );
+        const T& operator[]( const unsigned int i ) const;
 
-            Vector<T, R> operator+( const Vector<T, R>& obj ) const;
-            Vector<T, R> operator-( const Vector<T, R>& obj ) const;
-            Vector<T, R> operator*( const double& x ) const;
-            Vector<T, R> operator/( const double& x ) const;
+        Vector<T, R>& operator=( const T& x );
+        Vector<T, R>& operator=( const T ( &x )[R] );
+        Vector<T, R>& operator=( const Vector<T, R>& obj );
+        Vector<T, R>& operator=( const std::initializer_list<T>& x );
 
-            Vector<T, R>& operator+=( const Vector<T, R>& obj );
-            Vector<T, R>& operator-=( const Vector<T, R>& obj );
-            Vector<T, R>& operator*=( const double& x );
-            Vector<T, R>& operator/=( const double& x );
+        Vector<T, R> operator+( const Vector<T, R>& obj ) const;
+        Vector<T, R> operator-( const Vector<T, R>& obj ) const;
+        Vector<T, R> operator*( const double& x ) const;
+        Vector<T, R> operator/( const double& x ) const;
 
-            Vector<T, R> operator-( void ) const;
+        Vector<T, R>& operator+=( const Vector<T, R>& obj );
+        Vector<T, R>& operator-=( const Vector<T, R>& obj );
+        Vector<T, R>& operator*=( const double& x );
+        Vector<T, R>& operator/=( const double& x );
 
-            bool operator==( const Vector<T, R>& obj ) const;
-            bool operator!=( const Vector<T, R>& obj ) const;
+        Vector<T, R> operator-( void ) const;
 
-            T Magnitude( void ) const;
-            void Normalize( void );
+        bool operator==( const Vector<T, R>& obj ) const;
+        bool operator!=( const Vector<T, R>& obj ) const;
+
+        T Magnitude( void ) const;
+        void Normalize( void );
     };
 
     typedef Vector<double, 2u> Vector2d;
