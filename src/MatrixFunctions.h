@@ -14,8 +14,8 @@ namespace myMath
     template < class T, unsigned int R >
     T DotProduct( const Vector< T, R >& lhs, const Vector< T, R >& rhs );
 
-    template < class T, unsigned int R >
-    Vector< T, R > CrossProduct( const Vector< T, R >& lhs, const Vector< T, R >& rhs );
+    template < class T >
+    Vector< T, 3u > CrossProduct( const Vector< T, 3u >& lhs, const Vector< T, 3u >& rhs );
 
     template < class T, unsigned int R >
     T Magnitude( const Vector< T, R >& obj );
@@ -56,34 +56,16 @@ namespace myMath
         return prod;
     }
 
-    template < class T, unsigned int R >
-    Vector< T, R > CrossProduct( const Vector< T, R >& lhs, const Vector< T, R >& rhs )
+    template < class T >
+    Vector< T, 3u > CrossProduct( const Vector< T, 3u >& lhs, const Vector< T, 3u >& rhs )
     {
-        if ( R == 2u || R == 3u )
-        {
-            Vector< T, R > prod{static_cast< T >( 0.0 )};
-            Matrix<T, R, R> concat{static_cast< T >( 0.0 )};
+            Vector< T, 3u > prod;
 
-            for ( unsigned int i{0u}; i < R; i++ )
-            {
-                concat.mat[0][i] = static_cast< T >( 2 * ( ( i + 2 ) % 2 == 0 ) - 1 );
-                concat.mat[1][i] = lhs.vec[i];
-                concat.mat[2][i] = rhs.vec[i];
-            }
-
-            for ( unsigned int i{0u}; i < R; i++ )
-            {
-                prod.vec[i] = concat.Minor( 0, i );
-            }
+            prod[0] = lhs[1] * rhs[2] - lhs[2] * rhs[1];
+            prod[1] = lhs[2] * rhs[0] - lhs[0] * rhs[2];
+            prod[2] = lhs[0] * rhs[1] - lhs[1] * rhs[0];
 
             return prod;
-        }
-        else
-        {
-            Vector< T, R > tmp{0.0};
-
-            return tmp;
-        }
     }
 
     template < class T, unsigned int R, unsigned int C >

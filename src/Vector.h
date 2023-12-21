@@ -10,7 +10,7 @@
 
 namespace myMath
 {
-    template <class T, unsigned int R>
+    template < class T, unsigned int R >
     class Vector
     {
       public:
@@ -19,53 +19,54 @@ namespace myMath
         Vector();
         Vector( const T& x );
         Vector( const T ( &x )[R] );
-        Vector( const Vector<T, R>& obj );
-        Vector( const std::initializer_list<T>& x );
+        Vector( const Vector< T, R >& obj );
+        Vector( const std::initializer_list< T >& x );
 
         virtual ~Vector() = default;
 
         T& operator[]( const unsigned int i );
         const T& operator[]( const unsigned int i ) const;
 
-        Vector<T, R>& operator=( const T& x );
-        Vector<T, R>& operator=( const T ( &x )[R] );
-        Vector<T, R>& operator=( const Vector<T, R>& obj );
-        Vector<T, R>& operator=( const std::initializer_list<T>& x );
+        Vector< T, R >& operator=( const T& x );
+        Vector< T, R >& operator=( const T ( &x )[R] );
+        Vector< T, R >& operator=( const Vector< T, R >& obj );
+        Vector< T, R >& operator=( const std::initializer_list< T >& x );
 
-        Vector<T, R> operator+( const Vector<T, R>& obj ) const;
-        Vector<T, R> operator-( const Vector<T, R>& obj ) const;
-        Vector<T, R> operator*( const double& x ) const;
-        Vector<T, R> operator/( const double& x ) const;
+        Vector< T, R > operator+( const Vector< T, R >& obj ) const;
+        Vector< T, R > operator-( const Vector< T, R >& obj ) const;
+        Vector< T, R > operator*( const double& x ) const;
+        Vector< T, R > operator/( const double& x ) const;
 
-        Vector<T, R>& operator+=( const Vector<T, R>& obj );
-        Vector<T, R>& operator-=( const Vector<T, R>& obj );
-        Vector<T, R>& operator*=( const double& x );
-        Vector<T, R>& operator/=( const double& x );
+        Vector< T, R >& operator+=( const Vector< T, R >& obj );
+        Vector< T, R >& operator-=( const Vector< T, R >& obj );
+        Vector< T, R >& operator*=( const double& x );
+        Vector< T, R >& operator/=( const double& x );
 
-        Vector<T, R> operator-( void ) const;
+        Vector< T, R > operator-( void ) const;
 
-        bool operator==( const Vector<T, R>& obj ) const;
-        bool operator!=( const Vector<T, R>& obj ) const;
+        bool operator==( const Vector< T, R >& obj ) const;
+        bool operator!=( const Vector< T, R >& obj ) const;
 
         T Magnitude( void ) const;
         void Normalize( void );
+        Vector< T, R > Unit() const;
     };
 
-    typedef Vector<double, 2u> Vector2d;
-    typedef Vector<double, 3u> Vector3d;
-    typedef Vector<double, 4u> Vector4d;
+    typedef Vector< double, 2u > Vector2d;
+    typedef Vector< double, 3u > Vector3d;
+    typedef Vector< double, 4u > Vector4d;
 
-    template <class T, unsigned int R>
-    Vector<T, R>::Vector()
+    template < class T, unsigned int R >
+    Vector< T, R >::Vector()
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
-            this->vec[i] = static_cast<T>( 0.0 );
+            this->vec[i] = static_cast< T >( 0.0 );
         }
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>::Vector( const T& x )
+    template < class T, unsigned int R >
+    Vector< T, R >::Vector( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -73,8 +74,8 @@ namespace myMath
         }
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>::Vector( const T ( &x )[R] )
+    template < class T, unsigned int R >
+    Vector< T, R >::Vector( const T ( &x )[R] )
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -82,8 +83,8 @@ namespace myMath
         }
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>::Vector( const Vector<T, R>& obj )
+    template < class T, unsigned int R >
+    Vector< T, R >::Vector( const Vector< T, R >& obj )
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -91,8 +92,8 @@ namespace myMath
         }
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>::Vector( const std::initializer_list<T>& x )
+    template < class T, unsigned int R >
+    Vector< T, R >::Vector( const std::initializer_list< T >& x )
     {
         if ( static_cast<unsigned int>( x.size() ) == 1u )
         {
@@ -110,20 +111,20 @@ namespace myMath
         std::copy( x.begin(), x.end(), this->vec );
     }
 
-    template <class T, unsigned int R>
-    T& Vector<T, R>::operator[]( const unsigned int i )
+    template < class T, unsigned int R >
+    T& Vector< T, R >::operator[]( const unsigned int i )
     {
         return this->vec[i];
     }
 
-    template <class T, unsigned int R>
-    const T& Vector<T, R>::operator[]( const unsigned int i ) const
+    template < class T, unsigned int R >
+    const T& Vector< T, R >::operator[]( const unsigned int i ) const
     {
         return this->vec[i];
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>& Vector<T, R>::operator=( const T& x )
+    template < class T, unsigned int R >
+    Vector< T, R >& Vector< T, R >::operator=( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -133,8 +134,8 @@ namespace myMath
         return *this;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>& Vector<T, R>::operator=( const T ( &x )[R] )
+    template < class T, unsigned int R >
+    Vector< T, R >& Vector< T, R >::operator=( const T ( &x )[R] )
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -144,8 +145,8 @@ namespace myMath
         return *this;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>& Vector<T, R>::operator=( const Vector<T, R>& obj )
+    template < class T, unsigned int R >
+    Vector< T, R >& Vector< T, R >::operator=( const Vector< T, R >& obj )
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -155,8 +156,8 @@ namespace myMath
         return *this;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>& Vector<T, R>::operator=( const std::initializer_list<T>& x )
+    template < class T, unsigned int R >
+    Vector< T, R >& Vector< T, R >::operator=( const std::initializer_list< T >& x )
     {
         if ( static_cast<unsigned int>( x.size() ) == 1u )
         {
@@ -172,10 +173,10 @@ namespace myMath
         return *this;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R> Vector<T, R>::operator+( const Vector<T, R>& obj ) const
+    template < class T, unsigned int R >
+    Vector< T, R > Vector< T, R >::operator+( const Vector< T, R >& obj ) const
     {
-        Vector<T, R> tmp{*this};
+        Vector< T, R > tmp{*this};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -185,10 +186,10 @@ namespace myMath
         return tmp;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R> Vector<T, R>::operator-( const Vector<T, R>& obj ) const
+    template < class T, unsigned int R >
+    Vector< T, R > Vector< T, R >::operator-( const Vector< T, R >& obj ) const
     {
-        Vector<T, R> tmp{*this};
+        Vector< T, R > tmp{*this};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -198,10 +199,10 @@ namespace myMath
         return tmp;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R> Vector<T, R>::operator*( const double& x ) const
+    template < class T, unsigned int R >
+    Vector< T, R > Vector< T, R >::operator*( const double& x ) const
     {
-        Vector<T, R> tmp{*this};
+        Vector< T, R > tmp{*this};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -211,10 +212,10 @@ namespace myMath
         return tmp;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R> Vector<T, R>::operator/( const double& x ) const
+    template < class T, unsigned int R >
+    Vector< T, R > Vector< T, R >::operator/( const double& x ) const
     {
-        Vector<T, R> tmp{*this};
+        Vector< T, R > tmp{*this};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -224,8 +225,8 @@ namespace myMath
         return tmp;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>& Vector<T, R>::operator+=( const Vector<T, R>& obj )
+    template < class T, unsigned int R >
+    Vector< T, R >& Vector< T, R >::operator+=( const Vector< T, R >& obj )
     {
 
         for ( unsigned int i{0u}; i < R; i++ )
@@ -236,8 +237,8 @@ namespace myMath
         return *this;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>& Vector<T, R>::operator-=( const Vector<T, R>& obj )
+    template < class T, unsigned int R >
+    Vector< T, R >& Vector< T, R >::operator-=( const Vector< T, R >& obj )
     {
 
         for ( unsigned int i{0u}; i < R; i++ )
@@ -248,8 +249,8 @@ namespace myMath
         return *this;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>& Vector<T, R>::operator*=( const double& x )
+    template < class T, unsigned int R >
+    Vector< T, R >& Vector< T, R >::operator*=( const double& x )
     {
 
         for ( unsigned int i{0u}; i < R; i++ )
@@ -260,8 +261,8 @@ namespace myMath
         return *this;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R>& Vector<T, R>::operator/=( const double& x )
+    template < class T, unsigned int R >
+    Vector< T, R >& Vector< T, R >::operator/=( const double& x )
     {
 
         for ( unsigned int i{0u}; i < R; i++ )
@@ -272,10 +273,10 @@ namespace myMath
         return *this;
     }
 
-    template <class T, unsigned int R>
-    Vector<T, R> Vector<T, R>::operator-( void ) const
+    template < class T, unsigned int R >
+    Vector< T, R > Vector< T, R >::operator-( void ) const
     {
-        Vector<T, R> tmp{*this};
+        Vector< T, R > tmp{*this};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -285,8 +286,8 @@ namespace myMath
         return tmp;
     }
 
-    template <class T, unsigned int R>
-    bool Vector<T, R>::operator==( const Vector<T, R>& obj ) const
+    template < class T, unsigned int R >
+    bool Vector< T, R >::operator==( const Vector< T, R >& obj ) const
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -299,8 +300,8 @@ namespace myMath
         return true;
     }
 
-    template <class T, unsigned int R>
-    bool Vector<T, R>::operator!=( const Vector<T, R>& obj ) const
+    template < class T, unsigned int R >
+    bool Vector< T, R >::operator!=( const Vector< T, R >& obj ) const
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -326,21 +327,21 @@ namespace myMath
         return tmp;
     }
 
-    template <class T, unsigned int R>
-    T Vector<T, R>::Magnitude( void ) const
+    template < class T, unsigned int R >
+    T Vector< T, R >::Magnitude( void ) const
     {
-        T tmp = static_cast<T>( 0.0 );
+        T tmp = static_cast< T >( 0.0 );
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
             tmp += SQ( this->vec[i] );
         }
 
-        return static_cast<T>( std::sqrt( tmp ) );
+        return static_cast< T >( std::sqrt( tmp ) );
     }
 
-    template <class T, unsigned int R>
-    void Vector<T, R>::Normalize( void )
+    template < class T, unsigned int R >
+    void Vector< T, R >::Normalize()
     {
         T mag{this->Magnitude()};
 
@@ -349,10 +350,21 @@ namespace myMath
             return;
         }
 
-        for ( unsigned int i{0u}; i < R; i++ )
+        *this /= mag;
+    }
+
+    template < class T, unsigned int R >
+    Vector< T, R > Vector< T, R >::Unit() const
+    {
+        Vector< T, R > tmp{*this};
+        T mag{this->Magnitude()};
+
+        if ( isZero( mag ) )
         {
-            this->vec[i] /= mag;
+            return tmp;
         }
+
+        tmp /= mag;
     }
 }
 
