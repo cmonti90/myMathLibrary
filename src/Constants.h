@@ -22,8 +22,13 @@ namespace myMath
         DEFINE_MATH_CONSTEXPR( double, EARTH_ROTATION_RATE, 7.2921159e-5 )          // rad / sec
         DEFINE_MATH_CONSTEXPR( double, EARTH_MASS, 5.9722e24 )                      // kg
         DEFINE_MATH_CONSTEXPR( double, EARTH_MU, 3.9860e14 )                        // m^3 / sec^2
-        DEFINE_MATH_CONSTEXPR( double, EARTH_J2, 1.082e-3 )                         // -
-        DEFINE_MATH_CONSTEXPR( double, EARTH_J3, -2.5e-6 )                          // -
+        DEFINE_MATH_CONSTEXPR( double, EARTH_J2, -0.1082635854e-2 )                 // -
+        DEFINE_MATH_CONSTEXPR( double, EARTH_J3,  0.2532435346e-5 )                 // -
+        DEFINE_MATH_CONSTEXPR( double, EARTH_J4,  0.1619331205e-5 )                 // -
+        DEFINE_MATH_CONSTEXPR( double, EARTH_J5,  0.2277161016e-6 )                 // -
+        DEFINE_MATH_CONSTEXPR( double, EARTH_J6, -0.5396484906e-6 )                 // -
+        DEFINE_MATH_CONSTEXPR( double, EARTH_J7,  0.3513684422e-6 )                 // -
+        DEFINE_MATH_CONSTEXPR( double, EARTH_J8,  0.2025187152e-6 )                 // -
         DEFINE_MATH_CONSTEXPR( double, UNIVERSAL_GRAVITATIONAL_CONST, 6.67430e-11 ) // m^3 / (kg * sec^2)
 
         // Astronomical Parameters

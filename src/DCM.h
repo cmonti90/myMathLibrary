@@ -10,70 +10,73 @@
 
 namespace myMath
 {
-    template <typename T>
+    template < typename T >
     class Angle;
 
-    template <typename T>
+    template < typename T >
     class Quaternion;
 
-    template <typename T>
-    class DCM : public Matrix<T, 3, 3>
+    template < typename T >
+    class DCM : public Matrix< T, 3u, 3u >
     {
       public:
         DCM();
-        DCM( const Matrix<T, 3, 3>& m );
+        DCM( const Matrix< T, 3u, 3u >& m );
+        DCM( const std::initializer_list< T >& list );
         DCM( const T ( &m )[3][3] );
         DCM( const T ( &m )[9] );
 
-        DCM<T>& operator=( const DCM<T>& dcm );
-        DCM<T>& operator=( const Matrix<T, 3, 3>& m );
-        DCM<T>& operator=( const T ( &m )[3][3] );
-        DCM<T>& operator=( const T ( &m )[9] );
+        DCM< T >& operator=( const DCM< T >& dcm );
+        DCM< T >& operator=( const Matrix< T, 3, 3 >& m );
+        DCM< T >& operator=( const T ( &m )[3][3] );
+        DCM< T >& operator=( const T ( &m )[9] );
 
-        DCM<T> operator*( const DCM<T>& dcm ) const;
-        DCM<T> operator*( const Matrix<T, 3, 3>& m ) const;
-
-        template <unsigned int C>
-        Matrix<T, 3, C> operator*( const Matrix<T, 3, C>& m ) const;
+        DCM< T > operator*( const DCM< T >& dcm ) const;
+        DCM< T > operator*( const Matrix< T, 3, 3 >& m ) const;
+        DCM< T > operator*( const double& x ) const;
 
         template <unsigned int C>
-        DCM<T> operator*( const T ( &m )[3][C] ) const;
+        Matrix<T, 3, C> operator*( const Matrix< T, 3, C >& m ) const;
+
+        template <unsigned int C>
+        DCM< T > operator*( const T ( &m )[3][C] ) const;
         Vector<T, 3u> operator*( const Vector<T, 3u>& v ) const;
 
-        DCM<T>& operator*=( const DCM<T>& dcm );
+        DCM< T >& operator*=( const DCM< T >& dcm );
 
-        DCM<T>& operator*=( const Matrix<T, 3, 3>& m );
-        DCM<T>& operator*=( const T ( &m )[3][3] );
-        DCM<T>& operator*=( const T ( &m )[9] );
+        DCM< T >& operator*=( const Matrix< T, 3u, 3u >& m );
+        DCM< T >& operator*=( const T ( &m )[3][3] );
+        DCM< T >& operator*=( const T ( &m )[9] );
+        DCM< T >& operator*=( const double& x );
 
-        DCM<T> operator-( void ) const;
+        DCM< T > operator-( void ) const;
 
-        bool operator==( const DCM<T>& dcm ) const;
-        bool operator!=( const DCM<T>& dcm ) const;
+        bool operator==( const DCM< T >& dcm ) const;
+        bool operator!=( const DCM< T >& dcm ) const;
 
-        static DCM<T> Identity( void )
+        static DCM< T > Identity( void )
         {
-            DCM<T> identityMat( static_cast<T>( 0 ) );
+            DCM< T > identityMat( static_cast< T >( 0 ) );
 
             for ( unsigned int i{0u}; i < 3u; i++ )
             {
-                identityMat[i][i] = static_cast<T>( 1 );
+                identityMat[i][i] = static_cast< T >( 1 );
             }
 
             return identityMat;
         }
 
-        DCM<T> Transpose() const;
+        DCM< T > Transpose() const;
         void Normalize();
-        Quaternion<T> ToQuaternion() const;
-        Angle<T> ToEuler( const TaitBryanOrder& rotOrder ) const;
-        Angle<T> ToEuler( const EulerOrder& rotOrder ) const;
+        Quaternion< T > ToQuaternion() const;
+        Angle< T > ToEuler( const TaitBryanOrder& rotOrder ) const;
+        Angle< T > ToEuler( const EulerOrder& rotOrder ) const;
 
-        Angle<T> Rotate( const Angle<T>& angle, const TaitBryanOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const;
-        Angle<T> Rotate( const Angle<T>& angle, const EulerOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const;
-        Angle<T> Rotate( const Angle<T>& angle, const EulerOrder& rotOrder, const EulerOrder rotOrderOut ) const;
-        DCM<T> Rotate( const DCM<T>& dcm ) const;
-        Quaternion<T> Rotate( const Quaternion<T>& q ) const;
+        Angle< T > Rotate( const Angle< T >& angle, const TaitBryanOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const;
+        Angle< T > Rotate( const Angle< T >& angle, const EulerOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const;
+        Angle< T > Rotate( const Angle< T >& angle, const EulerOrder& rotOrder, const EulerOrder rotOrderOut ) const;
+        DCM< T > Rotate( const DCM< T >& dcm ) const;
+        Quaternion< T > Rotate( const Quaternion< T >& q ) const;
         Vector<T, 3u> Rotate( const Vector<T, 3u>& v ) const;
     };
 } // namespace myMath
@@ -87,23 +90,28 @@ namespace myMath
     typedef DCM<double> DCMd;
     typedef DCM<float> DCMf;
 
-    template <typename T>
-    DCM<T>::DCM() : Matrix<T, 3, 3>()
+    template < typename T >
+    DCM< T >::DCM() : Matrix< T, 3u, 3u >()
     {
     }
 
-    template <typename T>
-    DCM<T>::DCM( const Matrix<T, 3, 3>& m ) : Matrix<T, 3, 3>( m )
+    template < typename T >
+    DCM< T >::DCM( const Matrix< T, 3u, 3u >& m ) : Matrix< T, 3u, 3u >( m )
     {
     }
 
-    template <typename T>
-    DCM<T>::DCM( const T ( &m )[3][3] ) : Matrix<T, 3, 3>( m )
+    template < typename T >
+    DCM< T >::DCM( const std::initializer_list< T >& list ) : Matrix< T, 3u, 3u >( list )
     {
     }
 
-    template <typename T>
-    DCM<T>::DCM( const T ( &m )[9] ) : Matrix<T, 3, 3>()
+    template < typename T >
+    DCM< T >::DCM( const T ( &m )[3][3] ) : Matrix< T, 3u, 3u >( m )
+    {
+    }
+
+    template < typename T >
+    DCM< T >::DCM( const T ( &m )[9] ) : Matrix< T, 3u, 3u >()
     {
         for ( unsigned int i{0u}; i < 3u; i++ )
         {
@@ -114,29 +122,29 @@ namespace myMath
         }
     }
 
-    template <typename T>
-    DCM<T>& DCM<T>::operator=( const DCM<T>& dcm )
+    template < typename T >
+    DCM< T >& DCM< T >::operator=( const DCM< T >& dcm )
     {
-        Matrix<T, 3, 3>::operator=( dcm );
+        Matrix< T, 3u, 3u >::operator=( dcm );
         return *this;
     }
 
-    template <typename T>
-    DCM<T>& DCM<T>::operator=( const Matrix<T, 3, 3>& m )
+    template < typename T >
+    DCM< T >& DCM< T >::operator=( const Matrix< T, 3u, 3u >& m )
     {
-        Matrix<T, 3, 3>::operator=( m );
+        Matrix< T, 3u, 3u >::operator=( m );
         return *this;
     }
 
-    template <typename T>
-    DCM<T>& DCM<T>::operator=( const T ( &m )[3][3] )
+    template < typename T >
+    DCM< T >& DCM< T >::operator=( const T ( &m )[3][3] )
     {
-        Matrix<T, 3, 3>::operator=( m );
+        Matrix< T, 3u, 3u >::operator=( m );
         return *this;
     }
 
-    template <typename T>
-    DCM<T>& DCM<T>::operator=( const T ( &m )[9] )
+    template < typename T >
+    DCM< T >& DCM< T >::operator=( const T ( &m )[9] )
     {
         for ( unsigned int i{0u}; i < 3u; i++ )
         {
@@ -149,16 +157,16 @@ namespace myMath
         return *this;
     }
 
-    template <typename T>
-    DCM<T> DCM<T>::operator*( const DCM<T>& dcm ) const
+    template < typename T >
+    DCM< T > DCM< T >::operator*( const DCM< T >& dcm ) const
     {
-        DCM<T> tmp;
+        DCM< T > tmp;
 
         for ( unsigned int i{0u}; i < 3u; i++ )
         {
             for ( unsigned int j{0u}; j < 3u; j++ )
             {
-                T tmp_sum = static_cast<T>( 0.0 );
+                T tmp_sum = static_cast< T >( 0 );
 
                 for ( unsigned int k{0u}; k < 3u; k++ )
                 {
@@ -172,16 +180,32 @@ namespace myMath
         return tmp;
     }
 
-    template <typename T>
-    DCM<T> DCM<T>::operator*( const Matrix<T, 3, 3>& m ) const
+    template < typename T >
+    DCM< T > DCM< T >::operator*( const double& x ) const
     {
-        DCM<T> tmp;
+        DCM< T > tmp{static_cast< T >( 0 )};
 
         for ( unsigned int i{0u}; i < 3u; i++ )
         {
             for ( unsigned int j{0u}; j < 3u; j++ )
             {
-                T tmp_sum = static_cast<T>( 0.0 );
+                tmp[i][j] = this->mat[i][j] * x;
+            }
+        }
+
+        return tmp;
+    }
+
+    template < typename T >
+    DCM< T > DCM< T >::operator*( const Matrix< T, 3u, 3u >& m ) const
+    {
+        DCM< T > tmp;
+
+        for ( unsigned int i{0u}; i < 3u; i++ )
+        {
+            for ( unsigned int j{0u}; j < 3u; j++ )
+            {
+                T tmp_sum = static_cast< T >( 0 );
 
                 for ( unsigned int k{0u}; k < 3u; k++ )
                 {
@@ -195,9 +219,9 @@ namespace myMath
         return tmp;
     }
 
-    template <typename T>
+    template < typename T >
     template <unsigned int C>
-    Matrix<T, 3, C> DCM<T>::operator*( const Matrix<T, 3, C>& m ) const
+    Matrix<T, 3, C> DCM< T >::operator*( const Matrix<T, 3, C>& m ) const
     {
         Matrix<T, 3u, C> tmp;
 
@@ -205,7 +229,7 @@ namespace myMath
         {
             for ( unsigned int j{0u}; j < C; j++ )
             {
-                T tmp_sum = static_cast<T>( 0.0 );
+                T tmp_sum = static_cast< T >( 0 );
 
                 for ( unsigned int k{0u}; k < 3u; k++ )
                 {
@@ -219,8 +243,8 @@ namespace myMath
         return tmp;
     }
 
-    template <typename T>
-    Vector<T, 3u> DCM<T>::operator*( const Vector<T, 3u>& v ) const
+    template < typename T >
+    Vector<T, 3u> DCM< T >::operator*( const Vector<T, 3u>& v ) const
     {
         Vector<T, 3u> tmp{0.0};
 
@@ -235,56 +259,95 @@ namespace myMath
         return tmp;
     }
 
-    template <typename T>
-    DCM<T>& DCM<T>::operator*=( const DCM<T>& dcm )
+    template < typename T >
+    DCM< T >& DCM< T >::operator*=( const DCM< T >& dcm )
     {
-        Matrix<T, 3, 3>::operator*=( dcm );
+        Matrix< T, 3u, 3u >::operator*=( dcm );
         return *this;
     }
 
-    template <typename T>
-    DCM<T>& DCM<T>::operator*=( const Matrix<T, 3, 3>& m )
+    template < typename T >
+    DCM< T >& DCM< T >::operator*=( const Matrix< T, 3u, 3u >& m )
     {
-        Matrix<T, 3, 3>::operator*=( m );
+        Matrix< T, 3u, 3u >::operator*=( m );
         return *this;
     }
 
-    template <typename T>
-    DCM<T>& DCM<T>::operator*=( const T ( &m )[3][3] )
+    template < typename T >
+    DCM< T >& DCM< T >::operator*=( const T ( &m )[3][3] )
     {
-        Matrix<T, 3, 3>::operator*=( m );
+        Matrix< T, 3u, 3u >::operator*=( m );
         return *this;
     }
 
-    template <typename T>
-    DCM<T>& DCM<T>::operator*=( const T ( &m )[9] )
+    template < typename T >
+    DCM< T >& DCM< T >::operator*=( const T ( &m )[9] )
     {
-        Matrix<T, 3, 3>::operator*=( m );
+        Matrix< T, 3u, 3u >::operator*=( m );
         return *this;
     }
 
-    template <typename T>
-    DCM<T> DCM<T>::operator-( void ) const
+    template < typename T >
+    DCM< T > DCM< T >::operator-( void ) const
     {
-        return static_cast<T>( -1 ) * *this;
+        return static_cast< T >( -1 ) * ( *this );
     }
 
-    template <typename T>
-    bool DCM<T>::operator==( const DCM<T>& dcm ) const
+
+
+    template < class T >
+    DCM< T > operator*( const double& x, const DCM< T >& obj )
     {
-        return Matrix<T, 3, 3>::operator==( dcm );
+        return obj * x;
     }
 
-    template <typename T>
-    bool DCM<T>::operator!=( const DCM<T>& dcm ) const
+    template < class T, unsigned int C >
+    Matrix< T, 3u, C > operator*=( const DCM< T >& lhs, const Matrix< T, 3u, C >& rhs )
     {
-        return Matrix<T, 3, 3>::operator!=( dcm );
+        Matrix< T, 3u, C > tmp;
+
+        for ( unsigned int i{0u}; i < 3u; i++ )
+        {
+            for ( unsigned int j{0u}; j < C; j++ )
+            {
+                T tmp_sum = static_cast< T >( 0 );
+
+                for ( unsigned int k{0u}; k < 3u; k++ )
+                {
+                    tmp_sum += lhs[i][k] * rhs[k][j];
+                }
+
+                tmp[i][j] = tmp_sum;
+            }
+        }
+
+        return tmp;
     }
 
-    template <typename T>
-    DCM<T> DCM<T>::Transpose() const
+    template < class T >
+    DCM< T >& DCM< T >::operator*=( const double& x )
     {
-        DCM<T> tmp;
+        *this = *this * x;
+
+        return *this;
+    }
+
+    template < typename T >
+    bool DCM< T >::operator==( const DCM< T >& dcm ) const
+    {
+        return Matrix< T, 3u, 3u >::operator==( dcm );
+    }
+
+    template < typename T >
+    bool DCM< T >::operator!=( const DCM< T >& dcm ) const
+    {
+        return Matrix< T, 3u, 3u >::operator!=( dcm );
+    }
+
+    template < typename T >
+    DCM< T > DCM< T >::Transpose() const
+    {
+        DCM< T > tmp;
 
         for ( unsigned int i{0u}; i < 3u; i++ )
         {
@@ -297,8 +360,8 @@ namespace myMath
         return tmp;
     }
 
-    template <typename T>
-    void DCM<T>::Normalize()
+    template < typename T >
+    void DCM< T >::Normalize()
     {
         for ( unsigned int i{0u}; i < 3u; i++ )
         {
@@ -306,44 +369,44 @@ namespace myMath
         }
     }
 
-    template <typename T>
-    Quaternion<T> DCM<T>::ToQuaternion() const
+    template < typename T >
+    Quaternion< T > DCM< T >::ToQuaternion() const
     {
-        Quaternion<T> q;
+        Quaternion< T > q;
 
-        T q0_mag = std::sqrt( ( static_cast<T>( 1 ) + this->mat[0][0] + this->mat[1][1] + this->mat[2][2] ) ) / static_cast<T>( 2 );
-        T q1_mag = std::sqrt( ( static_cast<T>( 1 ) + this->mat[0][0] - this->mat[1][1] - this->mat[2][2] ) ) / static_cast<T>( 2 );
-        T q2_mag = std::sqrt( ( static_cast<T>( 1 ) - this->mat[0][0] + this->mat[1][1] - this->mat[2][2] ) ) / static_cast<T>( 2 );
-        T q3_mag = std::sqrt( ( static_cast<T>( 1 ) - this->mat[0][0] - this->mat[1][1] + this->mat[2][2] ) ) / static_cast<T>( 2 );
+        T q0_mag = std::sqrt( ( static_cast< T >( 1 ) + this->mat[0][0] + this->mat[1][1] + this->mat[2][2] ) ) / static_cast< T >( 2 );
+        T q1_mag = std::sqrt( ( static_cast< T >( 1 ) + this->mat[0][0] - this->mat[1][1] - this->mat[2][2] ) ) / static_cast< T >( 2 );
+        T q2_mag = std::sqrt( ( static_cast< T >( 1 ) - this->mat[0][0] + this->mat[1][1] - this->mat[2][2] ) ) / static_cast< T >( 2 );
+        T q3_mag = std::sqrt( ( static_cast< T >( 1 ) - this->mat[0][0] - this->mat[1][1] + this->mat[2][2] ) ) / static_cast< T >( 2 );
 
         T q_max = MAX( q0_mag, MAX( q1_mag, MAX( q2_mag, q3_mag ) ) );
 
         if ( q_max == q0_mag )
         {
             q[0] = q0_mag;
-            q[1] = ( this->mat[1][2] - this->mat[2][1] ) / ( static_cast<T>( 4 ) * q0_mag );
-            q[2] = ( this->mat[2][0] - this->mat[0][2] ) / ( static_cast<T>( 4 ) * q0_mag );
-            q[3] = ( this->mat[0][1] - this->mat[1][0] ) / ( static_cast<T>( 4 ) * q0_mag );
+            q[1] = ( this->mat[1][2] - this->mat[2][1] ) / ( static_cast< T >( 4 ) * q0_mag );
+            q[2] = ( this->mat[2][0] - this->mat[0][2] ) / ( static_cast< T >( 4 ) * q0_mag );
+            q[3] = ( this->mat[0][1] - this->mat[1][0] ) / ( static_cast< T >( 4 ) * q0_mag );
         }
         else if ( q_max == q1_mag )
         {
-            q[0] = ( this->mat[1][2] - this->mat[2][1] ) / ( static_cast<T>( 4 ) * q1_mag );
+            q[0] = ( this->mat[1][2] - this->mat[2][1] ) / ( static_cast< T >( 4 ) * q1_mag );
             q[1] = q1_mag;
-            q[2] = ( this->mat[0][1] + this->mat[1][0] ) / ( static_cast<T>( 4 ) * q1_mag );
-            q[3] = ( this->mat[2][0] + this->mat[0][2] ) / ( static_cast<T>( 4 ) * q1_mag );
+            q[2] = ( this->mat[0][1] + this->mat[1][0] ) / ( static_cast< T >( 4 ) * q1_mag );
+            q[3] = ( this->mat[2][0] + this->mat[0][2] ) / ( static_cast< T >( 4 ) * q1_mag );
         }
         else if ( q_max == q2_mag )
         {
-            q[0] = ( this->mat[2][0] - this->mat[0][2] ) / ( static_cast<T>( 4 ) * q2_mag );
-            q[1] = ( this->mat[0][1] + this->mat[1][0] ) / ( static_cast<T>( 4 ) * q2_mag );
+            q[0] = ( this->mat[2][0] - this->mat[0][2] ) / ( static_cast< T >( 4 ) * q2_mag );
+            q[1] = ( this->mat[0][1] + this->mat[1][0] ) / ( static_cast< T >( 4 ) * q2_mag );
             q[2] = q2_mag;
-            q[3] = ( this->mat[1][2] + this->mat[2][1] ) / ( static_cast<T>( 4 ) * q2_mag );
+            q[3] = ( this->mat[1][2] + this->mat[2][1] ) / ( static_cast< T >( 4 ) * q2_mag );
         }
         else
         {
-            q[0] = ( this->mat[0][1] - this->mat[1][0] ) / ( static_cast<T>( 4 ) * q3_mag );
-            q[1] = ( this->mat[2][0] + this->mat[0][2] ) / ( static_cast<T>( 4 ) * q3_mag );
-            q[2] = ( this->mat[1][2] + this->mat[2][1] ) / ( static_cast<T>( 4 ) * q3_mag );
+            q[0] = ( this->mat[0][1] - this->mat[1][0] ) / ( static_cast< T >( 4 ) * q3_mag );
+            q[1] = ( this->mat[2][0] + this->mat[0][2] ) / ( static_cast< T >( 4 ) * q3_mag );
+            q[2] = ( this->mat[1][2] + this->mat[2][1] ) / ( static_cast< T >( 4 ) * q3_mag );
             q[3] = q3_mag;
         }
 
@@ -352,12 +415,12 @@ namespace myMath
         return q;
     }
 
-    template <typename T>
-    Angle<T> DCM<T>::ToEuler( const TaitBryanOrder& rotOrder ) const
+    template < typename T >
+    Angle< T > DCM< T >::ToEuler( const TaitBryanOrder& rotOrder ) const
     {
-        Angle<T> euler1;
-        Angle<T> euler2;
-        Angle<T> euler;
+        Angle< T > euler1;
+        Angle< T > euler2;
+        Angle< T > euler;
 
         switch ( rotOrder )
         {
@@ -368,7 +431,7 @@ namespace myMath
                     if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
                     {
                         euler1[0] = std::atan2( this->mat[0][1], this->mat[1][1] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -395,7 +458,7 @@ namespace myMath
                     if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
                     {
                         euler1[0] = std::atan2( this->mat[0][2], this->mat[2][2] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -422,7 +485,7 @@ namespace myMath
                     if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
                     {
                         euler1[0] = std::atan2( this->mat[1][0], this->mat[0][0] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -449,7 +512,7 @@ namespace myMath
                     if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
                     {
                         euler1[0] = std::atan2( this->mat[1][2], this->mat[2][2] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -476,7 +539,7 @@ namespace myMath
                     if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
                     {
                         euler1[0] = std::atan2( this->mat[0][1], this->mat[0][0] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -503,7 +566,7 @@ namespace myMath
                     if ( isZero( ABS( euler1[1] ) - Constants::PI / 2.0 ) )
                     {
                         euler1[0] = std::atan2( this->mat[2][1], this->mat[1][1] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -537,7 +600,7 @@ namespace myMath
         euler = euler1.Magnitude() < euler2.Magnitude() ? euler1 : euler2;
 
         #ifdef DEBUG
-        DCM<T> check = euler.ToDCM( rotOrder );
+        DCM< T > check = euler.ToDCM( rotOrder );
 
         if ( *this != check )
         {
@@ -548,12 +611,12 @@ namespace myMath
         return euler;
     }
 
-    template <typename T>
-    Angle<T> DCM<T>::ToEuler( const EulerOrder& rotOrder ) const
+    template < typename T >
+    Angle< T > DCM< T >::ToEuler( const EulerOrder& rotOrder ) const
     {
-        Angle<T> euler1;
-        Angle<T> euler2;
-        Angle<T> euler;
+        Angle< T > euler1;
+        Angle< T > euler2;
+        Angle< T > euler;
 
         switch ( rotOrder )
         {
@@ -564,7 +627,7 @@ namespace myMath
                     if ( isZero( euler1[1] ) )
                     {
                         euler1[0] = std::atan2( this->mat[1][2], this->mat[1][1] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -591,7 +654,7 @@ namespace myMath
                     if ( isZero( euler1[1] ) )
                     {
                         euler1[0] = std::atan2( this->mat[1][2], this->mat[1][1] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -618,7 +681,7 @@ namespace myMath
                     if ( isZero( euler1[1] ) )
                     {
                         euler1[0] = std::atan2( this->mat[2][0], this->mat[2][2] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -645,7 +708,7 @@ namespace myMath
                     if ( isZero( euler1[1] ) )
                     {
                         euler1[0] = std::atan2( -this->mat[0][2], this->mat[0][0] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -672,7 +735,7 @@ namespace myMath
                     if ( isZero( euler1[1] ) )
                     {
                         euler1[0] = std::atan2( this->mat[0][1], this->mat[0][0] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -699,7 +762,7 @@ namespace myMath
                     if ( isZero( euler1[1] ) )
                     {
                         euler1[0] = std::atan2( this->mat[0][1], this->mat[0][0] );
-                        euler1[2] = static_cast<T>( 0 );
+                        euler1[2] = static_cast< T >( 0 );
 
                         euler2 = euler1;
                     }
@@ -730,7 +793,7 @@ namespace myMath
 
         euler = euler1.Magnitude() < euler2.Magnitude() ? euler1 : euler2;
 
-        DCM<T> check = euler.ToDCM( rotOrder );
+        DCM< T > check = euler.ToDCM( rotOrder );
 
         if ( *this != check )
         {
@@ -740,38 +803,38 @@ namespace myMath
         return euler;
     }
 
-    template <typename T>
-    Angle<T> DCM<T>::Rotate( const Angle<T>& angle, const TaitBryanOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const
+    template < typename T >
+    Angle< T > DCM< T >::Rotate( const Angle< T >& angle, const TaitBryanOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const
     {
         return ( ( *this ) * angle.ToDCM( rotOrder ) ).ToEuler( rotOrderOut );
     }
 
-    template <typename T>
-    Angle<T> DCM<T>::Rotate( const Angle<T>& angle, const EulerOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const
+    template < typename T >
+    Angle< T > DCM< T >::Rotate( const Angle< T >& angle, const EulerOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const
     {
         return ( ( *this ) * angle.ToDCM( rotOrder ) ).ToEuler( rotOrderOut );
     }
 
-    template <typename T>
-    Angle<T> DCM<T>::Rotate( const Angle<T>& angle, const EulerOrder& rotOrder, const EulerOrder rotOrderOut ) const
+    template < typename T >
+    Angle< T > DCM< T >::Rotate( const Angle< T >& angle, const EulerOrder& rotOrder, const EulerOrder rotOrderOut ) const
     {
         return ( ( *this ) * angle.ToDCM( rotOrder ) ).ToEuler( rotOrderOut );
     }
 
-    template <typename T>
-    DCM<T> DCM<T>::Rotate( const DCM<T>& dcm ) const
+    template < typename T >
+    DCM< T > DCM< T >::Rotate( const DCM< T >& dcm ) const
     {
         return ( *this ) * dcm;
     }
 
-    template <typename T>
-    Quaternion<T> DCM<T>::Rotate( const Quaternion<T>& q ) const
+    template < typename T >
+    Quaternion< T > DCM< T >::Rotate( const Quaternion< T >& q ) const
     {
         return q * ToQuaternion();
     }
 
-    template <typename T>
-    Vector<T, 3u> DCM<T>::Rotate( const Vector<T, 3u>& v ) const
+    template < typename T >
+    Vector<T, 3u> DCM< T >::Rotate( const Vector<T, 3u>& v ) const
     {
         return ( *this ) * v;
     }

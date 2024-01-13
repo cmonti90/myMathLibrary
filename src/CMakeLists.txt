@@ -6,11 +6,6 @@ set(version 1.0.0)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-set(PROJ_COMPILE_DEFS 
-    "DEBUG")
-
-set(SOURCES mathlib.cpp)
-
 set(HEADERS 
             Angle.h
             BasicFunctions.h
@@ -24,7 +19,7 @@ set(HEADERS
             Vector.h
 )
 
-add_library(${target} SHARED ${SOURCES})
+add_library(${target} INTERFACE ${SOURCES})
 
 set_property(TARGET ${target} PROPERTY VERSION ${version})
 set_property(TARGET ${target} PROPERTY SOVERSION 1)
@@ -34,12 +29,10 @@ set_property(TARGET ${target} APPEND PROPERTY
   COMPATIBLE_INTERFACE_STRING myMathLib_MAJOR_VERSION
 )
 
-target_compile_definitions(${target} PRIVATE DEBUG)
+target_compile_definitions(${target} INTERFACE DEBUG)
 
-target_include_directories(${target} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+target_include_directories(${target} INTERFACE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
                                             "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
-
-target_link_options(${target} PUBLIC  -fPIC)
 
 install(TARGETS ${target}
         EXPORT ${exportedTarget}
