@@ -10,7 +10,7 @@ include(CMakePackageConfigHelpers)
 set(HEADERS 
             Angle.h
             BasicFunctions.h
-            Constants.h
+            myMathConstants.h
             DCM.h
             mathlib.h
             Matrix.h
