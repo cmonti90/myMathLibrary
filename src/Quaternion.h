@@ -35,9 +35,17 @@ namespace myMath
 
         virtual ~Quaternion();
 
-        Quaternion<T>& operator=( const Quaternion<T>& q );
-        Quaternion<T>& operator=( const Vector<T, 4u>& q );
-        Quaternion<T>& operator=( const T ( &q )[4] );
+        using Vector<T, 4u>::operator=;
+        using Vector<T, 4u>::operator[];
+        using Vector<T, 4u>::operator+;
+        using Vector<T, 4u>::operator+=;
+        using Vector<T, 4u>::operator-;
+        using Vector<T, 4u>::operator-=;
+        using Vector<T, 4u>::operator/;
+        using Vector<T, 4u>::operator/=;
+
+        using Vector<T, 4u>::operator==;
+        using Vector<T, 4u>::operator!=;
 
         Quaternion<T> operator*( const Quaternion<T>& q ) const;
         Quaternion<T> operator*( const Vector<T, 4u>& q ) const;
@@ -46,30 +54,6 @@ namespace myMath
         Quaternion<T>& operator*=( const Quaternion<T>& q );
         Quaternion<T>& operator*=( const Vector<T, 4u>& q );
         Quaternion<T>& operator*=( const T ( &q )[4] );
-
-        Quaternion<T> operator+( const Quaternion<T>& q ) const;
-        Quaternion<T> operator+( const Vector<T, 4u>& q ) const;
-        Quaternion<T> operator+( const T ( &q )[4] ) const;
-
-        Quaternion<T>& operator+=( const Quaternion<T>& q );
-        Quaternion<T>& operator+=( const Vector<T, 4u>& q );
-        Quaternion<T>& operator+=( const T ( &q )[4] );
-
-        Quaternion<T> operator-( const Quaternion<T>& q ) const;
-        Quaternion<T> operator-( const Vector<T, 4u>& q ) const;
-        Quaternion<T> operator-( const T ( &q )[4] ) const;
-
-        Quaternion<T>& operator-=( const Quaternion<T>& q );
-        Quaternion<T>& operator-=( const Vector<T, 4u>& q );
-        Quaternion<T>& operator-=( const T ( &q )[4] );
-
-        Quaternion<T> operator/( const T& q ) const;
-        Quaternion<T>& operator/=( const T& q );
-
-        Quaternion<T> operator-( void ) const;
-
-        bool operator==( const Quaternion<T>& q ) const;
-        bool operator!=( const Quaternion<T>& q ) const;
 
         static Quaternion<T> Identity( void )
         {
@@ -103,8 +87,8 @@ namespace myMath
 
 namespace myMath
 {
-    typedef Quaternion<double> QuaternionD;
-    typedef Quaternion<float> QuaternionF;
+    typedef Quaternion< double > QuaternionD;
+    typedef Quaternion< float >  QuaternionF;
 
     template <typename T>
     Quaternion<T>::Quaternion() : Vector<T, 4u>()
@@ -212,30 +196,6 @@ namespace myMath
     }
 
     template <typename T>
-    Quaternion<T>& Quaternion<T>::operator=( const Quaternion<T>& q )
-    {
-        std::memcpy( this->vec, q.vec, 4 * sizeof( T ) );
-
-        return *this;
-    }
-
-    template <typename T>
-    Quaternion<T>& Quaternion<T>::operator=( const Vector<T, 4u>& q )
-    {
-        std::memcpy( this->vec, q.vec, 4 * sizeof( T ) );
-
-        return *this;
-    }
-
-    template <typename T>
-    Quaternion<T>& Quaternion<T>::operator=( const T ( &q )[4] )
-    {
-        std::memcpy( this->vec, q, 4 * sizeof( T ) );
-
-        return *this;
-    }
-
-    template <typename T>
     Quaternion<T> Quaternion<T>::operator*( const Quaternion<T>& q ) const
     {
         Quaternion<T> qat;
@@ -323,199 +283,6 @@ namespace myMath
         this->Normalize();
 
         return *this;
-    }
-
-    template <typename T>
-    Quaternion<T> Quaternion<T>::operator+( const Quaternion<T>& q ) const
-    {
-        Quaternion<T> qat{*this};
-
-        qat[0] += q[0];
-        qat[1] += q[1];
-        qat[2] += q[2];
-        qat[3] += q[3];
-
-        return qat;
-    }
-
-    template <typename T>
-    Quaternion<T> Quaternion<T>::operator+( const Vector<T, 4u>& q ) const
-    {
-        Quaternion<T> qat{*this};
-
-        qat[0] += q[0];
-        qat[1] += q[1];
-        qat[2] += q[2];
-        qat[3] += q[3];
-
-        return qat;
-    }
-
-    template <typename T>
-    Quaternion<T> Quaternion<T>::operator+( const T ( &q )[4] ) const
-    {
-        Quaternion<T> qat{*this};
-
-        qat[0] += q[0];
-        qat[1] += q[1];
-        qat[2] += q[2];
-        qat[3] += q[3];
-
-        return qat;
-    }
-
-    template <typename T>
-    Quaternion<T>& Quaternion<T>::operator+=( const Quaternion<T>& q )
-    {
-        this->vec[0] += q[0];
-        this->vec[1] += q[1];
-        this->vec[2] += q[2];
-        this->vec[3] += q[3];
-
-        return *this;
-    }
-
-    template <typename T>
-    Quaternion<T>& Quaternion<T>::operator+=( const Vector<T, 4u>& q )
-    {
-        this->vec[0] += q[0];
-        this->vec[1] += q[1];
-        this->vec[2] += q[2];
-        this->vec[3] += q[3];
-
-        return *this;
-    }
-
-    template <typename T>
-    Quaternion<T>& Quaternion<T>::operator+=( const T ( &q )[4] )
-    {
-        this->vec[0] += q[0];
-        this->vec[1] += q[1];
-        this->vec[2] += q[2];
-        this->vec[3] += q[3];
-
-        return *this;
-    }
-
-    template <typename T>
-    Quaternion<T> Quaternion<T>::operator-( const Quaternion<T>& q ) const
-    {
-        Quaternion<T> qat{*this};
-
-        qat[0] -= q[0];
-        qat[1] -= q[1];
-        qat[2] -= q[2];
-        qat[3] -= q[3];
-
-        return qat;
-    }
-
-    template <typename T>
-    Quaternion<T> Quaternion<T>::operator-( const Vector<T, 4u>& q ) const
-    {
-        Quaternion<T> tmp{*this};
-
-        tmp[0] -= q[0];
-        tmp[1] -= q[1];
-        tmp[2] -= q[2];
-        tmp[3] -= q[3];
-
-        return tmp;
-    }
-
-    template <typename T>
-    Quaternion<T> Quaternion<T>::operator-( const T ( &q )[4] ) const
-    {
-        Quaternion<T> tmp{*this};
-
-        tmp[0] -= q[0];
-        tmp[1] -= q[1];
-        tmp[2] -= q[2];
-        tmp[3] -= q[3];
-
-        return tmp;
-    }
-
-    template <typename T>
-    Quaternion<T>& Quaternion<T>::operator-=( const Quaternion<T>& q )
-    {
-        this->vec[0] -= q[0];
-        this->vec[1] -= q[1];
-        this->vec[2] -= q[2];
-        this->vec[3] -= q[3];
-
-        return *this;
-    }
-
-    template <typename T>
-    Quaternion<T>& Quaternion<T>::operator-=( const Vector<T, 4u>& q )
-    {
-        this->vec[0] -= q[0];
-        this->vec[1] -= q[1];
-        this->vec[2] -= q[2];
-        this->vec[3] -= q[3];
-
-        return *this;
-    }
-
-    template <typename T>
-    Quaternion<T>& Quaternion<T>::operator-=( const T ( &q )[4] )
-    {
-        this->vec[0] -= q[0];
-        this->vec[1] -= q[1];
-        this->vec[2] -= q[2];
-        this->vec[3] -= q[3];
-
-        return *this;
-    }
-
-    template <typename T>
-    Quaternion<T> Quaternion<T>::operator/( const T& q ) const
-    {
-        Quaternion<T> tmp{*this};
-
-        tmp[0] /= q;
-        tmp[1] /= q;
-        tmp[2] /= q;
-        tmp[3] /= q;
-
-        return tmp;
-    }
-
-    template <typename T>
-    Quaternion<T>& Quaternion<T>::operator/=( const T& q )
-    {
-        this->vec[0] /= q;
-        this->vec[1] /= q;
-        this->vec[2] /= q;
-        this->vec[3] /= q;
-
-        return *this;
-    }
-
-    template <typename T>
-    Quaternion<T> Quaternion<T>::operator-( void ) const
-    {
-        Quaternion<T> tmp;
-
-        tmp[0] = -this->vec[0];
-        tmp[1] = -this->vec[1];
-        tmp[2] = -this->vec[2];
-        tmp[3] = -this->vec[3];
-
-        return tmp;
-    }
-
-    template <typename T>
-    bool Quaternion<T>::operator==( const Quaternion<T>& q ) const
-    {
-        return Vector<T, 4>::operator==( q );
-    }
-
-    template <typename T>
-    bool Quaternion<T>::operator!=( const Quaternion<T>& q ) const
-    {
-        return Vector<T, 4>::operator!=( q );
     }
 
     template <typename T>

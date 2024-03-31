@@ -1,6 +1,7 @@
 set(target mathlib)
 set(exportedTarget mathlibTarget)
 
+set(CMAKE_CXX_STANDARD 20)
 set(version 1.0.0)
 
 include(GNUInstallDirs)
