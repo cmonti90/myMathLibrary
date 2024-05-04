@@ -8,16 +8,16 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 set(HEADERS 
-            Angle.h
-            BasicFunctions.h
+            myMathAngle.h
+            myMathBasicFunctions.h
             myMathConstants.h
-            DCM.h
-            mathlib.h
-            Matrix.h
-            MatrixFunctions.h
-            Quaternion.h
-            Rotation.h
-            Vector.h
+            myMathDCM.h
+            myMath.h
+            myMathMatrix.h
+            myMathMatrixFunctions.h
+            myMathQuaternion.h
+            myMathRotation.h
+            myMathVector.h
 )
 
 add_library(${target} INTERFACE ${SOURCES})

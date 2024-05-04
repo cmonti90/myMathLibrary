@@ -1,8 +1,8 @@
-#ifndef E19DE42F_624A_4EBF_8117_D3009272C05E
-#define E19DE42F_624A_4EBF_8117_D3009272C05E
+#ifndef MYMATH_VECTOR_H
+#define MYMATH_VECTOR_H
 
-#include "Constants.h"
-#include "BasicFunctions.h"
+#include "myMathConstants.h"
+#include "myMathBasicFunctions.h"
 #include <cmath>
 #include <initializer_list>
 #include <stdexcept>
@@ -34,13 +34,13 @@ namespace myMath
 
         Vector< T, R > operator+( const Vector< T, R >& obj ) const;
         Vector< T, R > operator-( const Vector< T, R >& obj ) const;
-        Vector< T, R > operator*( const double& x ) const;
-        Vector< T, R > operator/( const double& x ) const;
+        Vector< T, R > operator*( const T& x ) const;
+        Vector< T, R > operator/( const T& x ) const;
 
         Vector< T, R >& operator+=( const Vector< T, R >& obj );
         Vector< T, R >& operator-=( const Vector< T, R >& obj );
-        Vector< T, R >& operator*=( const double& x );
-        Vector< T, R >& operator/=( const double& x );
+        Vector< T, R >& operator*=( const T& x );
+        Vector< T, R >& operator/=( const T& x );
 
         Vector< T, R > operator-( void ) const;
 
@@ -51,6 +51,10 @@ namespace myMath
         void Normalize( void );
         Vector< T, R > Unit() const;
     };
+
+    typedef Vector< float, 2u > Vector2f;
+    typedef Vector< float, 3u > Vector3f;
+    typedef Vector< float, 4u > Vector4f;
 
     typedef Vector< double, 2u > Vector2d;
     typedef Vector< double, 3u > Vector3d;
@@ -200,7 +204,7 @@ namespace myMath
     }
 
     template < typename T, unsigned int R >
-    Vector< T, R > Vector< T, R >::operator*( const double& x ) const
+    Vector< T, R > Vector< T, R >::operator*( const T& x ) const
     {
         Vector< T, R > tmp{*this};
 
@@ -213,7 +217,7 @@ namespace myMath
     }
 
     template < typename T, unsigned int R >
-    Vector< T, R > Vector< T, R >::operator/( const double& x ) const
+    Vector< T, R > Vector< T, R >::operator/( const T& x ) const
     {
         Vector< T, R > tmp{*this};
 
@@ -250,7 +254,7 @@ namespace myMath
     }
 
     template < typename T, unsigned int R >
-    Vector< T, R >& Vector< T, R >::operator*=( const double& x )
+    Vector< T, R >& Vector< T, R >::operator*=( const T& x )
     {
 
         for ( unsigned int i{0u}; i < R; i++ )
@@ -262,7 +266,7 @@ namespace myMath
     }
 
     template < typename T, unsigned int R >
-    Vector< T, R >& Vector< T, R >::operator/=( const double& x )
+    Vector< T, R >& Vector< T, R >::operator/=( const T& x )
     {
 
         for ( unsigned int i{0u}; i < R; i++ )
@@ -315,7 +319,7 @@ namespace myMath
     }
 
     template <class T, unsigned int C>
-    Vector<T, C> operator*( const double& x, const Vector<T, C>& obj )
+    Vector<T, C> operator*( const T& x, const Vector<T, C>& obj )
     {
         Vector<T, C> tmp{obj};
 
@@ -368,4 +372,4 @@ namespace myMath
     }
 }
 
-#endif /* E19DE42F_624A_4EBF_8117_D3009272C05E */
+#endif // MYMATH_VECTOR_H

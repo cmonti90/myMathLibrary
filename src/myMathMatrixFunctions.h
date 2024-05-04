@@ -1,10 +1,10 @@
-#ifndef DFB7B78E_BBE0_4E90_AFE6_62E04AA66E04
-#define DFB7B78E_BBE0_4E90_AFE6_62E04AA66E04
+#ifndef MYMATH_MATRIX_FUNCTIONS_H
+#define MYMATH_MATRIX_FUNCTIONS_H
 
-#include "BasicFunctions.h"
-#include "Vector.h"
-#include "Matrix.h"
-#include "DCM.h"
+#include "myMathBasicFunctions.h"
+#include "myMathVector.h"
+#include "myMathMatrix.h"
+#include "myMathDCM.h"
 
 namespace myMath
 {
@@ -28,6 +28,9 @@ namespace myMath
 
     template < class T, unsigned int R, unsigned int C >
     Matrix< T, R, C > OuterProduct( const Vector< T, R >& lhs, const Vector< T, C >& rhs );
+
+    template< class T, unsigned int R >
+    Matrix< T, R, R > Identity( void );
 
     /////////////////////////////////
     //         DEFINITIONS         //
@@ -116,6 +119,19 @@ namespace myMath
         return tmp;
     }
 
+    template< class T, unsigned int R >
+    Matrix< T, R, R > Identity( void )
+    {
+        Matrix< T, R, R > tmp{static_cast< T >( 0.0 )};
+
+        for ( unsigned int i{0u}; i < R; i++ )
+        {
+            tmp.mat[i][i] = static_cast< T >( 1.0 );
+        }
+
+        return tmp;
+    }
+
 } // namespace myMath
 
-#endif /* DFB7B78E_BBE0_4E90_AFE6_62E04AA66E04 */
+#endif // MYMATH_MATRIX_FUNCTIONS_H

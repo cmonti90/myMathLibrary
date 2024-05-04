@@ -1,9 +1,9 @@
-#ifndef BA9453AD_D478_47EC_9001_44325F419B41
-#define BA9453AD_D478_47EC_9001_44325F419B41
+#ifndef MYMATH_DCM_H
+#define MYMATH_DCM_H
 
-#include "BasicFunctions.h"
-#include "Rotation.h"
-#include "Matrix.h"
+#include "myMathBasicFunctions.h"
+#include "myMathRotation.h"
+#include "myMathMatrix.h"
 
 #include <cmath>
 #include <stdexcept>
@@ -24,16 +24,27 @@ namespace myMath
         DCM( const Matrix< T, 3u, 3u >& m );
         DCM( const std::initializer_list< T >& list );
         DCM( const T ( &m )[3][3] );
+        DCM( const T ( &&m )[3][3] );
         DCM( const T ( &m )[9] );
 
-        DCM< T >& operator=( const DCM< T >& dcm );
-        DCM< T >& operator=( const Matrix< T, 3, 3 >& m );
-        DCM< T >& operator=( const T ( &m )[3][3] );
-        DCM< T >& operator=( const T ( &m )[9] );
+        using Matrix< T, 3, 3 >::operator=;
+
+        using Matrix< T, 3, 3 >::operator+;
+        using Matrix< T, 3, 3 >::operator-;
+        using Matrix< T, 3, 3 >::operator*;
+        using Matrix< T, 3, 3 >::operator/;
+
+        using Matrix< T, 3, 3 >::operator+=;
+        using Matrix< T, 3, 3 >::operator-=;
+        using Matrix< T, 3, 3 >::operator*=;
+        using Matrix< T, 3, 3 >::operator/=;
+
+        using Matrix< T, 3, 3 >::operator==;
+        using Matrix< T, 3, 3 >::operator!=;
 
         DCM< T > operator*( const DCM< T >& dcm ) const;
         DCM< T > operator*( const Matrix< T, 3, 3 >& m ) const;
-        DCM< T > operator*( const double& x ) const;
+        DCM< T > operator*( const T& x ) const;
 
         template <unsigned int C>
         Matrix<T, 3, C> operator*( const Matrix< T, 3, C >& m ) const;
@@ -43,108 +54,59 @@ namespace myMath
         Vector<T, 3u> operator*( const Vector<T, 3u>& v ) const;
 
         DCM< T >& operator*=( const DCM< T >& dcm );
-
         DCM< T >& operator*=( const Matrix< T, 3u, 3u >& m );
-        DCM< T >& operator*=( const T ( &m )[3][3] );
-        DCM< T >& operator*=( const T ( &m )[9] );
-        DCM< T >& operator*=( const double& x );
 
-        DCM< T > operator-( void ) const;
-
-        bool operator==( const DCM< T >& dcm ) const;
-        bool operator!=( const DCM< T >& dcm ) const;
-
-        static DCM< T > Identity( void )
-        {
-            DCM< T > identityMat( static_cast< T >( 0 ) );
-
-            for ( unsigned int i{0u}; i < 3u; i++ )
-            {
-                identityMat[i][i] = static_cast< T >( 1 );
-            }
-
-            return identityMat;
-        }
+        static DCM< T > Identity( void );
 
         DCM< T > Transpose() const;
         void Normalize();
         Quaternion< T > ToQuaternion() const;
         Angle< T > ToEuler( const TaitBryanOrder& rotOrder ) const;
         Angle< T > ToEuler( const EulerOrder& rotOrder ) const;
-
-        Angle< T > Rotate( const Angle< T >& angle, const TaitBryanOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const;
-        Angle< T > Rotate( const Angle< T >& angle, const EulerOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const;
-        Angle< T > Rotate( const Angle< T >& angle, const EulerOrder& rotOrder, const EulerOrder rotOrderOut ) const;
-        DCM< T > Rotate( const DCM< T >& dcm ) const;
-        Quaternion< T > Rotate( const Quaternion< T >& q ) const;
-        Vector<T, 3u> Rotate( const Vector<T, 3u>& v ) const;
     };
 } // namespace myMath
 
-#include "Angle.h"
-#include "Quaternion.h"
+#include "myMathAngle.h"
+#include "myMathQuaternion.h"
 
 namespace myMath
 {
 
-    typedef DCM<double> DCMd;
-    typedef DCM<float> DCMf;
+    typedef DCM< float  > DCMf;
+    typedef DCM< double > DCMd;
 
     template < typename T >
-    DCM< T >::DCM() : Matrix< T, 3u, 3u >()
+    inline DCM< T >::DCM() : Matrix< T, 3u, 3u >()
     {
     }
 
+
     template < typename T >
-    DCM< T >::DCM( const Matrix< T, 3u, 3u >& m ) : Matrix< T, 3u, 3u >( m )
+    inline DCM< T >::DCM( const Matrix< T, 3u, 3u >& m ) : Matrix< T, 3u, 3u >( m )
     {
     }
 
+
     template < typename T >
-    DCM< T >::DCM( const std::initializer_list< T >& list ) : Matrix< T, 3u, 3u >( list )
+    inline DCM< T >::DCM( const std::initializer_list< T >& list ) : Matrix< T, 3u, 3u >( list )
     {
     }
 
+
     template < typename T >
-    DCM< T >::DCM( const T ( &m )[3][3] ) : Matrix< T, 3u, 3u >( m )
+    inline DCM< T >::DCM( const T ( &m )[3][3] ) : Matrix< T, 3u, 3u >( m )
     {
     }
 
-    template < typename T >
-    DCM< T >::DCM( const T ( &m )[9] ) : Matrix< T, 3u, 3u >()
-    {
-        for ( unsigned int i{0u}; i < 3u; i++ )
-        {
-            for ( unsigned int j{0u}; j < 3u; j++ )
-            {
-                this->mat[i][j] = m[i * 3u + j];
-            }
-        }
-    }
 
     template < typename T >
-    DCM< T >& DCM< T >::operator=( const DCM< T >& dcm )
+    inline DCM< T >::DCM( const T ( &&m )[3][3] ) : Matrix< T, 3u, 3u >( m )
     {
-        Matrix< T, 3u, 3u >::operator=( dcm );
-        return *this;
     }
 
-    template < typename T >
-    DCM< T >& DCM< T >::operator=( const Matrix< T, 3u, 3u >& m )
-    {
-        Matrix< T, 3u, 3u >::operator=( m );
-        return *this;
-    }
 
     template < typename T >
-    DCM< T >& DCM< T >::operator=( const T ( &m )[3][3] )
-    {
-        Matrix< T, 3u, 3u >::operator=( m );
-        return *this;
-    }
-
-    template < typename T >
-    DCM< T >& DCM< T >::operator=( const T ( &m )[9] )
+    inline DCM< T >::DCM( const T ( &m )[9] ) : Matrix< T, 3u, 3u >()
     {
         for ( unsigned int i{0u}; i < 3u; i++ )
         {
@@ -153,9 +115,8 @@ namespace myMath
                 this->mat[i][j] = m[i * 3u + j];
             }
         }
-
-        return *this;
     }
+
 
     template < typename T >
     DCM< T > DCM< T >::operator*( const DCM< T >& dcm ) const
@@ -180,8 +141,9 @@ namespace myMath
         return tmp;
     }
 
+
     template < typename T >
-    DCM< T > DCM< T >::operator*( const double& x ) const
+    DCM< T > DCM< T >::operator*( const T& x ) const
     {
         DCM< T > tmp{static_cast< T >( 0 )};
 
@@ -195,6 +157,7 @@ namespace myMath
 
         return tmp;
     }
+
 
     template < typename T >
     DCM< T > DCM< T >::operator*( const Matrix< T, 3u, 3u >& m ) const
@@ -259,12 +222,14 @@ namespace myMath
         return tmp;
     }
 
+
     template < typename T >
     DCM< T >& DCM< T >::operator*=( const DCM< T >& dcm )
     {
         Matrix< T, 3u, 3u >::operator*=( dcm );
         return *this;
     }
+
 
     template < typename T >
     DCM< T >& DCM< T >::operator*=( const Matrix< T, 3u, 3u >& m )
@@ -273,30 +238,9 @@ namespace myMath
         return *this;
     }
 
-    template < typename T >
-    DCM< T >& DCM< T >::operator*=( const T ( &m )[3][3] )
-    {
-        Matrix< T, 3u, 3u >::operator*=( m );
-        return *this;
-    }
-
-    template < typename T >
-    DCM< T >& DCM< T >::operator*=( const T ( &m )[9] )
-    {
-        Matrix< T, 3u, 3u >::operator*=( m );
-        return *this;
-    }
-
-    template < typename T >
-    DCM< T > DCM< T >::operator-( void ) const
-    {
-        return static_cast< T >( -1 ) * ( *this );
-    }
-
-
 
     template < class T >
-    DCM< T > operator*( const double& x, const DCM< T >& obj )
+    DCM< T > operator*( const T& x, const DCM< T >& obj )
     {
         return obj * x;
     }
@@ -323,26 +267,7 @@ namespace myMath
 
         return tmp;
     }
-
-    template < class T >
-    DCM< T >& DCM< T >::operator*=( const double& x )
-    {
-        *this = *this * x;
-
-        return *this;
-    }
-
-    template < typename T >
-    bool DCM< T >::operator==( const DCM< T >& dcm ) const
-    {
-        return Matrix< T, 3u, 3u >::operator==( dcm );
-    }
-
-    template < typename T >
-    bool DCM< T >::operator!=( const DCM< T >& dcm ) const
-    {
-        return Matrix< T, 3u, 3u >::operator!=( dcm );
-    }
+    
 
     template < typename T >
     DCM< T > DCM< T >::Transpose() const
@@ -360,6 +285,7 @@ namespace myMath
         return tmp;
     }
 
+
     template < typename T >
     void DCM< T >::Normalize()
     {
@@ -368,6 +294,7 @@ namespace myMath
             this->mat[i].Normalize();
         }
     }
+
 
     template < typename T >
     Quaternion< T > DCM< T >::ToQuaternion() const
@@ -414,6 +341,7 @@ namespace myMath
 
         return q;
     }
+
 
     template < typename T >
     Angle< T > DCM< T >::ToEuler( const TaitBryanOrder& rotOrder ) const
@@ -610,6 +538,7 @@ namespace myMath
 
         return euler;
     }
+    
 
     template < typename T >
     Angle< T > DCM< T >::ToEuler( const EulerOrder& rotOrder ) const
@@ -803,42 +732,20 @@ namespace myMath
         return euler;
     }
 
-    template < typename T >
-    Angle< T > DCM< T >::Rotate( const Angle< T >& angle, const TaitBryanOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const
-    {
-        return ( ( *this ) * angle.ToDCM( rotOrder ) ).ToEuler( rotOrderOut );
-    }
 
     template < typename T >
-    Angle< T > DCM< T >::Rotate( const Angle< T >& angle, const EulerOrder& rotOrder, const TaitBryanOrder rotOrderOut ) const
+    DCM< T > Identity( void )
     {
-        return ( ( *this ) * angle.ToDCM( rotOrder ) ).ToEuler( rotOrderOut );
-    }
+        DCM< T > identityMat( static_cast< T >( 0 ) );
 
-    template < typename T >
-    Angle< T > DCM< T >::Rotate( const Angle< T >& angle, const EulerOrder& rotOrder, const EulerOrder rotOrderOut ) const
-    {
-        return ( ( *this ) * angle.ToDCM( rotOrder ) ).ToEuler( rotOrderOut );
-    }
+        for ( unsigned int i{0u}; i < 3u; i++ )
+        {
+            identityMat[i][i] = static_cast< T >( 1 );
+        }
 
-    template < typename T >
-    DCM< T > DCM< T >::Rotate( const DCM< T >& dcm ) const
-    {
-        return ( *this ) * dcm;
-    }
-
-    template < typename T >
-    Quaternion< T > DCM< T >::Rotate( const Quaternion< T >& q ) const
-    {
-        return q * ToQuaternion();
-    }
-
-    template < typename T >
-    Vector<T, 3u> DCM< T >::Rotate( const Vector<T, 3u>& v ) const
-    {
-        return ( *this ) * v;
+        return identityMat;
     }
 
 } // namespace myMath
 
-#endif /* BA9453AD_D478_47EC_9001_44325F419B41 */
+#endif // MYMATH_DCM_H

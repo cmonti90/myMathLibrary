@@ -1,7 +1,7 @@
-#ifndef D01103EE_17E6_4BA7_9F31_064A6885444F
-#define D01103EE_17E6_4BA7_9F31_064A6885444F
+#ifndef MYMATH_BASIC_FUNCTIONS_H
+#define MYMATH_BASIC_FUNCTIONS_H
 
-#include "Constants.h"
+#include "myMathConstants.h"
 
 #include <cmath>
 namespace myMath
@@ -132,8 +132,8 @@ namespace myMath
     template <typename T>
     inline bool isZero( const T x )
     {
-        return ( ABS( static_cast<double>( x ) ) < Constants::ZERO_THRESHOLD );
+        return ( x == static_cast< T >( 0 ) );
     }
 }
 
-#endif /* D01103EE_17E6_4BA7_9F31_064A6885444F */
+#endif // MYMATH_BASIC_FUNCTIONS_H

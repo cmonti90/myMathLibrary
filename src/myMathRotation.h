@@ -1,5 +1,5 @@
-#ifndef AF5B087C_AEE8_44A9_A31B_D2AA6668F2A5
-#define AF5B087C_AEE8_44A9_A31B_D2AA6668F2A5
+#ifndef MYMATH_ROTATION_H
+#define MYMATH_ROTATION_H
 
 namespace myMath
 {
@@ -40,4 +40,4 @@ namespace myMath
     };
 }
 
-#endif /* AF5B087C_AEE8_44A9_A31B_D2AA6668F2A5 */
+#endif // MYMATH_ROTATION_H

@@ -1,9 +1,9 @@
-#ifndef B4D2FB34_E82B_4930_84AF_12D1E557452E
-#define B4D2FB34_E82B_4930_84AF_12D1E557452E
+#ifndef MYMATH_ANGLE_H
+#define MYMATH_ANGLE_H
 
-#include "BasicFunctions.h"
-#include "Rotation.h"
-#include "Vector.h"
+#include "myMathBasicFunctions.h"
+#include "myMathRotation.h"
+#include "myMathVector.h"
 
 #include <cmath>
 #include <stdexcept>
@@ -26,27 +26,17 @@ namespace myMath
         Angle( const Vector<T, 3u>& obj );
         Angle( const Angle<T>& obj );
 
-        virtual ~Angle();
+        ~Angle() = default;
 
-        Angle<T>& operator=( const T x );
-        Angle<T>& operator=( const T ( &x )[3u] );
-        Angle<T>& operator=( const Vector<T, 3u>& obj );
-        Angle<T>& operator=( const Angle<T>& obj );
+        using Vector<T, 3u>::operator=;
+        using Vector<T, 3u>::operator+;
+        using Vector<T, 3u>::operator-;
+        
+        using Vector<T, 3u>::operator+=;
+        using Vector<T, 3u>::operator-=;
 
-        Angle<T> operator+( const Angle<T>& obj ) const;
-        Angle<T> operator-( const Angle<T>& obj ) const;
-        Angle<T> operator*( const T x ) const;
-        Angle<T> operator/( const T x ) const;
-
-        Angle<T>& operator+=( const Angle<T>& obj );
-        Angle<T>& operator-=( const Angle<T>& obj );
-        Angle<T>& operator*=( const T x );
-        Angle<T>& operator/=( const T x );
-
-        Angle<T> operator-( void ) const;
-
-        bool operator==( const Angle<T>& obj ) const;
-        bool operator!=( const Angle<T>& obj ) const;
+        using Vector<T, 3u>::operator==;
+        using Vector<T, 3u>::operator!=;
 
         void Normalize();
 
@@ -56,159 +46,49 @@ namespace myMath
         Quaternion<T> ToQuaternion( const TaitBryanOrder& rotOrder ) const;
         Quaternion<T> ToQuaternion( const EulerOrder& rotOrder ) const;
 
-        Angle<T> Rotate( const TaitBryanOrder& rotOrder, const Angle<T>& ang, const TaitBryanOrder& rotOrder2, const TaitBryanOrder& rotOrderOut ) const;
-        Angle<T> Rotate( const TaitBryanOrder& rotOrder, const Angle<T>& ang, const EulerOrder& rotOrder2, const TaitBryanOrder& rotOrderOut ) const;
-        Angle<T> Rotate( const EulerOrder& rotOrder, const Angle<T>& ang, const TaitBryanOrder& rotOrder2, const TaitBryanOrder& rotOrderOut ) const;
-        Angle<T> Rotate( const EulerOrder& rotOrder, const Angle<T>& ang, const EulerOrder& rotOrder2, const EulerOrder& rotOrderOut ) const;
-        Angle<T> Rotate( const EulerOrder& rotOrder, const Angle<T>& ang, const EulerOrder& rotOrder2, const TaitBryanOrder& rotOrderOut ) const;
-
-        Vector<T, 3u> Rotate( const TaitBryanOrder& rotOrder, const Vector<T, 3u>& vec ) const;
-        Vector<T, 3u> Rotate( const EulerOrder& rotOrder, const Vector<T, 3u>& vec ) const;
-        DCM<T> Rotate( const TaitBryanOrder& rotOrder, const DCM<T>& dcm ) const;
-        DCM<T> Rotate( const EulerOrder& rotOrder, const DCM<T>& dcm ) const;
-        Quaternion<T> Rotate( const TaitBryanOrder& rotOrder, const Quaternion<T>& q ) const;
-        Quaternion<T> Rotate( const EulerOrder& rotOrder, const Quaternion<T>& q ) const;
-
         void wrapAnglesZeroToTwoPi( const Axis ax = Axis::ALL );
         void wrapAnglesMinusPiToPi( const Axis ax = Axis::ALL );
     };
 } // namespace myMath
 
-#include "DCM.h"
-#include "Quaternion.h"
+#include "myMathDCM.h"
+#include "myMathQuaternion.h"
 
 namespace myMath
 {
-    typedef Angle<double> AngleD;
-    typedef Angle<float> AngleF;
+    typedef Angle< double > AngleD;
+    typedef Angle< float >  AngleF;
+
 
     template <typename T>
-    Angle<T>::Angle() : Vector<T, 3u>( static_cast<T>( 0.0 ) )
+    inline Angle<T>::Angle() : Vector<T, 3u>( static_cast<T>( 0 ) )
     {
     }
 
+
     template <typename T>
-    Angle<T>::Angle( const T x ) : Vector<T, 3u>( x )
+    inline Angle<T>::Angle( const T x ) : Vector<T, 3u>( x )
     {
     }
 
+
     template <typename T>
-    Angle<T>::Angle( const T ( &x )[3u] ) : Vector<T, 3u>( x )
+    inline Angle<T>::Angle( const T ( &x )[3u] ) : Vector<T, 3u>( x )
     {
     }
 
+
     template <typename T>
-    Angle<T>::Angle( const Vector<T, 3u>& obj ) : Vector<T, 3u>( obj )
+    inline Angle<T>::Angle( const Vector<T, 3u>& obj ) : Vector<T, 3u>( obj )
     {
     }
 
-    template <typename T>
-    Angle<T>::Angle( const Angle<T>& ang ) : Vector<T, 3u>( static_cast<Vector<T, 3u>>( ang ) )
-    {
-    }
 
     template <typename T>
-    Angle<T>::~Angle()
+    inline Angle<T>::Angle( const Angle<T>& ang ) : Vector<T, 3u>( static_cast<Vector<T, 3u>>( ang ) )
     {
     }
-
-    template <typename T>
-    Angle<T>& Angle<T>::operator=( const T x )
-    {
-        Vector<T, 3u>::operator=( x );
-        return *this;
-    }
-
-    template <typename T>
-    Angle<T>& Angle<T>::operator=( const T ( &x )[3u] )
-    {
-        Vector<T, 3u>::operator=( x );
-        return *this;
-    }
-
-    template <typename T>
-    Angle<T>& Angle<T>::operator=( const Vector<T, 3u>& obj )
-    {
-        Vector<T, 3u>::operator=( obj );
-        return *this;
-    }
-
-    template <typename T>
-    Angle<T>& Angle<T>::operator=( const Angle<T>& obj )
-    {
-        Vector<T, 3u>::operator=( static_cast<Vector<T, 3u>>( obj ) );
-        return *this;
-    }
-
-    template <typename T>
-    Angle<T> Angle<T>::operator+( const Angle<T>& obj ) const
-    {
-        return Angle<T>( Vector<T, 3u>::operator+( static_cast<Vector<T, 3u>>( obj ) ) );
-    }
-
-    template <typename T>
-    Angle<T> Angle<T>::operator-( const Angle<T>& obj ) const
-    {
-        return Angle<T>( Vector<T, 3u>::operator-( obj ) );
-    }
-
-    template <typename T>
-    Angle<T> Angle<T>::operator*( const T x ) const
-    {
-        return Angle<T>( Vector<T, 3u>::operator*( x ) );
-    }
-
-    template <typename T>
-    Angle<T> Angle<T>::operator/( const T x ) const
-    {
-        return Angle<T>( Vector<T, 3u>::operator/( x ) );
-    }
-
-    template <typename T>
-    Angle<T>& Angle<T>::operator+=( const Angle<T>& obj )
-    {
-        Vector<T, 3u>::operator+=( static_cast<Vector<T, 3u>>( obj ) );
-        return *this;
-    }
-
-    template <typename T>
-    Angle<T>& Angle<T>::operator-=( const Angle<T>& obj )
-    {
-        Vector<T, 3u>::operator-=( static_cast<Vector<T, 3u>>( obj ) );
-        return *this;
-    }
-
-    template <typename T>
-    Angle<T>& Angle<T>::operator*=( const T x )
-    {
-        Vector<T, 3u>::operator*=( x );
-        return *this;
-    }
-
-    template <typename T>
-    Angle<T>& Angle<T>::operator/=( const T x )
-    {
-        Vector<T, 3u>::operator/=( x );
-        return *this;
-    }
-
-    template <typename T>
-    Angle<T> Angle<T>::operator-( void ) const
-    {
-        return static_cast<T>( -1 ) * ( *this );
-    }
-
-    template <typename T>
-    bool Angle<T>::operator==( const Angle<T>& obj ) const
-    {
-        return Vector<T, 3u>::operator==( static_cast<Vector<T, 3u>>( obj ) );
-    }
-
-    template <typename T>
-    bool Angle<T>::operator!=( const Angle<T>& obj ) const
-    {
-        return Vector<T, 3u>::operator!=( static_cast<Vector<T, 3u>>( obj ) );
-    }
+    
 
     template <typename T>
     void Angle<T>::Normalize()
@@ -218,6 +98,7 @@ namespace myMath
             this->vec[i] = fmod( this->vec[i], static_cast<T>( 2.0 * Constants::PI ) );
         }
     }
+
 
     template <typename T>
     DCM<T> Angle<T>::ToDCM( const TaitBryanOrder& rotOrder ) const
@@ -339,6 +220,7 @@ namespace myMath
         return tmp;
     }
 
+
     template <typename T>
     DCM<T> Angle<T>::ToDCM( const EulerOrder& rotOrder ) const
     {
@@ -459,6 +341,7 @@ namespace myMath
         return tmp;
     }
 
+
     template <typename T>
     Quaternion<T> Angle<T>::ToQuaternion( const TaitBryanOrder& rotOrder ) const
     {
@@ -541,6 +424,7 @@ namespace myMath
         return qat;
     }
 
+
     template <typename T>
     Quaternion<T> Angle<T>::ToQuaternion( const EulerOrder& rotOrder ) const
     {
@@ -607,71 +491,6 @@ namespace myMath
         return ( q1 * q2 * q3 );
     }
 
-    template <typename T>
-    Angle<T> Angle<T>::Rotate( const TaitBryanOrder& rotOrder, const Angle<T>& ang, const TaitBryanOrder& rotOrder2, const TaitBryanOrder& rotOrderOut ) const
-    {
-        return ( ToDCM( rotOrder ) * ang.ToDCM( rotOrder2 ) ).ToEuler( rotOrderOut );
-    }
-
-    template <typename T>
-    Angle<T> Angle<T>::Rotate( const TaitBryanOrder& rotOrder, const Angle<T>& ang, const EulerOrder& rotOrder2, const TaitBryanOrder& rotOrderOut ) const
-    {
-        return ( ToDCM( rotOrder ) * ang.ToDCM( rotOrder2 ) ).ToEuler( rotOrderOut );
-    }
-
-    template <typename T>
-    Angle<T> Angle<T>::Rotate( const EulerOrder& rotOrder, const Angle<T>& ang, const TaitBryanOrder& rotOrder2, const TaitBryanOrder& rotOrderOut ) const
-    {
-        return ( ToDCM( rotOrder ) * ang.ToDCM( rotOrder2 ) ).ToEuler( rotOrderOut );
-    }
-
-    template <typename T>
-    Angle<T> Angle<T>::Rotate( const EulerOrder& rotOrder, const Angle<T>& ang, const EulerOrder& rotOrder2, const EulerOrder& rotOrderOut ) const
-    {
-        return ( ToDCM( rotOrder ) * ang.ToDCM( rotOrder2 ) ).ToEuler( rotOrderOut );
-    }
-
-    template <typename T>
-    Angle<T> Angle<T>::Rotate( const EulerOrder& rotOrder, const Angle<T>& ang, const EulerOrder& rotOrder2, const TaitBryanOrder& rotOrderOut ) const
-    {
-        return ( ToDCM( rotOrder ) * ang.ToDCM( rotOrder2 ) ).ToEuler( rotOrderOut );
-    }
-
-    template <typename T>
-    Vector<T, 3u> Angle<T>::Rotate( const TaitBryanOrder& rotOrder, const Vector<T, 3u>& vec ) const
-    {
-        return ( ToDCM( rotOrder ) * vec );
-    }
-
-    template <typename T>
-    Vector<T, 3u> Angle<T>::Rotate( const EulerOrder& rotOrder, const Vector<T, 3u>& vec ) const
-    {
-        return ( ToDCM( rotOrder ) * vec );
-    }
-
-    template <typename T>
-    DCM<T> Angle<T>::Rotate( const TaitBryanOrder& rotOrder, const DCM<T>& dcm ) const
-    {
-        return ( ToDCM( rotOrder ) * dcm );
-    }
-
-    template <typename T>
-    DCM<T> Angle<T>::Rotate( const EulerOrder& rotOrder, const DCM<T>& dcm ) const
-    {
-        return ( ToDCM( rotOrder ) * dcm );
-    }
-
-    template <typename T>
-    Quaternion<T> Angle<T>::Rotate( const TaitBryanOrder& rotOrder, const Quaternion<T>& qat ) const
-    {
-        return ( qat * ToQuaternion( rotOrder ) );
-    }
-
-    template <typename T>
-    Quaternion<T> Angle<T>::Rotate( const EulerOrder& rotOrder, const Quaternion<T>& qat ) const
-    {
-        return ( qat * ToQuaternion( rotOrder ) );
-    }
 
     template <typename T>
     void Angle<T>::wrapAnglesZeroToTwoPi( const Axis ax )
@@ -715,4 +534,4 @@ namespace myMath
 
 } // namespace myMath
 
-#endif /* B4D2FB34_E82B_4930_84AF_12D1E557452E */
+#endif // MYMATH_ANGLE_H

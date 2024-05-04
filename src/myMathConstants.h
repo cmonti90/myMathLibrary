@@ -1,5 +1,5 @@
-#ifndef BB985253_419B_45F5_B678_9A31FB52D408
-#define BB985253_419B_45F5_B678_9A31FB52D408
+#ifndef MYMATH_CONSTANTS_H
+#define MYMATH_CONSTANTS_H
 
 namespace myMath
 {
@@ -175,4 +175,4 @@ namespace myMath
     }
 }
 
-#endif /* BB985253_419B_45F5_B678_9A31FB52D408 */
+#endif // MYMATH_CONSTANTS_H
