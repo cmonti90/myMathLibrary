@@ -1,23 +1,26 @@
 set(target mathlib)
 set(exportedTarget mathlibTarget)
 
+set(CMAKE_CXX_STANDARD 20)
 set(version 1.0.0)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-set(SOURCES mathlib.cpp)
-
 set(HEADERS 
-            Constants.h
-            BasicFunctions.h
-            Vector.h
-            Matrix.h
-            MatrixFunctions.h
-            mathlib.h
+            myMathAngle.h
+            myMathBasicFunctions.h
+            myMathConstants.h
+            myMathDCM.h
+            myMath.h
+            myMathMatrix.h
+            myMathMatrixFunctions.h
+            myMathQuaternion.h
+            myMathRotation.h
+            myMathVector.h
 )
 
-add_library(${target} SHARED ${SOURCES})
+add_library(${target} INTERFACE ${SOURCES})
 
 set_property(TARGET ${target} PROPERTY VERSION ${version})
 set_property(TARGET ${target} PROPERTY SOVERSION 1)
@@ -27,7 +30,9 @@ set_property(TARGET ${target} APPEND PROPERTY
   COMPATIBLE_INTERFACE_STRING myMathLib_MAJOR_VERSION
 )
 
-target_include_directories(${target} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+target_compile_definitions(${target} INTERFACE DEBUG)
+
+target_include_directories(${target} INTERFACE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
                                             "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 install(TARGETS ${target}
