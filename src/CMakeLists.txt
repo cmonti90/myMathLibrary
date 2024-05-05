@@ -12,6 +12,7 @@ set(HEADERS
             myMathBasicFunctions.h
             myMathConstants.h
             myMathDCM.h
+            myMathDistribution.h
             myMath.h
             myMathMatrix.h
             myMathMatrixFunctions.h
