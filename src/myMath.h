@@ -9,6 +9,7 @@
 #include "myMathMatrix.h"
 #include "myMathMatrixFunctions.h"
 #include "myMathQuaternion.h"
+#include "myMathStat.h"
 #include "myMathVector.h"
 
 #endif // MYMATH_H

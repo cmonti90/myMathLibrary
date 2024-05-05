@@ -124,11 +124,7 @@ namespace myMath
         variance_ = static_cast< T2 >( 0 );
     }
 
-
-
-
-
-}
+} // namespace myMath
 
 
 #endif // MYMATH_DISTRIBUTION_H

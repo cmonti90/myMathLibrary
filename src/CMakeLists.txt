@@ -18,6 +18,7 @@ set(HEADERS
             myMathMatrixFunctions.h
             myMathQuaternion.h
             myMathRotation.h
+            myMathStat.h
             myMathVector.h
 )
 
