@@ -24,6 +24,10 @@ namespace myMath
 
         void AddData( const T& data );
         void AddData( const std::list< T >& data );
+
+        template < class T3 >
+        void AddData( const Distribution< T, T3 >& obj );
+
         void ClearData( void );
 
       private:
@@ -110,6 +114,17 @@ namespace myMath
     void Distribution< T, T2 >::AddData( const std::list< T >& data )
     {
         for ( const T& d : data )
+        {
+            AddData( d );
+        }
+    }
+
+
+    template< class T, class T2 >
+    template< class T3 >
+    void Distribution< T, T2 >::AddData( const Distribution< T, T3 >& obj )
+    {
+        for ( const T& d : obj.data_ )
         {
             AddData( d );
         }
