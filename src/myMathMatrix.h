@@ -22,7 +22,6 @@ namespace myMath
         Matrix();
         Matrix( const T& x );
         Matrix( const T ( &x )[R][C] );
-        Matrix( const T ( &&x )[R][C] );
         Matrix( const Matrix< T, R, C >& obj );
         Matrix( const std::initializer_list< T >& x );
         ~Matrix() = default;
@@ -30,9 +29,11 @@ namespace myMath
         Vector< T, C >& operator[]( const unsigned int i );
         const Vector< T, C >& operator[]( const unsigned int i ) const;
 
+        T& operator()( const unsigned int i, const unsigned int j );
+        const T& operator()( const unsigned int i, const unsigned int j ) const;
+
         Matrix< T, R, C >& operator=( const T& x );
         Matrix< T, R, C >& operator=( const T ( &x )[R][C] );
-        Matrix< T, R, C >& operator=( const T ( &&x )[R][C] );
         Matrix< T, R, C >& operator=( const Matrix< T, R, C >& obj );
 
         Matrix< T, R, C > operator+( const Matrix< T, R, C >& obj ) const;
@@ -40,13 +41,13 @@ namespace myMath
 
         template < unsigned int C2 >
         Matrix< T, R, C2 > operator*( const Matrix< T, C, C2 >& rhs ) const;
-        Vector<T, R> operator*( const Vector< T, C >& obj ) const;
+        Vector< T, R > operator*( const Vector< T, C >& obj ) const;
         Matrix< T, R, C > operator*( const T& x ) const;
         Matrix< T, R, C > operator/( const T& x ) const;
 
         Matrix< T, R, C >& operator+=( const Matrix< T, R, C >& obj );
         Matrix< T, R, C >& operator-=( const Matrix< T, R, C >& obj );
-        Matrix< T, R, C >& operator*=( const Matrix< T, R, C >& rhs );
+        Matrix< T, R, C >& operator*=( const Matrix< T, C, C >& rhs );
         Matrix< T, R, C >& operator*=( const T& x );
         Matrix< T, R, C >& operator/=( const T& x );
 
@@ -56,7 +57,6 @@ namespace myMath
         bool operator!=( const Matrix< T, R, C >& obj ) const;
 
         Matrix< T, C, R > Transpose( void ) const;
-        void TransposeInPlace( void );
     };
 
 
@@ -88,19 +88,6 @@ namespace myMath
 
     template < typename T, unsigned int R, unsigned int C >
     inline Matrix< T, R, C >::Matrix( const T ( &x )[R][C] )
-    {
-        for ( unsigned int i{0u}; i < R; i++ )
-        {
-            for ( unsigned int j{0u}; j < C; j++ )
-            {
-                this->mat[i][j] = x[i][j];
-            }
-        }
-    }
-
-
-    template < typename T, unsigned int R, unsigned int C >
-    inline Matrix< T, R, C >::Matrix( const T ( &&x )[R][C] )
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -175,6 +162,20 @@ namespace myMath
 
 
     template < typename T, unsigned int R, unsigned int C >
+    T& Matrix< T, R, C >::operator()( const unsigned int i, const unsigned int j )
+    {
+        return this->mat[i][j];
+    }
+
+
+    template < typename T, unsigned int R, unsigned int C >
+    const T& Matrix< T, R, C >::operator()( const unsigned int i, const unsigned int j ) const
+    {
+        return this->mat[i][j];
+    }
+
+
+    template < typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C >& Matrix< T, R, C >::operator=( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -191,21 +192,6 @@ namespace myMath
 
     template < typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C >& Matrix< T, R, C >::operator=( const T ( &x )[R][C] )
-    {
-        for ( unsigned int i{0u}; i < R; i++ )
-        {
-            for ( unsigned int j{0u}; j < C; j++ )
-            {
-                this->mat[i][j] = x[i][j];
-            }
-        }
-
-        return *this;
-    }
-
-
-    template < typename T, unsigned int R, unsigned int C >
-    Matrix< T, R, C >& Matrix< T, R, C >::operator=( const T ( &&x )[R][C] )
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -310,7 +296,7 @@ namespace myMath
     template < typename T, unsigned int R, unsigned int C >
     Vector<T, R> Matrix< T, R, C >::operator*( const Vector< T, C >& obj ) const
     {
-        Vector<T, R> tmp{0.0};
+        Vector<T, R> tmp{static_cast< T >( 0 )};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -389,7 +375,7 @@ namespace myMath
 
 
     template < typename T, unsigned int R, unsigned int C >
-    Matrix< T, R, C >& Matrix< T, R, C >::operator*=( const Matrix< T, R, C >& rhs )
+    Matrix< T, R, C >& Matrix< T, R, C >::operator*=( const Matrix< T, C, C >& rhs )
     {
         *this = *this * rhs;
 
@@ -456,9 +442,9 @@ namespace myMath
 
 
     template < typename T, unsigned int R, unsigned int C >
-    Matrix<T, C, R> Matrix< T, R, C >::Transpose( void ) const
+    Matrix< T, C, R > Matrix< T, R, C >::Transpose( void ) const
     {
-        Matrix<T, C, R> tmpMat{*this};
+        Matrix< T, C, R > tmpMat;
 
         for ( unsigned int i{0u}; i < C; i++ )
         {
@@ -469,23 +455,6 @@ namespace myMath
         }
 
         return tmpMat;
-    }
-    
-
-    template < typename T, unsigned int R, unsigned int C >
-    void Matrix< T, R, C >::TransposeInPlace( void )
-    {
-        Matrix< T, R, C > tmpMat{*this};
-
-        for ( unsigned int i{0u}; i < R; i++ )
-        {
-            for ( unsigned int j{0u}; j < C; j++ )
-            {
-                tmpMat.mat[i][j] = this->mat[j].vec[i];
-            }
-        }
-
-        this = tmpMat;
     }
 
 
@@ -499,7 +468,6 @@ namespace myMath
         Matrix();
         Matrix( const T& x );
         Matrix( const T ( &x )[R][R] );
-        Matrix( const T ( &&x )[R][R] );
         Matrix( const Matrix< T, R, R >& obj );
         Matrix( const std::initializer_list< T >& x );
         ~Matrix() = default;
@@ -507,9 +475,11 @@ namespace myMath
         Vector< T, R >& operator[]( const unsigned int i );
         const Vector< T, R >& operator[]( const unsigned int i ) const;
 
+        T& operator()( const unsigned int i, const unsigned int j );
+        const T& operator()( const unsigned int i, const unsigned int j ) const;
+
         Matrix< T, R, R >& operator=( const T& x );
         Matrix< T, R, R >& operator=( const T ( &x )[R][R] );
-        Matrix< T, R, R >& operator=( const T ( &&x )[R][R] );
         Matrix< T, R, R >& operator=( const Matrix< T, R, R >& obj );
 
         Matrix< T, R, R > operator+( const Matrix< T, R, R >& obj ) const;
@@ -597,19 +567,6 @@ namespace myMath
 
 
     template < typename T, unsigned int R >
-    inline Matrix< T, R, R >::Matrix( const T ( &&x )[R][R] )
-    {
-        for ( unsigned int i{0u}; i < R; i++ )
-        {
-            for ( unsigned int j{0u}; j < R; j++ )
-            {
-                this->mat[i][j] = x[i][j];
-            }
-        }
-    }
-
-
-    template < typename T, unsigned int R >
     inline Matrix< T, R, R >::Matrix( const Matrix< T, R, R >& obj )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -672,6 +629,20 @@ namespace myMath
 
 
     template < typename T, unsigned int R >
+    T& Matrix< T, R, R >::operator()( const unsigned int i, const unsigned int j )
+    {
+        return this->mat[i][j];
+    }
+
+
+    template < typename T, unsigned int R >
+    const T& Matrix< T, R, R >::operator()( const unsigned int i, const unsigned int j ) const
+    {
+        return this->mat[i][j];
+    }
+
+
+    template < typename T, unsigned int R >
     Matrix< T, R, R >& Matrix< T, R, R >::operator=( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -688,21 +659,6 @@ namespace myMath
 
     template < typename T, unsigned int R >
     Matrix< T, R, R >& Matrix< T, R, R >::operator=( const T ( &x )[R][R] )
-    {
-        for ( unsigned int i{0u}; i < R; i++ )
-        {
-            for ( unsigned int j{0u}; j < R; j++ )
-            {
-                this->mat[i][j] = x[i][j];
-            }
-        }
-
-        return *this;
-    }
-
-
-    template < typename T, unsigned int R >
-    Matrix< T, R, R >& Matrix< T, R, R >::operator=( const T ( &&x )[R][R] )
     {
         for ( unsigned int i{0u}; i < R; i++ )
         {

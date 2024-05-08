@@ -64,7 +64,8 @@ echo "Build complete!"
 echo "Installing library..."
 cmake --install "${SCRIPT_DIR}/${buildToDir}" --prefix "${SCRIPT_DIR}/install"
 
-${SCRIPT_DIR}/${buildToDir}/tests/UnitTests
+cd ${SCRIPT_DIR}/${buildToDir}/Testing/
+ctest -V
 
 cd ${curDir}
 export OLDPWD=${oldDir}

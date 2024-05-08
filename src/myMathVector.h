@@ -369,6 +369,8 @@ namespace myMath
         }
 
         tmp /= mag;
+
+        return tmp;
     }
 }
 
