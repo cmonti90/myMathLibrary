@@ -6,17 +6,17 @@
 namespace myMath
 {
     template < class T, class T2 = double >
-    class Distribution
+    class NormalDistribution
     {
       public:
-        Distribution();
-        Distribution( const std::list< T >& data );
-        Distribution( const Distribution< T, T2 >& obj );
+        NormalDistribution();
+        NormalDistribution( const std::list< T >& data );
+        NormalDistribution( const NormalDistribution< T, T2 >& obj );
 
-        virtual ~Distribution() = default;
+        ~NormalDistribution() = default;
 
-        Distribution< T, T2 >& operator=( const std::list< T >& data );
-        Distribution< T, T2 >& operator=( const Distribution< T, T2 >& obj );
+        NormalDistribution< T, T2 >& operator=( const std::list< T >& data );
+        NormalDistribution< T, T2 >& operator=( const NormalDistribution< T, T2 >& obj );
 
         T getMean( void ) const;
         T getVariance( void ) const;
@@ -26,7 +26,7 @@ namespace myMath
         void AddData( const std::list< T >& data );
 
         template < class T3 >
-        void AddData( const Distribution< T, T3 >& obj );
+        void AddData( const NormalDistribution< T, T3 >& obj );
 
         void ClearData( void );
 
@@ -36,10 +36,10 @@ namespace myMath
         T2 mean_;
         T2 variance_;
 
-    }; // class Distribution
+    }; // class NormalDistribution
 
     template< class T, class T2 >
-    Distribution< T, T2 >::Distribution()
+    NormalDistribution< T, T2 >::NormalDistribution()
     : data_()
     , mean_( static_cast< T2 >( 0 ) )
     , variance_( static_cast< T2 >( 0 ) )
@@ -48,21 +48,21 @@ namespace myMath
 
 
     template< class T, class T2 >
-    Distribution< T, T2 >::Distribution( const std::list< T >& data )
+    NormalDistribution< T, T2 >::NormalDistribution( const std::list< T >& data )
     : data_( data )
     {
     }
 
 
     template< class T, class T2 >
-    Distribution< T, T2 >::Distribution( const Distribution< T, T2 >& obj )
+    NormalDistribution< T, T2 >::NormalDistribution( const NormalDistribution< T, T2 >& obj )
     : data_( obj.data )
     {
     }
 
 
     template< class T, class T2 >
-    Distribution< T, T2 >& Distribution< T, T2 >::operator=( const std::list< T >& data )
+    NormalDistribution< T, T2 >& NormalDistribution< T, T2 >::operator=( const std::list< T >& data )
     {
         this->data_ = data;
         return *this;
@@ -70,7 +70,7 @@ namespace myMath
 
 
     template< class T, class T2 >
-    Distribution< T, T2 >& Distribution< T, T2 >::operator=( const Distribution< T, T2 >& obj )
+    NormalDistribution< T, T2 >& NormalDistribution< T, T2 >::operator=( const NormalDistribution< T, T2 >& obj )
     {
         this->data_ = obj.data_;
         return *this;
@@ -78,28 +78,28 @@ namespace myMath
 
 
     template< class T, class T2 >
-    T Distribution< T, T2 >::getMean( void ) const
+    T NormalDistribution< T, T2 >::getMean( void ) const
     {
         return mean_;
     }
 
 
     template< class T, class T2 >
-    T Distribution< T, T2 >::getVariance( void ) const
+    T NormalDistribution< T, T2 >::getVariance( void ) const
     {
         return variance_;
     }
 
 
     template< class T, class T2 >
-    T Distribution< T, T2 >::getStandardDeviation( void ) const
+    T NormalDistribution< T, T2 >::getStandardDeviation( void ) const
     {
         return std::sqrt( variance_ );
     }
 
 
     template< class T, class T2 >
-    void Distribution< T, T2 >::AddData( const T& data )
+    void NormalDistribution< T, T2 >::AddData( const T& data )
     {
         data_.push_back( data );
 
@@ -111,7 +111,7 @@ namespace myMath
 
 
     template< class T, class T2 >
-    void Distribution< T, T2 >::AddData( const std::list< T >& data )
+    void NormalDistribution< T, T2 >::AddData( const std::list< T >& data )
     {
         for ( const T& d : data )
         {
@@ -122,7 +122,7 @@ namespace myMath
 
     template< class T, class T2 >
     template< class T3 >
-    void Distribution< T, T2 >::AddData( const Distribution< T, T3 >& obj )
+    void NormalDistribution< T, T2 >::AddData( const NormalDistribution< T, T3 >& obj )
     {
         for ( const T& d : obj.data_ )
         {
@@ -132,7 +132,7 @@ namespace myMath
 
 
     template< class T, class T2 >
-    void Distribution< T, T2 >::ClearData( void )
+    void NormalDistribution< T, T2 >::ClearData( void )
     {
         data_.clear();
         mean_     = static_cast< T2 >( 0 );

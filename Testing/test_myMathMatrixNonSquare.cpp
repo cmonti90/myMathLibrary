@@ -8,7 +8,7 @@
 BOOST_AUTO_TEST_SUITE( TestMyMathMatrixNonSquareSuite )
 
 
-BOOST_AUTO_TEST_CASE( testNonSqaureMatrixParenthesesIndexing )
+BOOST_AUTO_TEST_CASE( testNonSquareMatrixParenthesesIndexing )
 {
     // non const
     myMath::Matrix< int, 2, 4 > matrix1;
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( testNonSqaureMatrixParenthesesIndexing )
 }
 
 
-BOOST_AUTO_TEST_CASE( testNonSqaureMatrixSquareBracketIndexing )
+BOOST_AUTO_TEST_CASE( testNonSquareMatrixSquareBracketIndexing )
 {
     myMath::Matrix< int, 2, 4 > matrix1;
 
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( testNonSqaureMatrixSquareBracketIndexing )
 
 }
 
-BOOST_AUTO_TEST_CASE( testNonSqaureMatrixDefaultConstructor )
+BOOST_AUTO_TEST_CASE( testNonSquareMatrixDefaultConstructor )
 {
     // Default constructor
     myMath::Matrix< int, 2, 4 > matrix1;
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE( testNonSqaureMatrixDefaultConstructor )
 }
 
 
-BOOST_AUTO_TEST_CASE( testNonSqaureMatrixSingleValueConstructor )
+BOOST_AUTO_TEST_CASE( testNonSquareMatrixSingleValueConstructor )
 {
     // Single value constructor
     myMath::Matrix< int, 2, 4 > matrix1( 5 );
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE( testNonSqaureMatrixSingleValueConstructor )
 }
 
 
-BOOST_AUTO_TEST_CASE( testNonSqaureMatrixAggregateConstructor )
+BOOST_AUTO_TEST_CASE( testNonSquareMatrixAggregateConstructor )
 {
     // Aggregate reference constructor
     int x[2][4] = { { 1, 2, 3, 4 }, { 5, 6, 7, 8 } };
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE( testNonSqaureMatrixAggregateConstructor )
 }
 
 
-BOOST_AUTO_TEST_CASE( testNonSqaureMatrixMatrixConstructor )
+BOOST_AUTO_TEST_CASE( testNonSquareMatrixMatrixConstructor )
 {
     // Matrix constructor
     myMath::Matrix< int, 2, 4 > matrix1( 5 );
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE( testNonSqaureMatrixMatrixConstructor )
 
 }
 
-BOOST_AUTO_TEST_CASE( testNonSqaureMatrixInitializerListConstructor )
+BOOST_AUTO_TEST_CASE( testNonSquareMatrixInitializerListConstructor )
 {
     // Initializer list constructor
     myMath::Matrix< int, 2, 4 > matrix1{ 1, 2, 3, 4, 5, 6, 7, 8 };
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE( testNonSqaureMatrixInitializerListConstructor )
 
 
 
-BOOST_AUTO_TEST_CASE( testNonSqaureMatrixAssignment )
+BOOST_AUTO_TEST_CASE( testNonSquareMatrixAssignment )
 {
 
     // Assignment of a single value
@@ -638,7 +638,7 @@ BOOST_AUTO_TEST_CASE( testMatrixNonSquareNegation )
 }
 
 
-BOOST_AUTO_TEST_CASE( testMatrixNonSqaureEquivalence )
+BOOST_AUTO_TEST_CASE( testMatrixNonSquareEquivalence )
 {
     myMath::Matrix< int, 2, 4 > matrix1;
     myMath::Matrix< int, 2, 4 > matrix2;
@@ -671,7 +671,7 @@ BOOST_AUTO_TEST_CASE( testMatrixNonSqaureEquivalence )
 }
 
 
-BOOST_AUTO_TEST_CASE( testMatrixNonSqaureTranspose )
+BOOST_AUTO_TEST_CASE( testMatrixNonSquareTranspose )
 {
     myMath::Matrix< int, 2, 4 > matrix1;
     myMath::Matrix< int, 4, 2 > matrix2;

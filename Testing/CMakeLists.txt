@@ -8,6 +8,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 set(TestList Vector
              MatrixNonSquare
+             MatrixSquare
+             Matrix1x1
              )
 
 foreach(test ${TestList})

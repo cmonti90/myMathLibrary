@@ -486,7 +486,7 @@ namespace myMath
         Matrix< T, R, R > operator-( const Matrix< T, R, R >& obj ) const;
 
         Matrix< T, R, R > operator*( const T& x ) const;
-        Matrix< T, R, R > operator*( const Matrix< T, R, R >& rhs ) const;
+        Vector< T, R >    operator*( const Vector< T, R >& obj ) const;
 
         template< unsigned int C >
         Matrix< T, R, C > operator*( const Matrix< T, R, C >& rhs ) const;
@@ -506,12 +506,13 @@ namespace myMath
         bool operator==( const Matrix< T, R, R >& obj ) const;
         bool operator!=( const Matrix< T, R, R >& obj ) const;
 
-        T Minor( unsigned int i, unsigned int j ) const;
+        Matrix< T, R-1, R-1 > Minor( unsigned int i, unsigned int j ) const;
         T Determinant( void ) const;
         Matrix< T, R, R > Transpose( void ) const;
         void TransposeInPlace( void );
         void Invert( void );
         Matrix< T, R, R > Inverse( void ) const;
+        T Trace( void ) const;
 
         static Matrix< T, R, R > Identity();
     };
@@ -596,10 +597,6 @@ namespace myMath
         {
             std::cout << "Initializer list has incorrect size of " << x.size() << " instead of " << ( R * R ) << std::endl;
             throw std::invalid_argument( "Initializer list has incorrect size of " + std::to_string( x.size() ) + " instead of " + std::to_string( ( R * R ) ) + "" );
-        }
-        else if ( x.size() == 0 )
-        {
-            throw std::invalid_argument( "Initializer list is empty" );
         }
         else
         {
@@ -761,22 +758,15 @@ namespace myMath
 
 
     template < typename T, unsigned int R >
-    Matrix< T, R, R > Matrix< T, R, R >::operator*( const Matrix< T, R, R >& rhs ) const
+    Vector< T, R > Matrix< T, R, R >::operator*( const Vector< T, R >& obj ) const
     {
-        Matrix< T, R, R > tmp;
+        Vector< T, R > tmp{static_cast< T >( 0 )};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
             for ( unsigned int j{0u}; j < R; j++ )
             {
-                T tmp_sum = static_cast< T >( 0 );
-
-                for ( unsigned int k{0u}; k < R; k++ )
-                {
-                    tmp_sum += this->mat[i][k] * rhs.mat[k][j];
-                }
-
-                tmp.mat[i][j] = tmp_sum;
+                tmp.vec[i] += this->mat[i][j] * obj[j];
             }
         }
 
@@ -905,9 +895,9 @@ namespace myMath
 
 
     template < typename T, unsigned int R >
-    T Matrix< T, R, R >::Minor( unsigned int i, unsigned int j ) const
+    Matrix< T, R-1, R-1 > Matrix< T, R, R >::Minor( unsigned int i, unsigned int j ) const
     {
-        Matrix< T, R, R > minor;
+        Matrix< T, R-1, R-1 > minor;
 
         for ( unsigned int m{0u}; m < R; m++ )
         {
@@ -920,7 +910,7 @@ namespace myMath
             }
         }
 
-        return ( minor.Determinant() );
+        return minor;
     }
 
     template < typename T, unsigned int R >
@@ -1043,7 +1033,7 @@ namespace myMath
         }
         else
         {
-            return Matrix< T, R, R >::Identity();
+            return Matrix< T, R, R >( static_cast< T >( 0 ) );
         }
     }
 
@@ -1076,7 +1066,7 @@ namespace myMath
             }
         }
 
-        this = tmpMat;
+        *this = tmpMat;
     }
 
     template < typename T, unsigned int R >
@@ -1148,8 +1138,26 @@ namespace myMath
                 }
             }
 
-            this = invMat;
+            *this = invMat;
         }
+        else
+        {
+            *this = Matrix< T, R, R >( static_cast< T >( 0 ) );
+        }
+    }
+
+
+    template < typename T, unsigned int R >
+    T Matrix< T, R, R >::Trace( void ) const
+    {
+        T trace{static_cast< T >( 0 )};
+
+        for ( unsigned int i{0u}; i < R; i++ )
+        {
+            trace += this->mat[i][i];
+        }
+
+        return trace;
     }
 
 
@@ -1173,17 +1181,368 @@ namespace myMath
     template < typename T, unsigned int R >
     Matrix< T, R, R > operator*( const T& x, const Matrix< T, R, R >& obj )
     {
-        Matrix< T, R, R > tmp{obj};
+        return obj * x;
+    }
 
-        for ( unsigned int i{0u}; i < R; i++ )
+
+    template < typename T >
+    class Matrix< T, 1, 1 >
+    {
+        public:
+        Vector< T, 1 > mat[1];
+
+        Matrix();
+        Matrix( const T& x );
+        Matrix( const T ( &x )[1][1] );
+        Matrix( const Matrix< T, 1, 1 >& obj );
+        Matrix( const std::initializer_list< T >& x );
+        ~Matrix() = default;
+
+        Vector< T, 1 >& operator[]( const unsigned int i );
+        const Vector< T, 1 >& operator[]( const unsigned int i ) const;
+
+        T& operator()( const unsigned int i, const unsigned int j );
+        const T& operator()( const unsigned int i, const unsigned int j ) const;
+
+        Matrix< T, 1, 1 >& operator=( const T& x );
+        Matrix< T, 1, 1 >& operator=( const T ( &x )[1][1] );
+        Matrix< T, 1, 1 >& operator=( const Matrix< T, 1, 1 >& obj );
+
+        Matrix< T, 1, 1 > operator+( const Matrix< T, 1, 1 >& obj ) const;
+        Matrix< T, 1, 1 > operator-( const Matrix< T, 1, 1 >& obj ) const;
+
+        Matrix< T, 1, 1 > operator*( const T& x ) const;
+        Vector< T, 1 >    operator*( const Vector< T, 1 >& obj ) const;
+
+        template< unsigned int C >
+        Matrix< T, 1, C > operator*( const Matrix< T, 1, C >& rhs ) const;
+
+        Matrix< T, 1, 1 > operator/( const T& x ) const;
+
+        Matrix< T, 1, 1 >& operator+=( const Matrix< T, 1, 1 >& obj );
+        Matrix< T, 1, 1 >& operator-=( const Matrix< T, 1, 1 >& obj );
+
+        Matrix< T, 1, 1 >& operator*=( const T& x );
+        Matrix< T, 1, 1 >& operator*=( const Matrix< T, 1, 1 >& rhs );
+
+        Matrix< T, 1, 1 >& operator/=( const T& x );
+
+        Matrix< T, 1, 1 > operator-() const;
+
+        bool operator==( const Matrix< T, 1, 1 >& obj ) const;
+        bool operator!=( const Matrix< T, 1, 1 >& obj ) const;
+
+        T Determinant( void ) const;
+        Matrix< T, 1, 1 > Transpose( void ) const;
+        void TransposeInPlace( void );
+        void Invert( void );
+        Matrix< T, 1, 1 > Inverse( void ) const;
+        T Trace( void ) const;
+
+        static Matrix< T, 1, 1 > Identity();
+    };
+
+
+    template < typename T >
+    inline Matrix< T, 1, 1 >::Matrix()
+    {
+        this->mat[0][0] = static_cast< T >( 0 );
+    }
+
+
+    template < typename T >
+    inline Matrix< T, 1, 1 >::Matrix( const T& x )
+    {
+        this->mat[0][0] = x;
+    }
+
+
+    template < typename T >
+    inline Matrix< T, 1, 1 >::Matrix( const T ( &x )[1][1] )
+    {
+        this->mat[0][0] = x[0][0];
+    }
+
+
+    template < typename T >
+    inline Matrix< T, 1, 1 >::Matrix( const Matrix< T, 1, 1 >& obj )
+    {
+        this->mat[0][0] = obj.mat[0][0];
+    }
+
+
+    template < typename T >
+    inline Matrix< T, 1, 1 >::Matrix( const std::initializer_list< T >& x )
+    {
+        if ( static_cast<unsigned int>( x.size() ) == 1u )
         {
-            for ( unsigned int j{0u}; j < R; j++ )
-            {
-                tmp.mat[i][j] *= x;
-            }
+            this->mat[0][0] = *( x.begin() );
+        }
+        else
+        {
+            std::cout << "Initializer list has incorrect size of " << x.size() << " instead of 1" << std::endl;
+            throw std::invalid_argument( "Initializer list has incorrect size of " + std::to_string( x.size() ) + " instead of 1" );
+        }
+    }
+
+
+    template < typename T >
+    Vector< T, 1 >& Matrix< T, 1, 1 >::operator[]( const unsigned int i )
+    {
+        return this->mat[i];
+    }
+
+
+    template < typename T >
+    const Vector< T, 1 >& Matrix< T, 1, 1 >::operator[]( const unsigned int i ) const
+    {
+        return this->mat[i];
+    }
+
+
+    template < typename T >
+    T& Matrix< T, 1, 1 >::operator()( const unsigned int i, const unsigned int j )
+    {
+        return this->mat[i][j];
+    }
+
+
+    template < typename T >
+    const T& Matrix< T, 1, 1 >::operator()( const unsigned int i, const unsigned int j ) const
+    {
+        return this->mat[i][j];
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator=( const T& x )
+    {
+        this->mat[0][0] = x;
+
+        return *this;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator=( const T ( &x )[1][1] )
+    {
+        this->mat[0][0] = x[0][0];
+
+        return *this;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator=( const Matrix< T, 1, 1 >& obj )
+    {
+        this->mat[0][0] = obj.mat[0][0];
+
+        return *this;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 > Matrix< T, 1, 1 >::operator+( const Matrix< T, 1, 1 >& obj ) const
+    {
+        Matrix< T, 1, 1 > tmp{*this};
+
+        tmp.mat[0][0] += obj.mat[0][0];
+
+        return tmp;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 > Matrix< T, 1, 1 >::operator-( const Matrix< T, 1, 1 >& obj ) const
+    {
+        Matrix< T, 1, 1 > tmp{*this};
+
+        tmp.mat[0][0] -= obj.mat[0][0];
+
+        return tmp;
+    }
+
+
+    template < typename T >
+    bool Matrix< T, 1, 1 >::operator==( const Matrix< T, 1, 1 >& obj ) const
+    {
+        return this->mat[0][0] == obj.mat[0][0];
+    }
+
+
+    template < typename T >
+    bool Matrix< T, 1, 1 >::operator!=( const Matrix< T, 1, 1 >& obj ) const
+    {
+        return !( *this == obj );
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 > Matrix< T, 1, 1 >::operator*( const T& x ) const
+    {
+        Matrix< T, 1, 1 > tmp{*this};
+
+        tmp.mat[0][0] *= x;
+
+        return tmp;
+    }
+
+
+    template < typename T >
+    Vector< T, 1 > Matrix< T, 1, 1 >::operator*( const Vector< T, 1 >& obj ) const
+    {
+        Vector< T, 1 > tmp{static_cast< T >( 0 )};
+
+        tmp.vec[0] = this->mat[0][0] * obj[0];
+
+        return tmp;
+    }
+    
+
+    template < typename T >
+    template < unsigned int C >
+    Matrix< T, 1, C > Matrix< T, 1, 1 >::operator*( const Matrix< T, 1, C >& rhs ) const
+    {
+        Matrix< T, 1, C > tmp;
+
+        for ( unsigned int i{0u}; i < C; i++ )
+        {
+            tmp.mat[0][i] = this->mat[0][0] * rhs.mat[0][i];
         }
 
         return tmp;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 > Matrix< T, 1, 1 >::operator/( const T& x ) const
+    {
+        Matrix< T, 1, 1 > tmp{*this};
+
+        tmp.mat[0][0] /= x;
+
+        return tmp;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator+=( const Matrix< T, 1, 1 >& obj )
+    {
+        this->mat[0][0] += obj.mat[0][0];
+
+        return *this;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator-=( const Matrix< T, 1, 1 >& obj )
+    {
+        this->mat[0][0] -= obj.mat[0][0];
+
+        return *this;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator*=( const T& x )
+    {
+        this->mat[0][0] *= x;
+
+        return *this;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator*=( const Matrix< T, 1, 1 >& rhs )
+    {
+        *this = *this * rhs;
+
+        return *this;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator/=( const T& x )
+    {
+        this->mat[0][0] /= x;
+
+        return *this;
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 > Matrix< T, 1, 1 >::operator-() const
+    {
+        return static_cast< T >( -1 ) * ( *this );
+    }
+
+
+    template < typename T >
+    T Matrix< T, 1, 1 >::Determinant( void ) const
+    {
+        return this->mat[0][0];
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 > Matrix< T, 1, 1 >::Transpose( void ) const
+    {
+        return *this;
+    }
+
+
+    template < typename T >
+    void Matrix< T, 1, 1 >::TransposeInPlace( void )
+    {
+    }
+
+
+    template < typename T >
+    void Matrix< T, 1, 1 >::Invert( void )
+    {
+        if ( ABS( this->Determinant() ) > static_cast< T >( Constants::ZERO_THRESHOLD ) )
+        {
+            this->mat[0][0] = static_cast< T >( 1 ) / this->mat[0][0];
+        }
+        else
+        {
+            this->mat[0][0] = static_cast< T >( 0 );
+        }
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 > Matrix< T, 1, 1 >::Inverse( void ) const
+    {
+        if ( ABS( this->Determinant() ) > static_cast< T >( Constants::ZERO_THRESHOLD ) )
+        {
+            return static_cast< T >( 1 ) / this->mat[0][0];
+        }
+        else
+        {
+            return Matrix< T, 1, 1 >( static_cast< T >( 0 ) );
+        }
+    }
+
+
+    template < typename T >
+    T Matrix< T, 1, 1 >::Trace( void ) const
+    {
+        return this->mat[0][0];
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 > Matrix< T, 1, 1 >::Identity()
+    {
+        return Matrix< T, 1, 1 >( static_cast< T >( 1 ) );
+    }
+
+
+    template < typename T >
+    Matrix< T, 1, 1 > operator*( const T& x, const Matrix< T, 1, 1 >& obj )
+    {
+        return obj * x;
     }
 
 } // namespace myMath
