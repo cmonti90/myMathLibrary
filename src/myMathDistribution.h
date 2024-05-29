@@ -104,7 +104,7 @@ namespace myMath
         data_.push_back( data );
 
         // Update mean and variance fast method
-        const T oldMean = mean_;
+        const T2 oldMean = mean_;
         mean_     = ( ( data_.size() - 1 ) * oldMean + data ) / data_.size();
         variance_ = ( ( data_.size() - 1 ) * variance_ + ( data - oldMean ) * ( data - oldMean ) ) / data_.size();
     }

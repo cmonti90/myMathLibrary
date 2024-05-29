@@ -22,9 +22,9 @@ namespace myMath
       public:
         DCM();
         DCM( const Matrix< T, 3u, 3u >& m );
+        DCM( const DCM< T >& dcm ) = default;
         DCM( const std::initializer_list< T >& list );
         DCM( const T ( &m )[3][3] );
-        DCM( const T ( &&m )[3][3] );
         DCM( const T ( &m )[9] );
 
         using Matrix< T, 3, 3 >::operator=;
@@ -36,7 +36,6 @@ namespace myMath
 
         using Matrix< T, 3, 3 >::operator+=;
         using Matrix< T, 3, 3 >::operator-=;
-        using Matrix< T, 3, 3 >::operator*=;
         using Matrix< T, 3, 3 >::operator/=;
 
         using Matrix< T, 3, 3 >::operator==;
@@ -44,14 +43,16 @@ namespace myMath
 
         DCM< T > operator*( const DCM< T >& dcm ) const;
         DCM< T > operator*( const Matrix< T, 3, 3 >& m ) const;
-        DCM< T > operator*( const T& x ) const;
+        
+        DCM< T > operator*( const T& x ) const = delete;
+        DCM< T >& operator*=( const T& x ) const = delete;
+        DCM< T > operator/( const T& x ) const = delete;
+        DCM< T >& operator/=( const T& x ) const = delete;
 
-        template <unsigned int C>
-        Matrix<T, 3, C> operator*( const Matrix< T, 3, C >& m ) const;
+        template < unsigned int C >
+        Matrix< T, 3, C > operator*( const Matrix< T, 3, C >& m ) const;
 
-        template <unsigned int C>
-        DCM< T > operator*( const T ( &m )[3][C] ) const;
-        Vector<T, 3u> operator*( const Vector<T, 3u>& v ) const;
+        Vector< T, 3u > operator*( const Vector< T, 3u >& v ) const;
 
         DCM< T >& operator*=( const DCM< T >& dcm );
         DCM< T >& operator*=( const Matrix< T, 3u, 3u >& m );
@@ -76,7 +77,7 @@ namespace myMath
     typedef DCM< double > DCMd;
 
     template < typename T >
-    inline DCM< T >::DCM() : Matrix< T, 3u, 3u >()
+    inline DCM< T >::DCM() : Matrix< T, 3u, 3u >( Matrix< T, 3u, 3u >::Identity() )
     {
     }
 
@@ -95,12 +96,6 @@ namespace myMath
 
     template < typename T >
     inline DCM< T >::DCM( const T ( &m )[3][3] ) : Matrix< T, 3u, 3u >( m )
-    {
-    }
-
-
-    template < typename T >
-    inline DCM< T >::DCM( const T ( &&m )[3][3] ) : Matrix< T, 3u, 3u >( m )
     {
     }
 
@@ -135,23 +130,6 @@ namespace myMath
                 }
 
                 tmp[i][j] = tmp_sum;
-            }
-        }
-
-        return tmp;
-    }
-
-
-    template < typename T >
-    DCM< T > DCM< T >::operator*( const T& x ) const
-    {
-        DCM< T > tmp{static_cast< T >( 0 )};
-
-        for ( unsigned int i{0u}; i < 3u; i++ )
-        {
-            for ( unsigned int j{0u}; j < 3u; j++ )
-            {
-                tmp[i][j] = this->mat[i][j] * x;
             }
         }
 
@@ -734,7 +712,7 @@ namespace myMath
 
 
     template < typename T >
-    DCM< T > Identity( void )
+    DCM< T > DCM< T >::Identity( void )
     {
         DCM< T > identityMat( static_cast< T >( 0 ) );
 

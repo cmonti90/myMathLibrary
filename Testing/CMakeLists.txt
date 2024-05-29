@@ -6,10 +6,13 @@ find_package(Boost COMPONENTS system unit_test_framework REQUIRED)
 # Include Boost headers
 include_directories(${Boost_INCLUDE_DIRS})
 
-set(TestList Vector
+set(TestList Angle
+             BasicFunctions
+             Vector
              MatrixNonSquare
              MatrixSquare
              Matrix1x1
+             DCM
              )
 
 foreach(test ${TestList})

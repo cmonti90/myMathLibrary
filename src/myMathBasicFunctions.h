@@ -59,7 +59,7 @@ namespace myMath
 
     inline int factorial( const int x )
     {
-        int x_new = x < 0 ? ( -1 * static_cast<int>( factorial( static_cast<unsigned int>( x ) ) ) ) : ( static_cast<int>( factorial( static_cast<unsigned int>( x ) ) ) );
+        int x_new = x < 0 ? ( 0 ) : ( static_cast<int>( factorial( static_cast<unsigned int>( x ) ) ) );
 
         return x_new;
     }
@@ -102,31 +102,32 @@ namespace myMath
     template <typename T>
     inline T wrapZeroToTwoPi( const T ang )
     {
-        if ( ang < static_cast<T>( 0.0 ) )
+        T result = fmod( ang, static_cast<T>( 2.0 * Constants::PI ) );
+        
+        if ( result < static_cast<T>( 0.0 ) )
         {
-            return fmod( ang, static_cast<T>( 2.0 * Constants::PI ) ) + static_cast<T>( 2.0 * Constants::PI );
-        }
-        else if ( ang > static_cast<T>( 2.0 * Constants::PI ) )
-        {
-            return fmod( ang, static_cast<T>( 2.0 * Constants::PI ) );
+            result += static_cast<T>( 2.0 * Constants::PI );
         }
 
-        return ang;
+        return result;
     }
 
     template <typename T>
     inline T wrapMinusPiToPi( const T ang )
     {
-        if ( ang < static_cast<T>( -Constants::PI ) )
+        T result = fmod( ang, static_cast<T>( 2.0 * Constants::PI ) );
+
+        // Wrap to [-pi, pi)
+        if ( result < static_cast<T>( -1.0 * Constants::PI ) )
         {
-            return fmod( ang, static_cast<T>( 2.0 * Constants::PI ) ) + static_cast<T>( 2.0 * Constants::PI );
+            result += static_cast<T>( 2.0 * Constants::PI );
         }
-        else if ( ang > static_cast<T>( Constants::PI ) )
+        else if ( result >= static_cast<T>( Constants::PI ) )
         {
-            return fmod( ang, static_cast<T>( 2.0 * Constants::PI ) ) - static_cast<T>( 2.0 * Constants::PI );
+            result -= static_cast<T>( 2.0 * Constants::PI );
         }
 
-        return ang;
+        return result;
     }
 
     template <typename T>

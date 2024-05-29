@@ -23,10 +23,13 @@ namespace myMath
         Angle();
         Angle( const T x );
         Angle( const T ( &x )[3u] );
+        Angle( const T ang1, const T ang2, const T ang3 );
         Angle( const Vector<T, 3u>& obj );
         Angle( const Angle<T>& obj );
 
         ~Angle() = default;
+
+        using Vector<T, 3u>::operator[];
 
         using Vector<T, 3u>::operator=;
         using Vector<T, 3u>::operator+;
@@ -38,8 +41,6 @@ namespace myMath
         using Vector<T, 3u>::operator==;
         using Vector<T, 3u>::operator!=;
 
-        void Normalize();
-
         DCM<T> ToDCM( const TaitBryanOrder& rotOrder ) const;
         DCM<T> ToDCM( const EulerOrder& rotOrder ) const;
 
@@ -48,6 +49,8 @@ namespace myMath
 
         void wrapAnglesZeroToTwoPi( const Axis ax = Axis::ALL );
         void wrapAnglesMinusPiToPi( const Axis ax = Axis::ALL );
+
+        void Normalize() = delete;
     };
 } // namespace myMath
 
@@ -79,6 +82,12 @@ namespace myMath
 
 
     template <typename T>
+    inline Angle<T>::Angle( const T ang1, const T ang2, const T ang3 ) : Vector<T, 3u>( {ang1, ang2, ang3} )
+    {
+    }
+
+
+    template <typename T>
     inline Angle<T>::Angle( const Vector<T, 3u>& obj ) : Vector<T, 3u>( obj )
     {
     }
@@ -87,16 +96,6 @@ namespace myMath
     template <typename T>
     inline Angle<T>::Angle( const Angle<T>& ang ) : Vector<T, 3u>( static_cast<Vector<T, 3u>>( ang ) )
     {
-    }
-    
-
-    template <typename T>
-    void Angle<T>::Normalize()
-    {
-        for ( unsigned int i{0u}; i < 3u; i++ )
-        {
-            this->vec[i] = fmod( this->vec[i], static_cast<T>( 2.0 * Constants::PI ) );
-        }
     }
 
 

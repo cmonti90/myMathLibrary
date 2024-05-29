@@ -48,6 +48,22 @@
         "compare": "cpp",
         "concepts": "cpp",
         "list": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "ctime": "cpp",
+        "strstream": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp",
+        "complex": "cpp",
+        "condition_variable": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "ratio": "cpp",
+        "mutex": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp",
+        "cinttypes": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp"
     }
 }
