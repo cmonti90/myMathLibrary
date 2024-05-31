@@ -12,7 +12,9 @@ set(TestList Angle
              MatrixNonSquare
              MatrixSquare
              Matrix1x1
+             MatrixFunctions
              DCM
+             Quaternion
              )
 
 foreach(test ${TestList})

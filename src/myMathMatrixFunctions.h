@@ -38,18 +38,20 @@ namespace myMath
     template < class T, unsigned int R >
     inline T Magnitude( const Vector< T, R >& obj )
     {
-        T tmp = static_cast< T >( 0.0 );
+        T tmp = static_cast< T >( 0 );
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
-            tmp += SQ( obj.vec[i], 2 );
+            tmp += SQ( obj.vec[i]  );
         }
+
+        return static_cast< T >( std::sqrt( tmp ) );
     }
 
     template < class T, unsigned int R >
     inline T DotProduct( const Vector< T, R >& lhs, const Vector< T, R >& rhs )
     {
-        T prod{static_cast< T >( 0.0 )};
+        T prod{static_cast< T >( 0 )};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -106,7 +108,7 @@ namespace myMath
     template < class T, unsigned int R, unsigned int C >
     inline Matrix< T, R, C > OuterProduct( const Vector< T, R >& lhs, const Vector<T, C>& rhs )
     {
-        Matrix< T, R, C > tmp{static_cast< T >( 0.0 )};
+        Matrix< T, R, C > tmp{static_cast< T >( 0 )};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
@@ -122,11 +124,11 @@ namespace myMath
     template< class T, unsigned int R >
     inline Matrix< T, R, R > Identity( void )
     {
-        Matrix< T, R, R > tmp{static_cast< T >( 0.0 )};
+        Matrix< T, R, R > tmp{static_cast< T >( 0 )};
 
         for ( unsigned int i{0u}; i < R; i++ )
         {
-            tmp.mat[i][i] = static_cast< T >( 1.0 );
+            tmp.mat[i][i] = static_cast< T >( 1 );
         }
 
         return tmp;

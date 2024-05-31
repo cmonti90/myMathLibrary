@@ -17,35 +17,32 @@ namespace myMath
     class Angle;
 
     template < typename T >
-    class Quaternion : public Vector<T, 4u>
+    class Quaternion : public Vector< T, 4u >
     {
       public:
         Quaternion();
         Quaternion( const T& w, const T& x, const T& y, const T& z );
         Quaternion( const T ( &q )[4] );
         Quaternion( const Quaternion< T >& q );
-        Quaternion( const Vector<T, 4u>& q );
+        Quaternion( const Vector< T, 4u >& q );
         Quaternion( const T& w, const Vector<T, 3u>& v );
         Quaternion( const Vector<T, 3u>& v );
         Quaternion( const T& w, const Angle< T >& v );
-        Quaternion( const Angle< T >& ang, const TaitBryanOrder& rotOrder );
-        Quaternion( const Angle< T >& ang, const EulerOrder& rotOrder );
-        Quaternion( const DCM< T >& dcm );
         Quaternion( const T ang, const Axis ax );
 
         ~Quaternion() = default;
 
-        using Vector<T, 4u>::operator=;
-        using Vector<T, 4u>::operator[];
-        using Vector<T, 4u>::operator+;
-        using Vector<T, 4u>::operator+=;
-        using Vector<T, 4u>::operator-;
-        using Vector<T, 4u>::operator-=;
-        using Vector<T, 4u>::operator/;
-        using Vector<T, 4u>::operator/=;
+        using Vector< T, 4u >::operator=;
+        using Vector< T, 4u >::operator[];
+        using Vector< T, 4u >::operator+;
+        using Vector< T, 4u >::operator+=;
+        using Vector< T, 4u >::operator-;
+        using Vector< T, 4u >::operator-=;
+        using Vector< T, 4u >::operator/;
+        using Vector< T, 4u >::operator/=;
 
-        using Vector<T, 4u>::operator==;
-        using Vector<T, 4u>::operator!=;
+        using Vector< T, 4u >::operator==;
+        using Vector< T, 4u >::operator!=;
 
         Quaternion< T > operator*( const Quaternion< T >& q ) const;
 
@@ -80,66 +77,49 @@ namespace myMath
     typedef Quaternion< float >  QuaternionF;
 
     template < typename T >
-    inline Quaternion< T >::Quaternion() : Vector<T, 4u>()
+    inline Quaternion< T >::Quaternion() : Vector< T, 4u >()
     {
         this->vec[0] = static_cast< T >( 1 );
     }
 
     template < typename T >
-    inline Quaternion< T >::Quaternion( const T& w, const T& x, const T& y, const T& z ) : Vector<T, 4u>( {w, x, y, z} )
+    inline Quaternion< T >::Quaternion( const T& w, const T& x, const T& y, const T& z ) : Vector< T, 4u >( {w, x, y, z} )
     {
     }
 
     template < typename T >
-    inline Quaternion< T >::Quaternion( const T ( &q )[4] ) : Vector<T, 4u>( q )
+    inline Quaternion< T >::Quaternion( const T ( &q )[4] ) : Vector< T, 4u >( q )
     {
     }
 
     template < typename T >
-    inline Quaternion< T >::Quaternion( const Quaternion< T >& q ) : Vector<T, 4u>( static_cast < Vector<T, 4u>>( q ) )
+    inline Quaternion< T >::Quaternion( const Quaternion< T >& q ) : Vector< T, 4u >( static_cast < Vector< T, 4u >>( q ) )
     {
     }
 
     template < typename T >
-    inline Quaternion< T >::Quaternion( const Vector<T, 4u>& q ) : Vector<T, 4u>( q )
+    inline Quaternion< T >::Quaternion( const Vector< T, 4u >& q ) : Vector< T, 4u >( q )
     {
     }
 
     template < typename T >
-    inline Quaternion< T >::Quaternion( const T& w, const Vector<T, 3u>& v ) : Vector<T, 4u>( {w, v[0], v[1], v[2]} )
+    inline Quaternion< T >::Quaternion( const T& w, const Vector<T, 3u>& v ) : Vector< T, 4u >( {w, v[0], v[1], v[2]} )
     {
     }
 
     template < typename T >
-    inline Quaternion< T >::Quaternion( const Vector<T, 3u>& v ) : Vector<T, 4u>( {static_cast< T >( 0.0 ), v[0], v[1], v[2]} )
+    inline Quaternion< T >::Quaternion( const Vector<T, 3u>& v ) : Vector< T, 4u >( {static_cast< T >( 0.0 ), v[0], v[1], v[2]} )
     {
     }
 
     template < typename T >
-    inline Quaternion< T >::Quaternion( const T& w, const Angle< T >& ang ) : Vector<T, 4u>( {w, ang[0], ang[1], ang[2]} )
+    inline Quaternion< T >::Quaternion( const T& w, const Angle< T >& ang ) : Vector< T, 4u >( {w, ang[0], ang[1], ang[2]} )
     {
     }
 
-    template < typename T >
-    inline Quaternion< T >::Quaternion( const Angle< T >& ang, const TaitBryanOrder& rotOrder ) : Vector<T, 4u>()
-    {
-        *this = ang.ToQuaternion( rotOrder );
-    }
 
     template < typename T >
-    inline Quaternion< T >::Quaternion( const Angle< T >& ang, const EulerOrder& rotOrder ) : Vector<T, 4u>()
-    {
-        *this = ang.ToQuaternion( rotOrder );
-    }
-
-    template < typename T >
-    inline Quaternion< T >::Quaternion( const DCM< T >& dcm ) : Vector<T, 4u>()
-    {
-        *this = dcm.ToQuaternion();
-    }
-
-    template < typename T >
-    Quaternion< T >::Quaternion( const T ang, const Axis ax ) : Vector<T, 4u>()
+    Quaternion< T >::Quaternion( const T ang, const Axis ax ) : Vector< T, 4u >()
     {
         switch ( ax )
         {
@@ -178,6 +158,7 @@ namespace myMath
                 }
         }
     }
+
 
     template < typename T >
     Quaternion< T > Quaternion< T >::operator*( const Quaternion< T >& q ) const

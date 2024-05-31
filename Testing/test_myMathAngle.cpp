@@ -490,4 +490,74 @@ BOOST_AUTO_TEST_CASE( test_myMathAngle_ToQuaternion_TaitBryanOrder )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_myMathAngle_ToQuaternion_EulerOrder )
+{
+    myMath::Angle< double > A( 0.0, 0.0, 0.0 );
+
+    myMath::Quaternion< double > q = A.ToQuaternion( myMath::EulerOrder::XYX );
+
+    BOOST_CHECK_EQUAL( q[0], 1.0 );
+    BOOST_CHECK_EQUAL( q[1], 0.0 );
+    BOOST_CHECK_EQUAL( q[2], 0.0 );
+    BOOST_CHECK_EQUAL( q[3], 0.0 );
+
+
+    A = myMath::Angle< double >( myMath::Constants::PI / 2.0, - 3.0 * myMath::Constants::PI / 8.0, 11.0 * myMath::Constants::PI / 16.0 );
+
+    // XYX
+    q = A.ToQuaternion( myMath::EulerOrder::XYX );
+
+    BOOST_CHECK_SMALL( q[0] - ( -0.241362888054137 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[1] - (  0.795666809947927 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[2] - ( -0.531647565308600 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[3] - (  0.161273525784282 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // XZX
+    q = A.ToQuaternion( myMath::EulerOrder::XZX );
+
+    BOOST_CHECK_SMALL( q[0] - ( -0.241362888054137 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[1] - (  0.795666809947927 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[2] - ( -0.161273525784282 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[3] - ( -0.531647565308600 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // YXY
+    q = A.ToQuaternion( myMath::EulerOrder::YXY );
+
+    BOOST_CHECK_SMALL( q[0] - ( -0.241362888054137 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[1] - ( -0.531647565308600 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[2] - (  0.795666809947927 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[3] - ( -0.161273525784282 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // YZY
+    q = A.ToQuaternion( myMath::EulerOrder::YZY );
+
+    BOOST_CHECK_SMALL( q[0] - ( -0.241362888054137 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[1] - (  0.161273525784282 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[2] - (  0.795666809947927 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[3] - ( -0.531647565308600 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // ZXZ
+    q = A.ToQuaternion( myMath::EulerOrder::ZXZ );
+
+    BOOST_CHECK_SMALL( q[0] - ( -0.241362888054137 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[1] - ( -0.531647565308600 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[2] - (  0.161273525784282 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[3] - (  0.795666809947927 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // ZYZ
+    q = A.ToQuaternion( myMath::EulerOrder::ZYZ );
+
+    BOOST_CHECK_SMALL( q[0] - ( -0.241362888054137 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[1] - ( -0.161273525784282 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[2] - ( -0.531647565308600 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( q[3] - (  0.795666809947927 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
