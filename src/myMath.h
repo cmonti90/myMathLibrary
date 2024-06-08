@@ -5,7 +5,6 @@
 #include "myMathBasicFunctions.h"
 #include "myMathConstants.h"
 #include "myMathDCM.h"
-#include "myMathDistribution.h"
 #include "myMathMatrix.h"
 #include "myMathMatrixFunctions.h"
 #include "myMathQuaternion.h"
