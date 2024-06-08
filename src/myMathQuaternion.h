@@ -25,9 +25,7 @@ namespace myMath
         Quaternion( const T ( &q )[4] );
         Quaternion( const Quaternion< T >& q );
         Quaternion( const Vector< T, 4u >& q );
-        Quaternion( const T& w, const Vector<T, 3u>& v );
-        Quaternion( const Vector<T, 3u>& v );
-        Quaternion( const T& w, const Angle< T >& v );
+        Quaternion( const T& w, const Vector< T, 3u >& v );
         Quaternion( const T ang, const Axis ax );
 
         ~Quaternion() = default;
@@ -45,23 +43,30 @@ namespace myMath
         using Vector< T, 4u >::operator!=;
 
         Quaternion< T > operator*( const Quaternion< T >& q ) const;
+        Quaternion< T > operator*( const T scalar ) const;
 
         Quaternion< T >& operator*=( const Quaternion< T >& q );
+        Quaternion< T >& operator*=( const T scalar );
 
         static Quaternion< T > Identity( void );
 
-        T w( void ) const;
-        T x( void ) const;
-        T y( void ) const;
-        T z( void ) const;
+        T& w( void );
+        T& x( void );
+        T& y( void );
+        T& z( void );
+
+        const T& w( void ) const;
+        const T& x( void ) const;
+        const T& y( void ) const;
+        const T& z( void ) const;
 
         Quaternion< T > Conjugate( void ) const;
         Quaternion< T > Inverse( void ) const;
-        DCM< T > ToDCM( void );
-        Angle< T > ToEuler( const TaitBryanOrder& rotOrder );
-        Angle< T > ToEuler( const EulerOrder& rotOrder );
+        DCM< T > ToDCM( void ) const;
+        Angle< T > ToAngle( const TaitBryanOrder& rotOrder ) const;
+        Angle< T > ToAngle( const EulerOrder& rotOrder ) const;
 
-        Vector<T, 3u> Rotate( const Vector<T, 3u>& vec, const RotType& rotType = RotType::ACTIVE );
+        Vector< T, 3u > Rotate( const Vector< T, 3u >& vec, const RotType& rotType = RotType::PASSIVE ) const;
 
         Quaternion< T > Deriv( const Vector< T, 3u >& w ) const;
     };
@@ -103,17 +108,7 @@ namespace myMath
     }
 
     template < typename T >
-    inline Quaternion< T >::Quaternion( const T& w, const Vector<T, 3u>& v ) : Vector< T, 4u >( {w, v[0], v[1], v[2]} )
-    {
-    }
-
-    template < typename T >
-    inline Quaternion< T >::Quaternion( const Vector<T, 3u>& v ) : Vector< T, 4u >( {static_cast< T >( 0.0 ), v[0], v[1], v[2]} )
-    {
-    }
-
-    template < typename T >
-    inline Quaternion< T >::Quaternion( const T& w, const Angle< T >& ang ) : Vector< T, 4u >( {w, ang[0], ang[1], ang[2]} )
+    inline Quaternion< T >::Quaternion( const T& w, const Vector< T, 3u >& v ) : Vector< T, 4u >( {w, v[0], v[1], v[2]} )
     {
     }
 
@@ -170,7 +165,19 @@ namespace myMath
         qat[2] = this->vec[0] * q[2] - this->vec[1] * q[3] + this->vec[2] * q[0] + this->vec[3] * q[1];
         qat[3] = this->vec[0] * q[3] + this->vec[1] * q[2] - this->vec[2] * q[1] + this->vec[3] * q[0];
 
-        qat.Normalize();
+        return qat;
+    }
+
+
+    template < typename T >
+    Quaternion< T > Quaternion< T >::operator*( const T scalar ) const
+    {
+        Quaternion< T > qat;
+
+        qat[0] = this->vec[0] * scalar;
+        qat[1] = this->vec[1] * scalar;
+        qat[2] = this->vec[2] * scalar;
+        qat[3] = this->vec[3] * scalar;
 
         return qat;
     }
@@ -186,7 +193,17 @@ namespace myMath
         this->vec[2] = qat[0] * q[2] - qat[1] * q[3] + qat[2] * q[0] + qat[3] * q[1];
         this->vec[3] = qat[0] * q[3] + qat[1] * q[2] - qat[2] * q[1] + qat[3] * q[0];
 
-        this->Normalize();
+        return *this;
+    }
+
+
+    template < typename T >
+    Quaternion< T >& Quaternion< T >::operator*=( const T scalar )
+    {
+        this->vec[0] *= scalar;
+        this->vec[1] *= scalar;
+        this->vec[2] *= scalar;
+        this->vec[3] *= scalar;
 
         return *this;
     }
@@ -199,28 +216,56 @@ namespace myMath
 
 
     template < typename T >
-    T Quaternion< T >::w( void ) const
+    T& Quaternion< T >::w( void )
     {
         return this->vec[0];
     }
 
 
     template < typename T >
-    T Quaternion< T >::x( void ) const
+    T& Quaternion< T >::x( void )
     {
         return this->vec[1];
     }
 
 
     template < typename T >
-    T Quaternion< T >::y( void ) const
+    T& Quaternion< T >::y( void )
     {
         return this->vec[2];
     }
 
 
     template < typename T >
-    T Quaternion< T >::z( void ) const
+    T& Quaternion< T >::z( void )
+    {
+        return this->vec[3];
+    }
+
+
+    template < typename T >
+    const T& Quaternion< T >::w( void ) const
+    {
+        return this->vec[0];
+    }
+
+
+    template < typename T >
+    const T& Quaternion< T >::x( void ) const
+    {
+        return this->vec[1];
+    }
+
+
+    template < typename T >
+    const T& Quaternion< T >::y( void ) const
+    {
+        return this->vec[2];
+    }
+
+
+    template < typename T >
+    const T& Quaternion< T >::z( void ) const
     {
         return this->vec[3];
     }
@@ -245,57 +290,69 @@ namespace myMath
     {
         Quaternion< T > tmp = this->Conjugate();
 
-        tmp /= SQ( this->Magnitude() );
+        const T mag = this->Magnitude();
+
+        if ( !isZero( mag ) )
+        {
+            tmp /= SQ( mag );
+        }
 
         return tmp;
     }
 
 
     template < typename T >
-    DCM< T > Quaternion< T >::ToDCM( void )
+    DCM< T > Quaternion< T >::ToDCM( void ) const
     {
-        this->Normalize();
 
         DCM< T > dcm;
 
-        dcm[0][0] = static_cast< T >( 1 ) - static_cast< T >( 2 ) * SQ( this->vec[2] ) - static_cast< T >( 2 ) * SQ( this->vec[3] );
-        dcm[0][1] = static_cast< T >( 2 ) * ( this->vec[1] * this->vec[2] + this->vec[0] * this->vec[3] );
-        dcm[0][2] = static_cast< T >( 2 ) * ( this->vec[1] * this->vec[3] - this->vec[0] * this->vec[2] );
+        Quaternion< T > quatNormalize( this->vec );
+        
+        if ( !isZero( quatNormalize.Magnitude() - static_cast< T >( 1 ) ) )
+        {
+            quatNormalize.Normalize();
+        }
 
-        dcm[1][0] = static_cast< T >( 2 ) * ( this->vec[1] * this->vec[2] - this->vec[0] * this->vec[3] );
-        dcm[1][1] = static_cast< T >( 1 ) - static_cast< T >( 2 ) * SQ( this->vec[1] ) - static_cast< T >( 2 ) * SQ( this->vec[3] );
-        dcm[1][2] = static_cast< T >( 2 ) * ( this->vec[2] * this->vec[3] + this->vec[0] * this->vec[1] );
+        const T q0_sq = SQ( quatNormalize[0] );
+        const T q1_sq = SQ( quatNormalize[1] );
+        const T q2_sq = SQ( quatNormalize[2] );
+        const T q3_sq = SQ( quatNormalize[3] );
 
-        dcm[2][0] = static_cast< T >( 2 ) * ( this->vec[1] * this->vec[3] + this->vec[0] * this->vec[2] );
-        dcm[2][1] = static_cast< T >( 2 ) * ( this->vec[2] * this->vec[3] - this->vec[0] * this->vec[1] );
-        dcm[2][2] = static_cast< T >( 1 ) - static_cast< T >( 2 ) * SQ( this->vec[1] ) - static_cast< T >( 2 ) * SQ( this->vec[2] );
+        dcm[0][0] = q0_sq + q1_sq - q2_sq - q3_sq;
+        dcm[0][1] = static_cast< T >( 2 ) * ( quatNormalize[1] * quatNormalize[2] + quatNormalize[0] * quatNormalize[3] );
+        dcm[0][2] = static_cast< T >( 2 ) * ( quatNormalize[1] * quatNormalize[3] - quatNormalize[0] * quatNormalize[2] );
+
+        dcm[1][0] = static_cast< T >( 2 ) * ( quatNormalize[1] * quatNormalize[2] - quatNormalize[0] * quatNormalize[3] );
+        dcm[1][1] = q0_sq - q1_sq + q2_sq - q3_sq;
+        dcm[1][2] = static_cast< T >( 2 ) * ( quatNormalize[2] * quatNormalize[3] + quatNormalize[0] * quatNormalize[1] );
+
+        dcm[2][0] = static_cast< T >( 2 ) * ( quatNormalize[1] * quatNormalize[3] + quatNormalize[0] * quatNormalize[2] );
+        dcm[2][1] = static_cast< T >( 2 ) * ( quatNormalize[2] * quatNormalize[3] - quatNormalize[0] * quatNormalize[1] );
+        dcm[2][2] = q0_sq - q1_sq - q2_sq + q3_sq;
 
         return dcm;
     }
 
 
     template < typename T >
-    Angle< T > Quaternion< T >::ToEuler( const TaitBryanOrder& rotOrder )
+    Angle< T > Quaternion< T >::ToAngle( const TaitBryanOrder& rotOrder ) const
     {
-        this->Normalize();
-
-        return ToDCM().ToEuler( rotOrder );
+        return ToDCM().ToAngle( rotOrder );
     }
 
 
     template < typename T >
-    Angle< T > Quaternion< T >::ToEuler( const EulerOrder& rotOrder )
+    Angle< T > Quaternion< T >::ToAngle( const EulerOrder& rotOrder ) const
     {
-        this->Normalize();
-
-        return ToDCM().ToEuler( rotOrder );
+        return ToDCM().ToAngle( rotOrder );
     }
 
 
     template < typename T >
-    Vector<T, 3u> Quaternion< T >::Rotate( const Vector<T, 3u>& vec, const RotType& rotType )
+    Vector< T, 3u > Quaternion< T >::Rotate( const Vector< T, 3u >& vec, const RotType& rotType ) const
     {
-        Vector<T, 3u> vec_rot;
+        Vector< T, 3u > vec_rot;
 
         Quaternion< T > q_vec{static_cast< T >( 0.0 ), vec};
 

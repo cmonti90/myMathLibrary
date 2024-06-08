@@ -448,5 +448,130 @@ BOOST_AUTO_TEST_CASE( test_myMathDCM_ToQuaternion )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_myMathDCM_ToAngle_TaitBryanOrder )
+{
+    myMath::DCMd dcm = myMath::DCMd::Identity();
+
+    myMath::Angle< double > ang = dcm.ToAngle( myMath::TaitBryanOrder::XYZ );
+
+    BOOST_CHECK_SMALL( ang[0] - ( 0.0 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - ( 0.0 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - ( 0.0 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    dcm = myMath::AngleD ( 3.0 * myMath::Constants::PI / 4.0, 7.0 * myMath::Constants::PI / 8.0, 2.0 * myMath::Constants::PI / 3.0 ).ToDCM( myMath::TaitBryanOrder::ZYX );
+
+    // XYZ
+    ang = dcm.ToAngle( myMath::TaitBryanOrder::XYZ );
+
+    BOOST_CHECK_SMALL( ang[0] - ( -0.801513309269998 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - (  0.844548649772118 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - ( -0.180490806148252 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // XZY
+    ang = dcm.ToAngle( myMath::TaitBryanOrder::XZY );
+
+    BOOST_CHECK_SMALL( ang[0] - ( -0.937108698236525 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - ( -0.119492765396374 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - (  0.852672042824705 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // YXZ
+    ang = dcm.ToAngle( myMath::TaitBryanOrder::YXZ );
+
+    BOOST_CHECK_SMALL( ang[0] - (  1.017363870460633 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - ( -0.497321720650419 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - ( -0.838027874616926 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // YZX
+    ang = dcm.ToAngle( myMath::TaitBryanOrder::YZX );
+
+    BOOST_CHECK_SMALL( ang[0] - (  0.529902789748927 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - ( -0.711910568065696 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - ( -0.681707795228405 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // ZXY
+    ang = dcm.ToAngle( myMath::TaitBryanOrder::ZXY );
+
+    BOOST_CHECK_SMALL( ang[0] - ( -0.200058400607117 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - ( -0.927467146360809 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - (  0.691835813643225 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // ZYX
+    ang = dcm.ToAngle( myMath::TaitBryanOrder::ZYX );
+
+    BOOST_CHECK_SMALL( ang[0] - ( -0.785398163397448 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - (  0.392699081698724 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - ( -1.047197551196598 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+}
+
+
+BOOST_AUTO_TEST_CASE( test_myMathDCM_ToAngle_EulerOrder )
+{
+    myMath::DCMd dcm = myMath::DCMd::Identity();
+
+    myMath::Angle< double > ang = dcm.ToAngle( myMath::EulerOrder::XYX );
+
+    BOOST_CHECK_SMALL( ang[0] - ( 0.0 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - ( 0.0 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - ( 0.0 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    dcm = myMath::AngleD ( 3.0 * myMath::Constants::PI / 4.0, 7.0 * myMath::Constants::PI / 8.0, 2.0 * myMath::Constants::PI / 3.0 ).ToDCM( myMath::TaitBryanOrder::ZYX );
+
+    // XYX
+    ang = dcm.ToAngle( myMath::EulerOrder::XYX );
+
+    BOOST_CHECK_SMALL( ang[0] - ( -1.040893537045970 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - (  0.858885758729201 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - (  0.158109019630106 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // XZX
+    ang = dcm.ToAngle( myMath::EulerOrder::XZX );
+
+    BOOST_CHECK_SMALL( ang[0] - ( -2.611689863840867 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - (  0.858885758729201 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - (  1.728905346425002 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // YXY
+    ang = dcm.ToAngle( myMath::EulerOrder::YXY );
+
+    BOOST_CHECK_SMALL( ang[0] - (  2.993689114114857 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - (  0.942338207407867 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - ( -2.201551737999084 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // YZY
+    ang = dcm.ToAngle( myMath::EulerOrder::YZY );
+
+    BOOST_CHECK_SMALL( ang[0] - ( -1.718699866269833 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - (  0.942338207407867 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - (  2.510837242385606 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // ZXZ
+    ang = dcm.ToAngle( myMath::EulerOrder::ZXZ );
+
+    BOOST_CHECK_SMALL( ang[0] - (  2.138745486137063 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - (  1.090615267940999 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - ( -2.695461262167475 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+
+    // ZYZ
+    ang = dcm.ToAngle( myMath::EulerOrder::ZYZ );
+
+    BOOST_CHECK_SMALL( ang[0] - (  0.567949159342166 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[1] - (  1.090615267940999 ), 10.0 * std::numeric_limits< double >::epsilon() );
+    BOOST_CHECK_SMALL( ang[2] - ( -1.124664935372578 ), 10.0 * std::numeric_limits< double >::epsilon() );
+
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

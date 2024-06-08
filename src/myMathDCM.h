@@ -43,7 +43,7 @@ namespace myMath
 
         DCM< T > operator*( const DCM< T >& dcm ) const;
         DCM< T > operator*( const Matrix< T, 3, 3 >& m ) const;
-        
+
         DCM< T > operator*( const T& x ) const = delete;
         DCM< T >& operator*=( const T& x ) const = delete;
         DCM< T > operator/( const T& x ) const = delete;
@@ -62,8 +62,8 @@ namespace myMath
         DCM< T > Transpose() const;
         void Normalize();
         Quaternion< T > ToQuaternion() const;
-        Angle< T > ToEuler( const TaitBryanOrder& rotOrder ) const;
-        Angle< T > ToEuler( const EulerOrder& rotOrder ) const;
+        Angle< T > ToAngle( const TaitBryanOrder& rotOrder ) const;
+        Angle< T > ToAngle( const EulerOrder& rotOrder ) const;
     };
 } // namespace myMath
 
@@ -245,7 +245,7 @@ namespace myMath
 
         return tmp;
     }
-    
+
 
     template < typename T >
     DCM< T > DCM< T >::Transpose() const
@@ -315,14 +315,12 @@ namespace myMath
             q[3] = q3_mag;
         }
 
-        q.Normalize();
-
         return q;
     }
 
 
     template < typename T >
-    Angle< T > DCM< T >::ToEuler( const TaitBryanOrder& rotOrder ) const
+    Angle< T > DCM< T >::ToAngle( const TaitBryanOrder& rotOrder ) const
     {
         Angle< T > euler1;
         Angle< T > euler2;
@@ -498,10 +496,8 @@ namespace myMath
                     break;
                 }
         }
-
-
-        euler1.wrapAnglesMinusPiToPi();
-        euler2.wrapAnglesMinusPiToPi();
+        
+        return euler1;
 
         euler = euler1.Magnitude() < euler2.Magnitude() ? euler1 : euler2;
 
@@ -516,10 +512,10 @@ namespace myMath
 
         return euler;
     }
-    
+
 
     template < typename T >
-    Angle< T > DCM< T >::ToEuler( const EulerOrder& rotOrder ) const
+    Angle< T > DCM< T >::ToAngle( const EulerOrder& rotOrder ) const
     {
         Angle< T > euler1;
         Angle< T > euler2;
@@ -694,11 +690,12 @@ namespace myMath
                     throw std::invalid_argument( "Invalid Euler Order" );
                 }
         }
-
-        euler1.wrapAnglesMinusPiToPi();
-        euler2.wrapAnglesMinusPiToPi();
+        
+        return euler1;
 
         euler = euler1.Magnitude() < euler2.Magnitude() ? euler1 : euler2;
+
+        #ifdef DEBUG
 
         DCM< T > check = euler.ToDCM( rotOrder );
 
@@ -706,6 +703,8 @@ namespace myMath
         {
             std::cout << "WARNING! Conversion to Euler sequence: " << static_cast<unsigned int>( rotOrder ) << " is not possible!" << std::endl;
         }
+
+        #endif
 
         return euler;
     }
