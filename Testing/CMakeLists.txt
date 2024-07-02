@@ -1,6 +1,10 @@
 
 enable_testing()
 
+if(WIN32)
+    set(BOOST_ROOT "C:/Libraries/boost")
+endif()
+
 find_package(Boost COMPONENTS system unit_test_framework REQUIRED)
 
 # Include Boost headers
