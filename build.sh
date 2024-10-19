@@ -33,7 +33,7 @@ mkdir -p "${SCRIPT_DIR}/${buildToDir}"
 mkdir -p "${SCRIPT_DIR}/install"
 
 echo "Configuring build..."
-cmake -S "${SCRIPT_DIR}" -B "${SCRIPT_DIR}/${buildToDir}"
+cmake -S "${SCRIPT_DIR}" -B "${SCRIPT_DIR}/${buildToDir}" -DCMAKE_BUILD_TYPE=Release
 
 if [ ${?} -ne 0 ]
 then
@@ -47,7 +47,7 @@ then
 fi
 
 echo "Building library..."
-cmake --build "${SCRIPT_DIR}/${buildToDir}"
+cmake --build "${SCRIPT_DIR}/${buildToDir}" --config Release
 if [ ${?} -ne 0 ]
 then
   echo "Build failed"
@@ -65,7 +65,7 @@ echo "Installing library..."
 cmake --install "${SCRIPT_DIR}/${buildToDir}" --prefix "${SCRIPT_DIR}/install"
 
 cd ${SCRIPT_DIR}/${buildToDir}/Testing/
-ctest -C R -V
+ctest -C Release -V
 
 cd ${curDir}
 export OLDPWD=${oldDir}
