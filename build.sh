@@ -65,7 +65,7 @@ echo "Installing library..."
 cmake --install "${SCRIPT_DIR}/${buildToDir}" --prefix "${SCRIPT_DIR}/install"
 
 cd ${SCRIPT_DIR}/${buildToDir}/Testing/
-ctest -V
+ctest -C R -V
 
 cd ${curDir}
 export OLDPWD=${oldDir}
