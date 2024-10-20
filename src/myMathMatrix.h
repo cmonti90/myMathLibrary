@@ -13,7 +13,7 @@
 
 namespace myMath
 {
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     class Matrix
     {
       public:
@@ -39,7 +39,7 @@ namespace myMath
         Matrix< T, R, C > operator+( const Matrix< T, R, C >& obj ) const;
         Matrix< T, R, C > operator-( const Matrix< T, R, C >& obj ) const;
 
-        template < unsigned int C2 >
+        template< unsigned int C2 >
         Matrix< T, R, C2 > operator*( const Matrix< T, C, C2 >& rhs ) const;
         Vector< T, R > operator*( const Vector< T, C >& obj ) const;
         Matrix< T, R, C > operator*( const T& x ) const;
@@ -60,7 +60,7 @@ namespace myMath
     };
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     inline Matrix< T, R, C >::Matrix()
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -73,7 +73,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     inline Matrix< T, R, C >::Matrix( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -86,7 +86,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     inline Matrix< T, R, C >::Matrix( const T ( &x )[R][C] )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -99,7 +99,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     inline Matrix< T, R, C >::Matrix( const Matrix< T, R, C >& obj )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -112,7 +112,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     inline Matrix< T, R, C >::Matrix( const std::initializer_list< T >& x )
     {
         if ( static_cast<unsigned int>( x.size() ) == 1u )
@@ -147,35 +147,35 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Vector< T, C >& Matrix< T, R, C >::operator[]( const unsigned int i )
     {
         return this->mat[i];
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     const Vector< T, C >& Matrix< T, R, C >::operator[]( const unsigned int i ) const
     {
         return this->mat[i];
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     T& Matrix< T, R, C >::operator()( const unsigned int i, const unsigned int j )
     {
         return this->mat[i][j];
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     const T& Matrix< T, R, C >::operator()( const unsigned int i, const unsigned int j ) const
     {
         return this->mat[i][j];
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C >& Matrix< T, R, C >::operator=( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -190,7 +190,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C >& Matrix< T, R, C >::operator=( const T ( &x )[R][C] )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -205,7 +205,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C >& Matrix< T, R, C >::operator=( const Matrix< T, R, C >& obj )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -220,7 +220,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C > Matrix< T, R, C >::operator+( const Matrix< T, R, C >& obj ) const
     {
         Matrix< T, R, C > tmp{*this};
@@ -237,7 +237,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C > Matrix< T, R, C >::operator-( const Matrix< T, R, C >& obj ) const
     {
         Matrix< T, R, C > tmp{*this};
@@ -254,7 +254,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     bool Matrix< T, R, C >::operator==( const Matrix< T, R, C >& obj ) const
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -269,14 +269,14 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     bool Matrix< T, R, C >::operator!=( const Matrix< T, R, C >& obj ) const
     {
         return !( *this == obj );
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C > Matrix< T, R, C >::operator*( const T& x ) const
     {
         Matrix< T, R, C > tmp{*this};
@@ -293,7 +293,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Vector<T, R> Matrix< T, R, C >::operator*( const Vector< T, C >& obj ) const
     {
         Vector<T, R> tmp{static_cast< T >( 0 )};
@@ -310,7 +310,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C > Matrix< T, R, C >::operator/( const T& x ) const
     {
         Matrix< T, R, C > tmp{*this};
@@ -327,7 +327,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C >& Matrix< T, R, C >::operator+=( const Matrix< T, R, C >& obj )
     {
 
@@ -343,7 +343,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C >& Matrix< T, R, C >::operator-=( const Matrix< T, R, C >& obj )
     {
 
@@ -359,7 +359,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C >& Matrix< T, R, C >::operator*=( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -374,7 +374,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C >& Matrix< T, R, C >::operator*=( const Matrix< T, C, C >& rhs )
     {
         *this = *this * rhs;
@@ -383,7 +383,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C >& Matrix< T, R, C >::operator/=( const T& x )
     {
         *this = *this / x;
@@ -392,15 +392,15 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C > Matrix< T, R, C >::operator-() const
     {
         return static_cast< T >( -1 ) * ( *this );
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
-    template < unsigned int C2 >
+    template< typename T, unsigned int R, unsigned int C >
+    template< unsigned int C2 >
     Matrix< T, R, C2 > Matrix< T, R, C >::operator*( const Matrix< T, C, C2 >& rhs ) const
     {
         Matrix< T, R, C2 > tmp;
@@ -424,7 +424,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, R, C > operator*( const T& x, const Matrix< T, R, C >& obj )
     {
         Matrix< T, R, C > tmp{obj};
@@ -441,7 +441,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R, unsigned int C >
+    template< typename T, unsigned int R, unsigned int C >
     Matrix< T, C, R > Matrix< T, R, C >::Transpose( void ) const
     {
         Matrix< T, C, R > tmpMat;
@@ -459,7 +459,7 @@ namespace myMath
 
 
     // Square Matrices
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     class Matrix< T, R, R >
     {
       public:
@@ -528,7 +528,7 @@ namespace myMath
     typedef Matrix< double, 4u, 4u > Matrix4d;
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     inline Matrix< T, R, R >::Matrix()
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -541,7 +541,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     inline Matrix< T, R, R >::Matrix( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -554,7 +554,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     inline Matrix< T, R, R >::Matrix( const T ( &x )[R][R] )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -567,7 +567,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     inline Matrix< T, R, R >::Matrix( const Matrix< T, R, R >& obj )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -580,7 +580,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     inline Matrix< T, R, R >::Matrix( const std::initializer_list< T >& x )
     {
         if ( static_cast<unsigned int>( x.size() ) == 1u )
@@ -611,35 +611,35 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Vector< T, R >& Matrix< T, R, R >::operator[]( const unsigned int i )
     {
         return this->mat[i];
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     const Vector< T, R >& Matrix< T, R, R >::operator[]( const unsigned int i ) const
     {
         return this->mat[i];
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     T& Matrix< T, R, R >::operator()( const unsigned int i, const unsigned int j )
     {
         return this->mat[i][j];
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     const T& Matrix< T, R, R >::operator()( const unsigned int i, const unsigned int j ) const
     {
         return this->mat[i][j];
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R >& Matrix< T, R, R >::operator=( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -654,7 +654,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R >& Matrix< T, R, R >::operator=( const T ( &x )[R][R] )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -669,7 +669,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R >& Matrix< T, R, R >::operator=( const Matrix< T, R, R >& obj )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -684,7 +684,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R > Matrix< T, R, R >::operator+( const Matrix< T, R, R >& obj ) const
     {
         Matrix< T, R, R > tmp{*this};
@@ -701,7 +701,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R > Matrix< T, R, R >::operator-( const Matrix< T, R, R >& obj ) const
     {
         Matrix< T, R, R > tmp{*this};
@@ -718,7 +718,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     bool Matrix< T, R, R >::operator==( const Matrix< T, R, R >& obj ) const
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -733,14 +733,14 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     bool Matrix< T, R, R >::operator!=( const Matrix< T, R, R >& obj ) const
     {
         return !( *this == obj );
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R > Matrix< T, R, R >::operator*( const T& x ) const
     {
         Matrix< T, R, R > tmp{*this};
@@ -757,7 +757,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Vector< T, R > Matrix< T, R, R >::operator*( const Vector< T, R >& obj ) const
     {
         Vector< T, R > tmp{static_cast< T >( 0 )};
@@ -774,8 +774,8 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
-    template < unsigned int C >
+    template< typename T, unsigned int R >
+    template< unsigned int C >
     Matrix< T, R, C > Matrix< T, R, R >::operator*( const Matrix< T, R, C >& rhs ) const
     {
         Matrix< T, R, C > tmp;
@@ -799,7 +799,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R > Matrix< T, R, R >::operator/( const T& x ) const
     {
         Matrix< T, R, R > tmp{*this};
@@ -816,7 +816,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R >& Matrix< T, R, R >::operator+=( const Matrix< T, R, R >& obj )
     {
 
@@ -832,7 +832,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R >& Matrix< T, R, R >::operator-=( const Matrix< T, R, R >& obj )
     {
 
@@ -848,7 +848,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R >& Matrix< T, R, R >::operator*=( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -863,7 +863,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R >& Matrix< T, R, R >::operator*=( const Matrix< T, R, R >& rhs )
     {
         *this = *this * rhs;
@@ -872,7 +872,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R >& Matrix< T, R, R >::operator/=( const T& x )
     {
         for ( unsigned int i{0u}; i < R; i++ )
@@ -887,14 +887,14 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R > Matrix< T, R, R >::operator-() const
     {
         return static_cast< T >( -1 ) * ( *this );
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R-1, R-1 > Matrix< T, R, R >::Minor( unsigned int i, unsigned int j ) const
     {
         Matrix< T, R-1, R-1 > minor;
@@ -913,7 +913,7 @@ namespace myMath
         return minor;
     }
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     T Matrix< T, R, R >::Determinant( void ) const
     {
         Matrix< T, R, R > tmpMat{*this};
@@ -959,7 +959,7 @@ namespace myMath
         return det;
     }
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R > Matrix< T, R, R >::Inverse( void ) const
     {
         if ( ABS( this->Determinant() ) > static_cast< T >( Constants::ZERO_THRESHOLD ) )
@@ -1016,7 +1016,7 @@ namespace myMath
                 }
             }
 
-            for ( int i{static_cast<int>( R ) - 1}; i >= 0; i-- )
+            for ( int i{static_cast< int >( R ) - 1}; i >= 0; i-- )
             {
                 for ( unsigned int j{0u}; j < R; j++ )
                 {
@@ -1037,7 +1037,7 @@ namespace myMath
         }
     }
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix<T, R, R> Matrix< T, R, R >::Transpose( void ) const
     {
         Matrix<T, R, R> tmpMat{*this};
@@ -1053,7 +1053,7 @@ namespace myMath
         return tmpMat;
     }
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     void Matrix< T, R, R >::TransposeInPlace( void )
     {
         Matrix< T, R, R > tmpMat{*this};
@@ -1069,7 +1069,7 @@ namespace myMath
         *this = tmpMat;
     }
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     void Matrix< T, R, R >::Invert( void )
     {
         if ( ABS( this->Determinant() ) > static_cast< T >( Constants::ZERO_THRESHOLD ) )
@@ -1125,7 +1125,7 @@ namespace myMath
                 }
             }
 
-            for ( int i{static_cast<int>( R ) - 1}; i >= 0; i-- )
+            for ( int i{static_cast< int >( R ) - 1}; i >= 0; i-- )
             {
                 for ( unsigned int j{0u}; j < R; j++ )
                 {
@@ -1147,7 +1147,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     T Matrix< T, R, R >::Trace( void ) const
     {
         T trace{static_cast< T >( 0 )};
@@ -1161,7 +1161,7 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R > Matrix< T, R, R >::Identity()
     {
         Matrix< T, R, R > tmpMat;
@@ -1178,14 +1178,14 @@ namespace myMath
     }
 
 
-    template < typename T, unsigned int R >
+    template< typename T, unsigned int R >
     Matrix< T, R, R > operator*( const T& x, const Matrix< T, R, R >& obj )
     {
         return obj * x;
     }
 
 
-    template < typename T >
+    template< typename T >
     class Matrix< T, 1, 1 >
     {
         public:
@@ -1243,35 +1243,35 @@ namespace myMath
     };
 
 
-    template < typename T >
+    template< typename T >
     inline Matrix< T, 1, 1 >::Matrix()
     {
         this->mat[0][0] = static_cast< T >( 0 );
     }
 
 
-    template < typename T >
+    template< typename T >
     inline Matrix< T, 1, 1 >::Matrix( const T& x )
     {
         this->mat[0][0] = x;
     }
 
 
-    template < typename T >
+    template< typename T >
     inline Matrix< T, 1, 1 >::Matrix( const T ( &x )[1][1] )
     {
         this->mat[0][0] = x[0][0];
     }
 
 
-    template < typename T >
+    template< typename T >
     inline Matrix< T, 1, 1 >::Matrix( const Matrix< T, 1, 1 >& obj )
     {
         this->mat[0][0] = obj.mat[0][0];
     }
 
 
-    template < typename T >
+    template< typename T >
     inline Matrix< T, 1, 1 >::Matrix( const std::initializer_list< T >& x )
     {
         if ( static_cast<unsigned int>( x.size() ) == 1u )
@@ -1286,35 +1286,35 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Vector< T, 1 >& Matrix< T, 1, 1 >::operator[]( const unsigned int i )
     {
         return this->mat[i];
     }
 
 
-    template < typename T >
+    template< typename T >
     const Vector< T, 1 >& Matrix< T, 1, 1 >::operator[]( const unsigned int i ) const
     {
         return this->mat[i];
     }
 
 
-    template < typename T >
+    template< typename T >
     T& Matrix< T, 1, 1 >::operator()( const unsigned int i, const unsigned int j )
     {
         return this->mat[i][j];
     }
 
 
-    template < typename T >
+    template< typename T >
     const T& Matrix< T, 1, 1 >::operator()( const unsigned int i, const unsigned int j ) const
     {
         return this->mat[i][j];
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator=( const T& x )
     {
         this->mat[0][0] = x;
@@ -1323,7 +1323,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator=( const T ( &x )[1][1] )
     {
         this->mat[0][0] = x[0][0];
@@ -1332,7 +1332,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator=( const Matrix< T, 1, 1 >& obj )
     {
         this->mat[0][0] = obj.mat[0][0];
@@ -1341,7 +1341,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 > Matrix< T, 1, 1 >::operator+( const Matrix< T, 1, 1 >& obj ) const
     {
         Matrix< T, 1, 1 > tmp{*this};
@@ -1352,7 +1352,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 > Matrix< T, 1, 1 >::operator-( const Matrix< T, 1, 1 >& obj ) const
     {
         Matrix< T, 1, 1 > tmp{*this};
@@ -1363,21 +1363,21 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     bool Matrix< T, 1, 1 >::operator==( const Matrix< T, 1, 1 >& obj ) const
     {
         return this->mat[0][0] == obj.mat[0][0];
     }
 
 
-    template < typename T >
+    template< typename T >
     bool Matrix< T, 1, 1 >::operator!=( const Matrix< T, 1, 1 >& obj ) const
     {
         return !( *this == obj );
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 > Matrix< T, 1, 1 >::operator*( const T& x ) const
     {
         Matrix< T, 1, 1 > tmp{*this};
@@ -1388,7 +1388,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Vector< T, 1 > Matrix< T, 1, 1 >::operator*( const Vector< T, 1 >& obj ) const
     {
         Vector< T, 1 > tmp{static_cast< T >( 0 )};
@@ -1399,8 +1399,8 @@ namespace myMath
     }
     
 
-    template < typename T >
-    template < unsigned int C >
+    template< typename T >
+    template< unsigned int C >
     Matrix< T, 1, C > Matrix< T, 1, 1 >::operator*( const Matrix< T, 1, C >& rhs ) const
     {
         Matrix< T, 1, C > tmp;
@@ -1414,7 +1414,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 > Matrix< T, 1, 1 >::operator/( const T& x ) const
     {
         Matrix< T, 1, 1 > tmp{*this};
@@ -1425,7 +1425,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator+=( const Matrix< T, 1, 1 >& obj )
     {
         this->mat[0][0] += obj.mat[0][0];
@@ -1434,7 +1434,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator-=( const Matrix< T, 1, 1 >& obj )
     {
         this->mat[0][0] -= obj.mat[0][0];
@@ -1443,7 +1443,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator*=( const T& x )
     {
         this->mat[0][0] *= x;
@@ -1452,7 +1452,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator*=( const Matrix< T, 1, 1 >& rhs )
     {
         *this = *this * rhs;
@@ -1461,7 +1461,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 >& Matrix< T, 1, 1 >::operator/=( const T& x )
     {
         this->mat[0][0] /= x;
@@ -1470,34 +1470,34 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 > Matrix< T, 1, 1 >::operator-() const
     {
         return static_cast< T >( -1 ) * ( *this );
     }
 
 
-    template < typename T >
+    template< typename T >
     T Matrix< T, 1, 1 >::Determinant( void ) const
     {
         return this->mat[0][0];
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 > Matrix< T, 1, 1 >::Transpose( void ) const
     {
         return *this;
     }
 
 
-    template < typename T >
+    template< typename T >
     void Matrix< T, 1, 1 >::TransposeInPlace( void )
     {
     }
 
 
-    template < typename T >
+    template< typename T >
     void Matrix< T, 1, 1 >::Invert( void )
     {
         if ( ABS( this->Determinant() ) > static_cast< T >( Constants::ZERO_THRESHOLD ) )
@@ -1511,7 +1511,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 > Matrix< T, 1, 1 >::Inverse( void ) const
     {
         if ( ABS( this->Determinant() ) > static_cast< T >( Constants::ZERO_THRESHOLD ) )
@@ -1525,21 +1525,21 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     T Matrix< T, 1, 1 >::Trace( void ) const
     {
         return this->mat[0][0];
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 > Matrix< T, 1, 1 >::Identity()
     {
         return Matrix< T, 1, 1 >( static_cast< T >( 1 ) );
     }
 
 
-    template < typename T >
+    template< typename T >
     Matrix< T, 1, 1 > operator*( const T& x, const Matrix< T, 1, 1 >& obj )
     {
         return obj * x;

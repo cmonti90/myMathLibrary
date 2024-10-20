@@ -10,13 +10,13 @@
 
 namespace myMath
 {
-    template < typename T >
+    template< typename T >
     class Angle;
 
-    template < typename T >
+    template< typename T >
     class Quaternion;
 
-    template < typename T >
+    template< typename T >
     class DCM : public Matrix< T, 3u, 3u >
     {
       public:
@@ -49,7 +49,7 @@ namespace myMath
         DCM< T > operator/( const T& x ) const = delete;
         DCM< T >& operator/=( const T& x ) const = delete;
 
-        template < unsigned int C >
+        template< unsigned int C >
         Matrix< T, 3, C > operator*( const Matrix< T, 3, C >& m ) const;
 
         Vector< T, 3u > operator*( const Vector< T, 3u >& v ) const;
@@ -76,31 +76,31 @@ namespace myMath
     typedef DCM< float  > DCMf;
     typedef DCM< double > DCMd;
 
-    template < typename T >
+    template< typename T >
     inline DCM< T >::DCM() : Matrix< T, 3u, 3u >( Matrix< T, 3u, 3u >::Identity() )
     {
     }
 
 
-    template < typename T >
+    template< typename T >
     inline DCM< T >::DCM( const Matrix< T, 3u, 3u >& m ) : Matrix< T, 3u, 3u >( m )
     {
     }
 
 
-    template < typename T >
+    template< typename T >
     inline DCM< T >::DCM( const std::initializer_list< T >& list ) : Matrix< T, 3u, 3u >( list )
     {
     }
 
 
-    template < typename T >
+    template< typename T >
     inline DCM< T >::DCM( const T ( &m )[3][3] ) : Matrix< T, 3u, 3u >( m )
     {
     }
 
 
-    template < typename T >
+    template< typename T >
     inline DCM< T >::DCM( const T ( &m )[9] ) : Matrix< T, 3u, 3u >()
     {
         for ( unsigned int i{0u}; i < 3u; i++ )
@@ -113,7 +113,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     DCM< T > DCM< T >::operator*( const DCM< T >& dcm ) const
     {
         DCM< T > tmp;
@@ -137,7 +137,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     DCM< T > DCM< T >::operator*( const Matrix< T, 3u, 3u >& m ) const
     {
         DCM< T > tmp;
@@ -160,8 +160,8 @@ namespace myMath
         return tmp;
     }
 
-    template < typename T >
-    template <unsigned int C>
+    template< typename T >
+    template<unsigned int C>
     Matrix<T, 3, C> DCM< T >::operator*( const Matrix<T, 3, C>& m ) const
     {
         Matrix<T, 3u, C> tmp;
@@ -184,7 +184,7 @@ namespace myMath
         return tmp;
     }
 
-    template < typename T >
+    template< typename T >
     Vector<T, 3u> DCM< T >::operator*( const Vector<T, 3u>& v ) const
     {
         Vector<T, 3u> tmp{0.0};
@@ -201,7 +201,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     DCM< T >& DCM< T >::operator*=( const DCM< T >& dcm )
     {
         Matrix< T, 3u, 3u >::operator*=( dcm );
@@ -209,7 +209,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     DCM< T >& DCM< T >::operator*=( const Matrix< T, 3u, 3u >& m )
     {
         Matrix< T, 3u, 3u >::operator*=( m );
@@ -217,13 +217,13 @@ namespace myMath
     }
 
 
-    template < class T >
+    template< class T >
     DCM< T > operator*( const T& x, const DCM< T >& obj )
     {
         return obj * x;
     }
 
-    template < class T, unsigned int C >
+    template< class T, unsigned int C >
     Matrix< T, 3u, C > operator*=( const DCM< T >& lhs, const Matrix< T, 3u, C >& rhs )
     {
         Matrix< T, 3u, C > tmp;
@@ -247,7 +247,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     DCM< T > DCM< T >::Transpose() const
     {
         DCM< T > tmp;
@@ -264,7 +264,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     void DCM< T >::Normalize()
     {
         for ( unsigned int i{0u}; i < 3u; i++ )
@@ -274,7 +274,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Quaternion< T > DCM< T >::ToQuaternion() const
     {
         Quaternion< T > q;
@@ -319,7 +319,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Angle< T > DCM< T >::ToAngle( const TaitBryanOrder& rotOrder ) const
     {
         Angle< T > euler1;
@@ -514,7 +514,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Angle< T > DCM< T >::ToAngle( const EulerOrder& rotOrder ) const
     {
         Angle< T > euler1;
@@ -710,7 +710,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     DCM< T > DCM< T >::Identity( void )
     {
         DCM< T > identityMat( static_cast< T >( 0 ) );

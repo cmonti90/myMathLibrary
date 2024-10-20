@@ -10,13 +10,13 @@
 
 namespace myMath
 {
-    template < typename T >
+    template< typename T >
     class DCM;
 
-    template < typename T >
+    template< typename T >
     class Angle;
 
-    template < typename T >
+    template< typename T >
     class Quaternion : public Vector< T, 4u >
     {
       public:
@@ -81,39 +81,39 @@ namespace myMath
     typedef Quaternion< double > QuaternionD;
     typedef Quaternion< float >  QuaternionF;
 
-    template < typename T >
+    template< typename T >
     inline Quaternion< T >::Quaternion() : Vector< T, 4u >()
     {
         this->vec[0] = static_cast< T >( 1 );
     }
 
-    template < typename T >
+    template< typename T >
     inline Quaternion< T >::Quaternion( const T& w, const T& x, const T& y, const T& z ) : Vector< T, 4u >( {w, x, y, z} )
     {
     }
 
-    template < typename T >
+    template< typename T >
     inline Quaternion< T >::Quaternion( const T ( &q )[4] ) : Vector< T, 4u >( q )
     {
     }
 
-    template < typename T >
+    template< typename T >
     inline Quaternion< T >::Quaternion( const Quaternion< T >& q ) : Vector< T, 4u >( static_cast < Vector< T, 4u >>( q ) )
     {
     }
 
-    template < typename T >
+    template< typename T >
     inline Quaternion< T >::Quaternion( const Vector< T, 4u >& q ) : Vector< T, 4u >( q )
     {
     }
 
-    template < typename T >
+    template< typename T >
     inline Quaternion< T >::Quaternion( const T& w, const Vector< T, 3u >& v ) : Vector< T, 4u >( {w, v[0], v[1], v[2]} )
     {
     }
 
 
-    template < typename T >
+    template< typename T >
     Quaternion< T >::Quaternion( const T ang, const Axis ax ) : Vector< T, 4u >()
     {
         switch ( ax )
@@ -155,7 +155,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Quaternion< T > Quaternion< T >::operator*( const Quaternion< T >& q ) const
     {
         Quaternion< T > qat;
@@ -169,7 +169,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Quaternion< T > Quaternion< T >::operator*( const T scalar ) const
     {
         Quaternion< T > qat;
@@ -183,7 +183,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Quaternion< T >& Quaternion< T >::operator*=( const Quaternion< T >& q )
     {
         Quaternion< T > qat{*this};
@@ -197,7 +197,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Quaternion< T >& Quaternion< T >::operator*=( const T scalar )
     {
         this->vec[0] *= scalar;
@@ -208,70 +208,70 @@ namespace myMath
         return *this;
     }
 
-    template < typename T >
+    template< typename T >
     Quaternion< T > Quaternion< T >::Identity( void )
     {
         return Quaternion< T >( static_cast< T >( 1 ), static_cast< T >( 0 ), static_cast< T >( 0 ), static_cast< T >( 0 ) );
     }
 
 
-    template < typename T >
+    template< typename T >
     T& Quaternion< T >::w( void )
     {
         return this->vec[0];
     }
 
 
-    template < typename T >
+    template< typename T >
     T& Quaternion< T >::x( void )
     {
         return this->vec[1];
     }
 
 
-    template < typename T >
+    template< typename T >
     T& Quaternion< T >::y( void )
     {
         return this->vec[2];
     }
 
 
-    template < typename T >
+    template< typename T >
     T& Quaternion< T >::z( void )
     {
         return this->vec[3];
     }
 
 
-    template < typename T >
+    template< typename T >
     const T& Quaternion< T >::w( void ) const
     {
         return this->vec[0];
     }
 
 
-    template < typename T >
+    template< typename T >
     const T& Quaternion< T >::x( void ) const
     {
         return this->vec[1];
     }
 
 
-    template < typename T >
+    template< typename T >
     const T& Quaternion< T >::y( void ) const
     {
         return this->vec[2];
     }
 
 
-    template < typename T >
+    template< typename T >
     const T& Quaternion< T >::z( void ) const
     {
         return this->vec[3];
     }
 
 
-    template < typename T >
+    template< typename T >
     Quaternion< T > Quaternion< T >::Conjugate( void ) const
     {
         Quaternion< T > tmp;
@@ -285,7 +285,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Quaternion< T > Quaternion< T >::Inverse( void ) const
     {
         Quaternion< T > tmp = this->Conjugate();
@@ -301,7 +301,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     DCM< T > Quaternion< T >::ToDCM( void ) const
     {
 
@@ -335,21 +335,21 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Angle< T > Quaternion< T >::ToAngle( const TaitBryanOrder& rotOrder ) const
     {
         return ToDCM().ToAngle( rotOrder );
     }
 
 
-    template < typename T >
+    template< typename T >
     Angle< T > Quaternion< T >::ToAngle( const EulerOrder& rotOrder ) const
     {
         return ToDCM().ToAngle( rotOrder );
     }
 
 
-    template < typename T >
+    template< typename T >
     Vector< T, 3u > Quaternion< T >::Rotate( const Vector< T, 3u >& vec, const RotType& rotType ) const
     {
         Vector< T, 3u > vec_rot;
@@ -388,7 +388,7 @@ namespace myMath
     }
 
 
-    template < typename T >
+    template< typename T >
     Quaternion< T > Quaternion< T >::Deriv( const Vector< T, 3u >& w ) const
     {
         Quaternion< T > q_dot;

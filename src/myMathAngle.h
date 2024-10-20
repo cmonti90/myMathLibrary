@@ -10,13 +10,13 @@
 
 namespace myMath
 {
-    template <typename T>
+    template< typename T >
     class DCM;
 
-    template <typename T>
+    template< typename T >
     class Quaternion;
 
-    template <typename T>
+    template< typename T >
     class Angle : public Vector<T, 3u>
     {
       public:
@@ -25,7 +25,7 @@ namespace myMath
         Angle( const T ( &x )[3u] );
         Angle( const T ang1, const T ang2, const T ang3 );
         Angle( const Vector<T, 3u>& obj );
-        Angle( const Angle<T>& obj );
+        Angle( const Angle< T >& obj );
 
         ~Angle() = default;
 
@@ -41,11 +41,11 @@ namespace myMath
         using Vector<T, 3u>::operator==;
         using Vector<T, 3u>::operator!=;
 
-        DCM<T> ToDCM( const TaitBryanOrder& rotOrder ) const;
-        DCM<T> ToDCM( const EulerOrder& rotOrder ) const;
+        DCM< T > ToDCM( const TaitBryanOrder& rotOrder ) const;
+        DCM< T > ToDCM( const EulerOrder& rotOrder ) const;
 
-        Quaternion<T> ToQuaternion( const TaitBryanOrder& rotOrder ) const;
-        Quaternion<T> ToQuaternion( const EulerOrder& rotOrder ) const;
+        Quaternion< T > ToQuaternion( const TaitBryanOrder& rotOrder ) const;
+        Quaternion< T > ToQuaternion( const EulerOrder& rotOrder ) const;
 
         void wrapAnglesZeroToTwoPi( const Axis ax = Axis::ALL );
         void wrapAnglesMinusPiToPi( const Axis ax = Axis::ALL );
@@ -63,46 +63,46 @@ namespace myMath
     typedef Angle< float >  AngleF;
 
 
-    template <typename T>
-    inline Angle<T>::Angle() : Vector<T, 3u>( static_cast<T>( 0 ) )
+    template< typename T >
+    inline Angle< T >::Angle() : Vector<T, 3u>( static_cast< T >( 0 ) )
     {
     }
 
 
-    template <typename T>
-    inline Angle<T>::Angle( const T x ) : Vector<T, 3u>( x )
+    template< typename T >
+    inline Angle< T >::Angle( const T x ) : Vector<T, 3u>( x )
     {
     }
 
 
-    template <typename T>
-    inline Angle<T>::Angle( const T ( &x )[3u] ) : Vector<T, 3u>( x )
+    template< typename T >
+    inline Angle< T >::Angle( const T ( &x )[3u] ) : Vector<T, 3u>( x )
     {
     }
 
 
-    template <typename T>
-    inline Angle<T>::Angle( const T ang1, const T ang2, const T ang3 ) : Vector<T, 3u>( {ang1, ang2, ang3} )
+    template< typename T >
+    inline Angle< T >::Angle( const T ang1, const T ang2, const T ang3 ) : Vector<T, 3u>( {ang1, ang2, ang3} )
     {
     }
 
 
-    template <typename T>
-    inline Angle<T>::Angle( const Vector<T, 3u>& obj ) : Vector<T, 3u>( obj )
+    template< typename T >
+    inline Angle< T >::Angle( const Vector<T, 3u>& obj ) : Vector<T, 3u>( obj )
     {
     }
 
 
-    template <typename T>
-    inline Angle<T>::Angle( const Angle<T>& ang ) : Vector<T, 3u>( static_cast<Vector<T, 3u>>( ang ) )
+    template< typename T >
+    inline Angle< T >::Angle( const Angle< T >& ang ) : Vector<T, 3u>( static_cast<Vector<T, 3u>>( ang ) )
     {
     }
 
 
-    template <typename T>
-    DCM<T> Angle<T>::ToDCM( const TaitBryanOrder& rotOrder ) const
+    template< typename T >
+    DCM< T > Angle< T >::ToDCM( const TaitBryanOrder& rotOrder ) const
     {
-        DCM<T> tmp;
+        DCM< T > tmp;
 
         T c0 = std::cos( this->vec[0] );
         T c1 = std::cos( this->vec[1] );
@@ -220,10 +220,10 @@ namespace myMath
     }
 
 
-    template <typename T>
-    DCM<T> Angle<T>::ToDCM( const EulerOrder& rotOrder ) const
+    template< typename T >
+    DCM< T > Angle< T >::ToDCM( const EulerOrder& rotOrder ) const
     {
-        DCM<T> tmp;
+        DCM< T > tmp;
 
         T c0 = std::cos( this->vec[0] );
         T c1 = std::cos( this->vec[1] );
@@ -341,22 +341,22 @@ namespace myMath
     }
 
 
-    template <typename T>
-    Quaternion<T> Angle<T>::ToQuaternion( const TaitBryanOrder& rotOrder ) const
+    template< typename T >
+    Quaternion< T > Angle< T >::ToQuaternion( const TaitBryanOrder& rotOrder ) const
     {
-        Quaternion<T> qat;
+        Quaternion< T > qat;
 
-        Quaternion<T> qx;
-        Quaternion<T> qy;
-        Quaternion<T> qz;
+        Quaternion< T > qx;
+        Quaternion< T > qy;
+        Quaternion< T > qz;
 
         switch ( rotOrder )
         {
             case TaitBryanOrder::XYZ:
                 {
-                    qx = Quaternion<T>( this->vec[0], Axis::X );
-                    qy = Quaternion<T>( this->vec[1], Axis::Y );
-                    qz = Quaternion<T>( this->vec[2], Axis::Z );
+                    qx = Quaternion< T >( this->vec[0], Axis::X );
+                    qy = Quaternion< T >( this->vec[1], Axis::Y );
+                    qz = Quaternion< T >( this->vec[2], Axis::Z );
 
                     qat = qx * qy * qz;
 
@@ -364,9 +364,9 @@ namespace myMath
                 }
             case TaitBryanOrder::XZY:
                 {
-                    qx = Quaternion<T>( this->vec[0], Axis::X );
-                    qz = Quaternion<T>( this->vec[1], Axis::Z );
-                    qy = Quaternion<T>( this->vec[2], Axis::Y );
+                    qx = Quaternion< T >( this->vec[0], Axis::X );
+                    qz = Quaternion< T >( this->vec[1], Axis::Z );
+                    qy = Quaternion< T >( this->vec[2], Axis::Y );
 
                     qat = qx * qz * qy;
 
@@ -374,9 +374,9 @@ namespace myMath
                 }
             case TaitBryanOrder::YXZ:
                 {
-                    qy = Quaternion<T>( this->vec[0], Axis::Y );
-                    qx = Quaternion<T>( this->vec[1], Axis::X );
-                    qz = Quaternion<T>( this->vec[2], Axis::Z );
+                    qy = Quaternion< T >( this->vec[0], Axis::Y );
+                    qx = Quaternion< T >( this->vec[1], Axis::X );
+                    qz = Quaternion< T >( this->vec[2], Axis::Z );
 
                     qat = qy * qx * qz;
 
@@ -384,9 +384,9 @@ namespace myMath
                 }
             case TaitBryanOrder::YZX:
                 {
-                    qy = Quaternion<T>( this->vec[0], Axis::Y );
-                    qz = Quaternion<T>( this->vec[1], Axis::Z );
-                    qx = Quaternion<T>( this->vec[2], Axis::X );
+                    qy = Quaternion< T >( this->vec[0], Axis::Y );
+                    qz = Quaternion< T >( this->vec[1], Axis::Z );
+                    qx = Quaternion< T >( this->vec[2], Axis::X );
 
                     qat = qy * qz * qx;
 
@@ -394,9 +394,9 @@ namespace myMath
                 }
             case TaitBryanOrder::ZXY:
                 {
-                    qz = Quaternion<T>( this->vec[0], Axis::Z );
-                    qx = Quaternion<T>( this->vec[1], Axis::X );
-                    qy = Quaternion<T>( this->vec[2], Axis::Y );
+                    qz = Quaternion< T >( this->vec[0], Axis::Z );
+                    qx = Quaternion< T >( this->vec[1], Axis::X );
+                    qy = Quaternion< T >( this->vec[2], Axis::Y );
 
                     qat = qz * qx * qy;
 
@@ -404,9 +404,9 @@ namespace myMath
                 }
             case TaitBryanOrder::ZYX:
                 {
-                    qz = Quaternion<T>( this->vec[0], Axis::Z );
-                    qy = Quaternion<T>( this->vec[1], Axis::Y );
-                    qx = Quaternion<T>( this->vec[2], Axis::X );
+                    qz = Quaternion< T >( this->vec[0], Axis::Z );
+                    qy = Quaternion< T >( this->vec[1], Axis::Y );
+                    qx = Quaternion< T >( this->vec[2], Axis::X );
 
                     qat = qz * qy * qx;
 
@@ -424,60 +424,60 @@ namespace myMath
     }
 
 
-    template <typename T>
-    Quaternion<T> Angle<T>::ToQuaternion( const EulerOrder& rotOrder ) const
+    template< typename T >
+    Quaternion< T > Angle< T >::ToQuaternion( const EulerOrder& rotOrder ) const
     {
-        Quaternion<T> q1;
-        Quaternion<T> q2;
-        Quaternion<T> q3;
+        Quaternion< T > q1;
+        Quaternion< T > q2;
+        Quaternion< T > q3;
 
         switch ( rotOrder )
         {
             case EulerOrder::XYX:
                 {
-                    q1 = Quaternion<T>( this->vec[0], Axis::X );
-                    q2 = Quaternion<T>( this->vec[1], Axis::Y );
-                    q3 = Quaternion<T>( this->vec[2], Axis::X );
+                    q1 = Quaternion< T >( this->vec[0], Axis::X );
+                    q2 = Quaternion< T >( this->vec[1], Axis::Y );
+                    q3 = Quaternion< T >( this->vec[2], Axis::X );
 
                     break;
                 }
             case EulerOrder::XZX:
                 {
-                    q1 = Quaternion<T>( this->vec[0], Axis::X );
-                    q2 = Quaternion<T>( this->vec[1], Axis::Z );
-                    q3 = Quaternion<T>( this->vec[2], Axis::X );
+                    q1 = Quaternion< T >( this->vec[0], Axis::X );
+                    q2 = Quaternion< T >( this->vec[1], Axis::Z );
+                    q3 = Quaternion< T >( this->vec[2], Axis::X );
 
                     break;
                 }
             case EulerOrder::YXY:
                 {
-                    q1 = Quaternion<T>( this->vec[0], Axis::Y );
-                    q2 = Quaternion<T>( this->vec[1], Axis::X );
-                    q3 = Quaternion<T>( this->vec[2], Axis::Y );
+                    q1 = Quaternion< T >( this->vec[0], Axis::Y );
+                    q2 = Quaternion< T >( this->vec[1], Axis::X );
+                    q3 = Quaternion< T >( this->vec[2], Axis::Y );
 
                     break;
                 }
             case EulerOrder::YZY:
                 {
-                    q1 = Quaternion<T>( this->vec[0], Axis::Y );
-                    q2 = Quaternion<T>( this->vec[1], Axis::Z );
-                    q3 = Quaternion<T>( this->vec[2], Axis::Y );
+                    q1 = Quaternion< T >( this->vec[0], Axis::Y );
+                    q2 = Quaternion< T >( this->vec[1], Axis::Z );
+                    q3 = Quaternion< T >( this->vec[2], Axis::Y );
 
                     break;
                 }
             case EulerOrder::ZXZ:
                 {
-                    q1 = Quaternion<T>( this->vec[0], Axis::Z );
-                    q2 = Quaternion<T>( this->vec[1], Axis::X );
-                    q3 = Quaternion<T>( this->vec[2], Axis::Z );
+                    q1 = Quaternion< T >( this->vec[0], Axis::Z );
+                    q2 = Quaternion< T >( this->vec[1], Axis::X );
+                    q3 = Quaternion< T >( this->vec[2], Axis::Z );
 
                     break;
                 }
             case EulerOrder::ZYZ:
                 {
-                    q1 = Quaternion<T>( this->vec[0], Axis::Z );
-                    q2 = Quaternion<T>( this->vec[1], Axis::Y );
-                    q3 = Quaternion<T>( this->vec[2], Axis::Z );
+                    q1 = Quaternion< T >( this->vec[0], Axis::Z );
+                    q2 = Quaternion< T >( this->vec[1], Axis::Y );
+                    q3 = Quaternion< T >( this->vec[2], Axis::Z );
 
                     break;
                 }
@@ -491,8 +491,8 @@ namespace myMath
     }
 
 
-    template <typename T>
-    void Angle<T>::wrapAnglesZeroToTwoPi( const Axis ax )
+    template< typename T >
+    void Angle< T >::wrapAnglesZeroToTwoPi( const Axis ax )
     {
         if ( ax == Axis::ALL )
         {
@@ -511,8 +511,8 @@ namespace myMath
         }
     }
 
-    template <typename T>
-    void Angle<T>::wrapAnglesMinusPiToPi( const Axis ax )
+    template< typename T >
+    void Angle< T >::wrapAnglesMinusPiToPi( const Axis ax )
     {
         if ( ax == Axis::ALL )
         {

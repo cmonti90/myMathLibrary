@@ -11,22 +11,22 @@ namespace myMath
     /////////////////////////////////
     //         DECLARATIONS        //
     /////////////////////////////////
-    template < class T, unsigned int R >
+    template< class T, unsigned int R >
     T DotProduct( const Vector< T, R >& lhs, const Vector< T, R >& rhs );
 
-    template < class T >
+    template< class T >
     Vector< T, 3u > CrossProduct( const Vector< T, 3u >& lhs, const Vector< T, 3u >& rhs );
 
-    template < class T, unsigned int R >
+    template< class T, unsigned int R >
     T Magnitude( const Vector< T, R >& obj );
 
-    template < class T, unsigned int R, unsigned int C >
+    template< class T, unsigned int R, unsigned int C >
     Matrix< T, C, R > Transpose( const Matrix< T, R, C >& obj );
 
-    template < class T >
+    template< class T >
     DCM< T > Transpose( const DCM< T >& obj );
 
-    template < class T, unsigned int R, unsigned int C >
+    template< class T, unsigned int R, unsigned int C >
     Matrix< T, R, C > OuterProduct( const Vector< T, R >& lhs, const Vector< T, C >& rhs );
 
     template< class T, unsigned int R >
@@ -35,7 +35,7 @@ namespace myMath
     /////////////////////////////////
     //         DEFINITIONS         //
     /////////////////////////////////
-    template < class T, unsigned int R >
+    template< class T, unsigned int R >
     inline T Magnitude( const Vector< T, R >& obj )
     {
         T tmp = static_cast< T >( 0 );
@@ -48,7 +48,7 @@ namespace myMath
         return static_cast< T >( std::sqrt( tmp ) );
     }
 
-    template < class T, unsigned int R >
+    template< class T, unsigned int R >
     inline T DotProduct( const Vector< T, R >& lhs, const Vector< T, R >& rhs )
     {
         T prod{static_cast< T >( 0 )};
@@ -61,7 +61,7 @@ namespace myMath
         return prod;
     }
 
-    template < class T >
+    template< class T >
     inline Vector< T, 3u > CrossProduct( const Vector< T, 3u >& lhs, const Vector< T, 3u >& rhs )
     {
             Vector< T, 3u > prod;
@@ -73,7 +73,7 @@ namespace myMath
             return prod;
     }
 
-    template < class T, unsigned int R, unsigned int C >
+    template< class T, unsigned int R, unsigned int C >
     inline Matrix<T, C, R> Transpose( const Matrix< T, R, C >& obj )
     {
         Matrix<T, C, R> tmp;
@@ -89,7 +89,7 @@ namespace myMath
         return tmp;
     }
 
-    template < class T >
+    template< class T >
     inline DCM< T > Transpose( const DCM< T >& obj )
     {
         DCM< T > tmp;
@@ -105,7 +105,7 @@ namespace myMath
         return tmp;
     }
 
-    template < class T, unsigned int R, unsigned int C >
+    template< class T, unsigned int R, unsigned int C >
     inline Matrix< T, R, C > OuterProduct( const Vector< T, R >& lhs, const Vector<T, C>& rhs )
     {
         Matrix< T, R, C > tmp{static_cast< T >( 0 )};
