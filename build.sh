@@ -2,12 +2,9 @@
 
 buildToDir="build"
 
-SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )"
+SCRIPT_DIR="$( dirname -- "${0}" )"
 
-curDir=${PWD}
-oldDir=${OLDPWD}
-
-SOURCE=${BASH_SOURCE[0]}
+SOURCE="${0}"
 while [ -L "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
   SOURCE=$(readlink "$SOURCE")
@@ -39,11 +36,8 @@ if [ ${?} -ne 0 ]
 then
   echo "Configuration failed"
   echo "Exiting"
-  
-  cd ${curDir}
-  export OLDPWD=${oldDir}
 
-  exit 1
+  return 1
 fi
 
 echo "Building library..."
@@ -53,10 +47,7 @@ then
   echo "Build failed"
   echo "Exiting"
 
-  cd ${curDir}
-  export OLDPWD=${oldDir}
-
-  exit 1
+  return 1
 fi
 
 echo "Build complete!"
@@ -67,7 +58,4 @@ cmake --install "${SCRIPT_DIR}/${buildToDir}" --prefix "${SCRIPT_DIR}/install"
 cd ${SCRIPT_DIR}/${buildToDir}/Testing/
 ctest -C Release -V
 
-cd ${curDir}
-export OLDPWD=${oldDir}
-
-exit 0
+return 0
