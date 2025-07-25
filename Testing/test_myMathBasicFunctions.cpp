@@ -23,17 +23,6 @@ BOOST_AUTO_TEST_CASE( test_myMathBasicFunctions_factorial )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_myMathBasicFunctions_ABS )
-{
-    BOOST_CHECK_EQUAL( myMath::ABS( -1 ), 1 );
-    BOOST_CHECK_EQUAL( myMath::ABS( 0 ), 0 );
-    BOOST_CHECK_EQUAL( myMath::ABS( 1 ), 1 );
-    BOOST_CHECK_EQUAL( myMath::ABS( -1.0 ), 1.0 );
-    BOOST_CHECK_EQUAL( myMath::ABS( 0.0 ), 0.0 );
-    BOOST_CHECK_EQUAL( myMath::ABS( 1.0 ), 1.0 );
-}
-
-
 BOOST_AUTO_TEST_CASE( test_myMathBasicFunctions_SQ )
 {
     BOOST_CHECK_EQUAL( myMath::SQ( -1 ), 1 );
@@ -48,44 +37,16 @@ BOOST_AUTO_TEST_CASE( test_myMathBasicFunctions_SQ )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_myMathBasicFunctions_SIGN )
+BOOST_AUTO_TEST_CASE( test_myMathBasicFunctions_Sign )
 {
-    BOOST_CHECK_EQUAL( myMath::SIGN( -1 ), -1 );
-    BOOST_CHECK_EQUAL( myMath::SIGN( 0 ), 0 );
-    BOOST_CHECK_EQUAL( myMath::SIGN( 1 ), 1 );
-    BOOST_CHECK_EQUAL( myMath::SIGN( -1.0 ), -1.0 );
-    BOOST_CHECK_EQUAL( myMath::SIGN( 0.0 ), 0.0 );
-    BOOST_CHECK_EQUAL( myMath::SIGN( 1.0 ), 1.0 );
-    BOOST_CHECK_EQUAL( myMath::SIGN( 10.0 ), 1.0 );
-    BOOST_CHECK_EQUAL( myMath::SIGN( -10.0 ), -1.0 );
-}
-
-
-BOOST_AUTO_TEST_CASE( test_myMathBasicFunctions_MAX )
-{
-    BOOST_CHECK_EQUAL( myMath::MAX( -1, 0 ), 0 );
-    BOOST_CHECK_EQUAL( myMath::MAX( 0, 0 ), 0 );
-    BOOST_CHECK_EQUAL( myMath::MAX( 1, 0 ), 1 );
-    BOOST_CHECK_EQUAL( myMath::MAX( -1.0, 0.0 ), 0.0 );
-    BOOST_CHECK_EQUAL( myMath::MAX( 0.0, 0.0 ), 0.0 );
-    BOOST_CHECK_EQUAL( myMath::MAX( 1.0, 0.0 ), 1.0 );
-    BOOST_CHECK_EQUAL( myMath::MAX( 1.0, 1.0 ), 1.0 );
-    BOOST_CHECK_EQUAL( myMath::MAX( 1.0, 2.0 ), 2.0 );
-    BOOST_CHECK_EQUAL( myMath::MAX( 2.0, 1.0 ), 2.0 );
-}
-
-
-BOOST_AUTO_TEST_CASE( test_myMathBasicFunctions_MIN )
-{
-    BOOST_CHECK_EQUAL( myMath::MIN( -1, 0 ), -1 );
-    BOOST_CHECK_EQUAL( myMath::MIN( 0, 0 ), 0 );
-    BOOST_CHECK_EQUAL( myMath::MIN( 1, 0 ), 0 );
-    BOOST_CHECK_EQUAL( myMath::MIN( -1.0, 0.0 ), -1.0 );
-    BOOST_CHECK_EQUAL( myMath::MIN( 0.0, 0.0 ), 0.0 );
-    BOOST_CHECK_EQUAL( myMath::MIN( 1.0, 0.0 ), 0.0 );
-    BOOST_CHECK_EQUAL( myMath::MIN( 1.0, 1.0 ), 1.0 );
-    BOOST_CHECK_EQUAL( myMath::MIN( 1.0, 2.0 ), 1.0 );
-    BOOST_CHECK_EQUAL( myMath::MIN( 2.0, 1.0 ), 1.0 );
+    BOOST_CHECK_EQUAL( myMath::Sign( -1 ), -1 );
+    BOOST_CHECK_EQUAL( myMath::Sign( 0 ), 0 );
+    BOOST_CHECK_EQUAL( myMath::Sign( 1 ), 1 );
+    BOOST_CHECK_EQUAL( myMath::Sign( -1.0 ), -1.0 );
+    BOOST_CHECK_EQUAL( myMath::Sign( 0.0 ), 0.0 );
+    BOOST_CHECK_EQUAL( myMath::Sign( 1.0 ), 1.0 );
+    BOOST_CHECK_EQUAL( myMath::Sign( 10.0 ), 1.0 );
+    BOOST_CHECK_EQUAL( myMath::Sign( -10.0 ), -1.0 );
 }
 
 
